@@ -1,0 +1,66 @@
+The second part of the project involves getting information on the symptoms the patient is experiencing and the patient’s medical history. This could involve things like their blood pressure, tests they’ve had performed, and background information they have provided to their doctor previously. The most important thing is to surface the relevant information to provide to the doctor so that the doctor can give a patient diagnosis quickly. Some finer points:
+
+- The model will research many different diseases, performing research based on symptoms and medical history provided from the patient
+- Data sources include WebMD for researching symptom information, and data from a collaborative project with the college of medicine. In the long term if we want to extend this we will have to look at open source data.
+- While much of the project is reliant on LLM models, a multi-modal AI may need to built to do predictions. For any non-LLM models, we will be doing the training.
+# Implementation questions
+Process information from part 1, query additional data sources for greater context
+- Processing part 1's output
+	- How should data be processed?
+		- [[Dynamic Knowledge Graphs (DKGs)]]
+		- RAG
+			- Agentic
+- Querying external data sources for contextual information and diagnosis suggestions
+	- Websites
+		- WebMD
+		- [[PubMed]]
+			- Referenced in [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]
+				- Also noted in David's AI-generated research
+	- Medical LLMs
+		- [[PMC-LLaMA]]
+		- [[DDxT - Deep Generative Transformer Models for Differential Diagnosis]]
+		- [[MedPaLM-2]]
+		- [[Me-LLaMA]]
+		- [[BioBERT]]
+		- [[BioGPT]]
+	- Data source alternatives
+		- [[UMLS]]
+			- Referenced in [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]
+				- David's generated notes also include this
+		- [[DDXPlus]]
+		- [[MIMIC-III Clinical Database]]
+			- Referenced in [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]
+				- David's generated notes mention MIMIC-IV
+		- [[SNOWMED CT]]
+			- Referenced in [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]
+				- David's generated notes also include this
+			- Does not charge for licensing
+		- Kennedy's data suggestion
+			- [MTS Dialogue Clinical Note](https://huggingface.co/datasets/har1/MTS_Dialogue-Clinical_Note)
+	- David's AI-generated data sources
+		- eICU Collaborative Research Database
+- Combining external results with input gathered from part 1
+	- [[Dynamic Knowledge Graphs (DKGs)]]
+	- [[Adaptive Semantic Fusion Algorithm (ASFA)]]
+		- [[Markov random field (MRF)]]
+- Presenting results to the doctor
+	- [[Chart.js]]
+		- See output from 
+	- [[GLoRIA]] (if images are used for input)
+	- David's AI-generated output ideas
+		- Top-ranked differential diagnoses
+		- Calibrated confidence estimates
+		- Highlighted supporting and contradicting evidence
+		- Identification of high-risk or red-flag conditions
+- Evaluating the accuracy of these results
+	- Baseline methods mentioned in [[LLM-Driven Medical Document Analysis -  Enhancing Trustworthy Pathology and Differential Diagnosis]]
+		- [[BASD]]
+		- [[GTPA (Ground Truth Pathology Accuracy)]]
+		- [[AARLC]]
+	- Methods mentioned in [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]
+		- [[Mean Utility Error (MUE)]]
+- Where this fits in the broader context of current work
+	- What papers do we have that help assist us with this part?
+	- What papers show opportunities that this part may address?
+# See also
+- [[Project Proposal]]
