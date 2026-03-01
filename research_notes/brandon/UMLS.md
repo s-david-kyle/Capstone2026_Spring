@@ -4,6 +4,7 @@
 - <mark>UMLS licenses are issued only to individuals and not to groups or organizations</mark>
 - No charge to license for use in United States and other member countries
 - Having a UTS account allows for browsing, downloading, and querying the UMLS
+	- <mark>Brandon requested license Saturday 2/28/2026, takes 3 business days</mark>
 # UMLS usage
 - Link terms and codes between your doctor, your pharmacy, and your insurance company
 - Coordinate patient care among several departments within a hospital
@@ -44,6 +45,7 @@ Full text: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC308795/](https://www.n
 
 # See also
 - [[DKG-LLM Datasets]]
+- [[Knowledge Graphs (KGs)]]
 
 # Source
 https://www.nlm.nih.gov/research/umls/index.html
