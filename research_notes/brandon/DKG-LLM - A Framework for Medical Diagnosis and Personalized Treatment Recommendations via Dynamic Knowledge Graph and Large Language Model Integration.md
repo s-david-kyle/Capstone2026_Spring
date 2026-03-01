@@ -18,9 +18,22 @@ The paper emphasizes evaluating the framework's ability to extract semantic info
 **In essence, this paper introduces a DKG framework designed to be a dynamic and scalable resource for medical knowledge, outlining its structure, update mechanisms, and evaluation process.**
 # Paper
 ![[2508.06186v1.pdf]]
+# What this paper adds to research
+- Adaptive Semantic Fusion Algorithm (ASFA)
+	-  Processes heterogeneous medical data and dynamically updates a knowledge graph in 1 second
+	- Advanced probabilisitic models, graph optimization, and feedback-based learning
+- Evaluations on datasets show robustness in complex scenarios - multi-symptom diseases and presence of noisy data
+# Opportunities for improvement
+- Challenges with ensuring data privacy
+	- [[Federated learning]] could be used to protect patient data (suggested by paper)
+	- Local models/graphs could be used instead of cloud-based (personal speculation)
+- Optimizing for larger datasets
+- Incorporating biosensor data
+- Extending applications to areas such as [[Emerging Disease Prediction]]
 # See also 
 - [[DKG-LLM Framework]]
 - [[DKG-LLM Datasets]]
+- [[Research Paper Summaries]]
 # Sources
 - Publisher page: https://arxiv.org/abs/2508.06186
 - PDF paper: https://arxiv.org/pdf/2508.06186

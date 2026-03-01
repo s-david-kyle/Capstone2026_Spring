@@ -3,13 +3,39 @@ The second part of the project involves getting information on the symptoms the 
 - The model will research many different diseases, performing research based on symptoms and medical history provided from the patient
 - Data sources include WebMD for researching symptom information, and data from a collaborative project with the college of medicine. In the long term if we want to extend this we will have to look at open source data.
 - While much of the project is reliant on LLM models, a multi-modal AI may need to built to do predictions. For any non-LLM models, we will be doing the training.
+
+# Proposed architecture
+- Medical knowledge retrieval and explainability
+	- RAG
+	- Knowledge graphs
+		- Pre-existing
+			- [[UMLS]]
+		- Building tools
+			- [[Neo4j]]
+	- GraphRAG (no papers citing this yet)
+- Evaluation
+	- From [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]:
+		- Clinician feedback 
+			- A specialized team consisting of a general practitioner, an endocrinologist, and a cardiologist was used to assess the practical applicability of the treatment recommendations.
+			- The team aimed to assess the framework's ability to provide personalized treatment recommendations. 
+			- Semi-structured interviews and standardized questionnaires were utilized in the evaluation. 
+			- Each of these questionnaires used a 5-point Likert scale from 1 (strongly disagree) to 5 (strongly agree) to gauge three types of dimensions as stated below:
+				- Accuracy: Relevance to the patient’s condition
+				- Reliability: Consistency in similar cases
+				- Usability: Feasibility in clinical settings
+		- Complex scenarios
+			- Subset of 200 complex cases evaluated
+				- 100 cases from real-world datasets [[MIMIC-III Clinical Database]]
+				- 100 cases from simulated datasets
+		- Graph integration effectiveness evaluated using Graph Alignment Score (GAS)
+			- Correctly integrated nodes and edges / total nodes and edges in ground truth
 # Implementation questions
 Process information from part 1, query additional data sources for greater context
 - Processing part 1's output
+	- Agentic?
 	- How should data be processed?
 		- [[Dynamic Knowledge Graphs (DKGs)]]
 		- RAG
-			- Agentic
 - Querying external data sources for contextual information and diagnosis suggestions
 	- Websites
 		- WebMD
@@ -42,7 +68,7 @@ Process information from part 1, query additional data sources for greater conte
 - Combining external results with input gathered from part 1
 	- [[Dynamic Knowledge Graphs (DKGs)]]
 	- [[Adaptive Semantic Fusion Algorithm (ASFA)]]
-		- [[Markov random field (MRF)]]
+		- [[Markov Random Field (MRF)]]
 - Presenting results to the doctor
 	- [[Chart.js]]
 		- See output from 

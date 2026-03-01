@@ -5,5 +5,7 @@ A Markov network or MRF is similar to a [Bayesian network](https://en.wikipedia
 [![An example of a Markov random field.](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Markov_random_field_example.svg/250px-Markov_random_field_example.svg.png)](https://en.wikipedia.org/wiki/File:Markov_random_field_example.svg)
 
 An example of a Markov random field. Each edge represents dependency. In this example: A depends on B and D. B depends on A and D. D depends on A, B, and E. E depends on D and C. C depends on E.
+# Uses
+- In [[DKG-LLM Framework]], it is used for graph pruning
 # Source
 - https://en.wikipedia.org/wiki/Markov_random_field

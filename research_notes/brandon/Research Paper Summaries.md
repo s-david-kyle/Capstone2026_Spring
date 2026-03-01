@@ -1,6 +1,3 @@
-[[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]
-[[LLM-Driven Medical Document Analysis -  Enhancing Trustworthy Pathology and Differential Diagnosis]]
-
 
 # Articles with restricted access
 - https://journals.sagepub.com/doi/abs/10.1177/026921639701100511

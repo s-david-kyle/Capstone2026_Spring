@@ -3,5 +3,6 @@ The process of identifying the most likely medical condition among the possible 
 # See also
 - [[Web-based Interface]]
 # Sources
-- https://arxiv.org/abs/2506.19702
+- [[LLM-Driven Medical Document Analysis -  Enhancing Trustworthy Pathology and Differential Diagnosis]]
+	- https://arxiv.org/abs/2506.19702
 - https://openreview.net/forum?id=Uk6WMt9l9w
