@@ -1,14 +1,14 @@
 # Overview
 
 # Paper summary
-A research paper or a report related to a study on problem list summarization in electronic health records (EHRs). Here's a summary of the key information gleaned from the citations:
+A study on problem list summarization in electronic health records (EHRs).
 
-**Core Focus:** The document centers around the ProbSum shared task, which involves summarizing patients' active diagnoses and problems from EHR progress notes.
+**Core Focus:** Centers around the ProbSum shared task, which involves summarizing patients' active diagnoses and problems from EHR progress notes.
 
 **Datasets Used:** The study utilizes two main datasets:
 
 - **MIMIC-III:** A dataset containing approximately 1005 progress notes with active diagnoses annotated from the "plan" sections.
-- **In-house EHR dataset:** A dataset containing 4815 progress notes, which was created by parsing text using a medical concept extractor based on the UMLS SNOMED CT vocabulary.
+- **In-house EHR dataset:** A dataset containing 4815 progress notes, which was created by parsing text using a medical concept extractor based on the [[UMLS]] [[SNOWMED CT]] vocabulary.
 
 **Methods and Models:** The research explores various approaches for summarization, including:
 

@@ -1,5 +1,5 @@
 # Notes
-- Kennedy, Partha joined
+- Brandon, Kennedy, Partha joined
 - Kennedy
 	- First part - about conversations
 	- Tuning the LLM

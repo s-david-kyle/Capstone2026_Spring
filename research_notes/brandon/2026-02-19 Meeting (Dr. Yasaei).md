@@ -1,11 +1,11 @@
 # Introductions
 Dr. Yasaei introduced herself, and the rest of the team gave a brief overview of their background and interests. Sree Paada Reddy Pallikila spoke of his research in data science, Kennedy Okhawere of working as a physician in the public health sector, Partha Vemuri completing his masters in data science, Brandon Knox in workforce/customer analytics, and David Kyle in programming, industrial engineering, and optimization.
 # Project concept
-The goal of the project is to assist doctors with quickly diagnosing patient symptoms. We are focusing on giving information to the doctor instead of competing with tools that give individuals information about their health. From Dr. Yasaei’s discussions with medical doctors, this is a pain point because of the speed at which they must work. The project will be tackled in two parts.
+The goal of the project is to assist doctors with quickly diagnosing patient symptoms. <mark>We are focusing on giving information to the doctor instead of competing with tools that give individuals information about their health. From Dr. Yasaei’s discussions with medical doctors, this is a pain point because of the speed at which they must work.</mark> The project will be tackled in two parts.
 
-The first part of the project is taking in the information from the patient. When a patient comes in with a series of symptoms, not all symptoms they provide are correct as they may use the wrong names or keywords. For example, they may say they have a migraine when they actually have a headache. We want to utilize a chatbot interface that resembles the interaction a nurse or doctor has with a patient when they initially meet. The goal in this part is to get accurate symptoms and the condition of the patient. Some finer points:
+The first part of the project is taking in the information from the patient. When a patient comes in with a series of symptoms, not all symptoms they provide are correct as <mark>they may use the wrong names or keywords.</mark> For example, they may say they have a migraine when they actually have a headache. We want to utilize a chatbot interface that resembles the interaction a nurse or doctor has with a patient when they initially meet. The goal in this part is to get accurate symptoms and the condition of the patient. Some finer points:
 
-- The chatbot’s language must be simple so the patient does not have to read many words, and the words should be calm and reassuring
+- <mark>The chatbot’s language must be simple so the patient does not have to read many words, and the words should be calm and reassuring</mark>
 - We will make use of a pre-trained model, with a goal of fine-tuning it to make it more personalized.
 - We will consider privacy issues with relaying this information to a chatbot to be resolved (or the interactions to be local) for this proof of concept, however if we do have time to address privacy directly that would also be good.
 
@@ -19,7 +19,7 @@ These two parts - interfacing with the patient to get their information and inte
 ## Next steps
 Our next steps will be:
 - Research personal medicine and current AI/LLM models that are helping patients
-- Gather existing research papers to understand how to speak with patients and the process of getting correct symptoms
+- <mark>Gather existing research papers to understand how to speak with patients and the process of getting correct symptoms</mark>
 - Decide where our project should start - making the most of what has already been created and building on top of it
 - Look into data collection, especially from WebMD
 - Have the group meet together without the professor, discuss what pieces each of us are interested in working on (based on the two main project parts described above), and create two groups

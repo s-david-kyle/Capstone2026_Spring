@@ -6,9 +6,9 @@ The content appears to be a study or research paper exploring how patients recor
 
 **Consultation Frequency and Self-Medication:** The research involved 198 women aged 20-44 who kept health diaries, recording symptoms on one in three days. On 57% of these symptom days, self-medication occurred. A relatively small proportion of symptoms (about 1 in 37) led to a doctor's consultation.
 
-**Relationship Between Anxiety and Symptom Reporting:** The study found a significant relationship between anxiety and both the perception of symptoms and the decision to seek medical advice. Individuals with higher anxiety scores were more likely to report symptoms, restrict activities, self-medicate, and consult a doctor.
+**Relationship Between Anxiety and Symptom Reporting:** <mark>The study found a significant relationship between anxiety and both the perception of symptoms and the decision to seek medical advice. Individuals with higher anxiety scores were more likely to report symptoms, restrict activities, self-medicate, and consult a doctor.</mark>
 
-**Concerns About the Standard of Care:** The citations highlight concerns about the potential strain on general practitioner services if even a minor shift towards more self-care and fewer doctor visits occurs. There's also a noted issue with the varying frequency of doctor consultations among individuals, which isn't fully explained by factors like age and sex alone. The Patients' Association is mentioned as raising concerns about the reluctance of family doctors to make home visits and the inadequacy of some emergency care services.
+**Concerns About the Standard of Care:** The citations highlight <mark>concerns about the potential strain on general practitioner services if even a minor shift towards more self-care and fewer doctor visits occurs.</mark> There's also a noted issue with the <mark>varying frequency of doctor consultations among individuals</mark>, which isn't fully explained by factors like age and sex alone. The Patients' Association is mentioned as raising concerns about the reluctance of family doctors to make home visits and the inadequacy of some emergency care services.
 # Paper
 ![[jroyalcgprac00282-0008.pdf]]
 # See also
