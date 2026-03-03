@@ -21,6 +21,25 @@ Research on a knowledge graph-based approach called **KGT** for enhancing the pe
 **Data:** The knowledge graph used in this research was developed by the authors using non-personalized data from credible biomedical sources, adhering to ethical guidelines and data privacy regulations.
 # Paper
 ![[giae082.pdf]]
+# Opportunities Addressed
+**1. Addressing Hallucinations (Citation 3):** A significant challenge highlighted is the tendency of LLMs to generate "hallucinations" – incorrect or fabricated information. This is a key area for improvement, and the research explored methods to mitigate this.
+
+**2. Catastrophic Forgetting (Citation 3):** <mark>Fine-tuning LLMs, while helpful for reducing hallucinations, can lead to "catastrophic forgetting," where the model loses its previously learned abilities.</mark> This suggests a need for more robust training techniques that preserve prior knowledge while incorporating new information.
+
+**3. Prompt Engineering Optimization (Citation 3):** <mark>While prompt engineering offers a way to enhance LLM performance without fine-tuning, it's an area that can be further optimized. Research into more effective prompt design strategies (like Chain-of-Thought prompting) is ongoing and presents an opportunity for improvement. The development of automated prompt engineering methods (APE) also offers potential gains.</mark>
+
+**4. Knowledge Graph Integration (Citation 3 & 1):** The research highlights the potential of integrating knowledge graphs with LLMs to improve factual accuracy. <mark>Further exploration of different KG architectures, retrieval methods, and reasoning strategies within the KG framework could lead to more robust and reliable systems.</mark>
+
+**5. Scalability & Resource Efficiency (Implied):** While not explicitly stated as an opportunity, the mention of high training expenses associated with fine-tuning implies a need for more efficient methods. <mark>Research into techniques that reduce the computational cost of training and deploying LLMs would be beneficial.</mark>
+
+**6. Generalizability & Benchmarking (Citation 1):** The research emphasizes the importance of robust benchmarking to evaluate LLM capabilities. Continued development and refinement of benchmarks (like the one created for oncology QA) are crucial to drive progress in this field. The focus on generalizability suggests a need to explore methods that allow models to perform well across diverse domains.
+
+# Potential improvements
+- The constructed QA dataset was designed to validate the effectiveness of the framework, but does not cover all potential use cases
+- <mark>The system does not perform fuzzy matching - if a drug is misspelled by even one letter it will fail to retrieve information from the knowledge graph</mark>
+- Their ultimate goal is to create a robust framework applicable to the rapidly evolving domain of medical knowledge to support health care professionals in delivering personalized, precise medication tailored to individual needs
+- This study is a proof of concept, and has not been validated in actual clinical practice
+
 # See also
 - [[Research Paper Summaries]]
 # Source
