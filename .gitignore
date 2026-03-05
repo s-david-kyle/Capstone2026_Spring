@@ -1,6 +1,10 @@
 # files
 .DS_Store
+config.py
 *.bkp
 
 # folders
-.obsidian/
+data/pubmed
+data/UMLS
+__pycache__
+.obsidian
