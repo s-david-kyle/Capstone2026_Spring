@@ -4,6 +4,9 @@ import json
 import os
 from datetime import datetime
 
+# team modules
+from external_data_pull import ollama_llm_symptom_check
+
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
 # ==========================================
@@ -36,6 +39,7 @@ def get_llm_response(messages):
             )
         }
         # Combines the system rules with the existing chat history
+        print(messages)
         response = ollama.chat(model=MODEL, messages=[system_instruction] + messages)
         return response['message']['content']
     except Exception as e:
@@ -111,9 +115,14 @@ if prompt := st.chat_input("Type your response here..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
 
+    # TODO: pull symptoms here
+    symptoms = ollama_llm_symptom_check(prompt, MODEL)
+    print(symptoms)
+
     # Get and display LLM response
     with st.spinner("Thinking..."):
         response = get_llm_response(st.session_state.messages)
+        
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.chat_message("assistant").write(response)
 

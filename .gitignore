@@ -9,3 +9,4 @@ data/pubmed
 data/UMLS
 __pycache__
 .obsidian
+.ipynb_checkpoints/
