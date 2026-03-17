@@ -2,6 +2,7 @@
 .DS_Store
 config.py
 *.bkp
+patient_records.json
 
 # folders
 data/pubmed
