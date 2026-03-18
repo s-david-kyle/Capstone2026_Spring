@@ -6,6 +6,7 @@ from datetime import datetime
 
 # team modules
 from external_data_pull import ollama_llm_symptom_check
+from db_write import add_data_to_db
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -116,8 +117,16 @@ if prompt := st.chat_input("Type your response here..."):
     st.chat_message("user").write(prompt)
 
     # TODO: pull symptoms here
+    # temporary code - will place data inside db
     symptoms = ollama_llm_symptom_check(prompt, MODEL)
     print(symptoms)
+
+    # TODO: update database tables
+    # temporary static add to ensure database updates properly
+    new_row = [1, 'Sess1', '2024-03-06 02:11:00', '2024-03-06 02:11:00',
+               'chest_pain', "{'symptom': 'dizziness', 'symptom': 'urinary'}", 
+               'reviewed', 'v0', '2024-03-06 02:11:00']
+    add_data_to_db('Session', new_row)
 
     # Get and display LLM response
     with st.spinner("Thinking..."):

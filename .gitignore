@@ -3,6 +3,7 @@
 config.py
 *.bkp
 patient_records.json
+clerkship_dialogue.db
 
 # folders
 data/pubmed
