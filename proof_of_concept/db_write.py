@@ -7,7 +7,6 @@ def add_data_to_db(table_name, data):
     and closes the connection.
 
     Args:
-        db_name (str): The name of the SQLite database file.
         table_name (str): The name of the table to add the data to.
         data (list): A list of values to insert into the table.  
                       The order of the values must match the columns
@@ -17,13 +16,9 @@ def add_data_to_db(table_name, data):
         conn = sqlite3.connect('clerkship_dialogue.db')
         cursor = conn.cursor()
 
-        # Construct the SQL query
+        # Construct the SQL query, execute and commit
         sql = f"INSERT INTO {table_name} VALUES ({','.join(['?'] * len(data))})"
-
-        # Execute the query with the data
         cursor.execute(sql, data)
-
-        # Commit the changes
         conn.commit()
 
         print(f"Row added successfully to table '{table_name}'.")
@@ -36,9 +31,4 @@ def add_data_to_db(table_name, data):
             conn.close()
 
 if __name__ == '__main__':
-    # Example Usage:
-    # table = 'customers'
-    # customer_data = ['Alice', 'Smith', '123 Main St', 'Anytown']
-
-    # add_data_to_db(table, customer_data)
     pass
