@@ -6,7 +6,7 @@ from datetime import datetime
 
 # team modules
 from external_data_pull import ollama_llm_symptom_check
-from db_write import add_data_to_db, add_session_data, get_session_id, add_turn_data
+from db_write import add_data_to_db, add_new_session_data, get_session_id, add_turn_data
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -103,13 +103,13 @@ st.title("🩺 Patient Intake Assistant")
 # Initialize the conversation log in session state
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hello. What symptoms are you experiencing today?",
-         "time_of_message": datetime.now()}
+        {"role": "assistant", "content": "Hello. What symptoms are you experiencing today?"}
     ]
 
 # Create unique session ID
 session_id = get_session_id()
 new_session = True
+session_start = datetime.now()
 
 # Display the conversation history
 for msg in st.session_state.messages:
@@ -118,9 +118,10 @@ for msg in st.session_state.messages:
 # Requirement: Text input box for the patient
 if prompt := st.chat_input("Type your response here..."):
     # Add patient response to the log
-    st.session_state.messages.append({"role": "user", "content": prompt,
-                                      "time_of_message": datetime.now()})
+    st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
+    user_time_of_message = datetime.now()
+    system_time_of_message = datetime.now() # this will get updated below
 
     # TODO: pull symptoms here
     # temporary code - will place data inside db
@@ -130,27 +131,29 @@ if prompt := st.chat_input("Type your response here..."):
     # TODO: update database tables
     # Initialize session table (will complete after information gathered)
     if new_session == True:
-        add_session_data(st.session_state, session_id, MODEL)
+        add_new_session_data(session_id, MODEL, session_start)
         new_session == False
     
-    add_turn_data(st.session_state, session_id)
-    # new_row = [12, 1, '02:11:00', 'system', 'When did it start?']
-    # add_data_to_db('Turn', new_row)
+    # update turn table with current patient dialogue
+    add_turn_data(session_id, datetime.now(), 'patient', prompt)
 
-    new_row = [1, 'AI draft: ...', 'Clinician final: ...', '2024-03-06 02:11:00']
-    add_data_to_db('Summary', new_row)
+    # TODO: move these to final step (when user clicks end conversation)
+    # new_row = [1, 'AI draft: ...', 'Clinician final: ...', '2024-03-06 02:11:00']
+    # add_data_to_db('Summary', new_row)
 
-    new_row = [1, 8, 7, 6, 5, .833, 1, "{'symptom': 'radiation'}", 320, 1,
-               "{'symptom': 'radiation'}", .72, 1, 1, 0, "{'hallucinated phrases': 'None'}"]
-    add_data_to_db('SessionMetric', new_row)
+    # new_row = [1, 8, 7, 6, 5, .833, 1, "{'symptom': 'radiation'}", 320, 1,
+    #            "{'symptom': 'radiation'}", .72, 1, 1, 0, "{'hallucinated phrases': 'None'}"]
+    # add_data_to_db('SessionMetric', new_row)
 
     # Get and display LLM response
     with st.spinner("Thinking..."):
         response = get_llm_response(st.session_state.messages)
         
-        st.session_state.messages.append({"role": "assistant", "content": response,
-                                          "time_of_message": datetime.now()})
+        st.session_state.messages.append({"role": "assistant", "content": response})
         st.chat_message("assistant").write(response)
+        # update turn table with current system dialogue
+        add_turn_data(session_id, datetime.now(), 'system', response)
+
 
 # Sidebar for actions
 st.sidebar.header("Controls")

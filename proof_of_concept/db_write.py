@@ -20,50 +20,30 @@ def get_session_id():
     session_id = greatest_number + 1
     return session_id
 
-def add_session_data(session_state, session_id, model):
+def add_new_session_data(session_id, model, session_start):
     """
     Extracts information from streamlit's session_state to add to database
     """
     session_name = f'Sess{session_id}'
-    created_at = dt.now()
     # start of conversation
-    new_row = [session_id, session_name, created_at,
-               None, None, None, 'active', model, created_at]
+    new_row = [session_id, session_name, session_start,
+               None, None, None, 'active', model, session_start]
     add_data_to_db('Session', new_row)
-    print('session_state: ', session_state)
+    # print('session_state: ', session_state)
     # temporary static add to ensure database updates properly
     # new_row = [1, 'Sess1', '2024-03-06 02:11:00', '2024-03-06 02:11:00',
     #            'chest_pain', "{'symptom': 'dizziness', 'symptom': 'urinary'}", 
     #            'reviewed', 'v0', '2024-03-06 02:11:00']
     # add_data_to_db('Session', new_row)
 
-def add_turn_data(session_state, session_id):
+def add_turn_data(session_id, time_of_message, speaker, message):
     """
     Extracts information from streamlit's session_state to add to database's Turn table
     """
-    # grab two most recent messages (session_state will have all from session)
-    if len(session_state.messages) >= 2:
-        messages = [session_state.messages[-2], session_state.messages[-1]]
-    elif len(session_state.messages) == 1:
-        messages = [session_state.messages[0], None]
-    else:
-        messages = [None, None]
-    # note: turn_id will be created automatically by db
-    for msg in messages:
-        time_of_message = msg['time_of_message']
-        role = msg['role']
-        if role == 'assistant':
-            speaker = 'system'
-        elif role == 'user':
-            speaker = 'patient'
-        else:
-            speaker = 'unknown'
-        message = msg['content']
-
-        # write message to db
-        new_row = [session_id, time_of_message, speaker, message]
-        columns = ['SessionId', 'TimeOfMessage', 'Speaker', 'Message']
-        add_data_to_db('Turn', new_row, columns)
+    # write message to db
+    new_row = [session_id, time_of_message, speaker, message]
+    columns = ['SessionId', 'TimeOfMessage', 'Speaker', 'Message']
+    add_data_to_db('Turn', new_row, columns)
 
 
 def add_data_to_db(table_name, data, columns=None):
