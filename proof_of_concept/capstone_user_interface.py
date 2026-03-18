@@ -6,7 +6,7 @@ from datetime import datetime
 
 # team modules
 from external_data_pull import ollama_llm_symptom_check
-from db_write import add_data_to_db
+from db_write import add_data_to_db, add_session_data, get_session_id, add_turn_data
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -106,6 +106,10 @@ if "messages" not in st.session_state:
         {"role": "assistant", "content": "Hello. What symptoms are you experiencing today?"}
     ]
 
+# Create unique session ID
+session_id = get_session_id()
+new_session = True
+
 # Display the conversation history
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
@@ -122,14 +126,14 @@ if prompt := st.chat_input("Type your response here..."):
     print(symptoms)
 
     # TODO: update database tables
-    # temporary static add to ensure database updates properly
-    new_row = [1, 'Sess1', '2024-03-06 02:11:00', '2024-03-06 02:11:00',
-               'chest_pain', "{'symptom': 'dizziness', 'symptom': 'urinary'}", 
-               'reviewed', 'v0', '2024-03-06 02:11:00']
-    add_data_to_db('Session', new_row)
+    # Initialize session table (will complete after information gathered)
+    if new_session == True:
+        add_session_data(st.session_state, session_id, MODEL)
+        new_session == False
     
-    new_row = [12, 1, '02:11:00', 'system', 'When did it start?']
-    add_data_to_db('Turn', new_row)
+    add_turn_data(st.session_state, session_id, MODEL)
+    # new_row = [12, 1, '02:11:00', 'system', 'When did it start?']
+    # add_data_to_db('Turn', new_row)
 
     new_row = [1, 'AI draft: ...', 'Clinician final: ...', '2024-03-06 02:11:00']
     add_data_to_db('Summary', new_row)

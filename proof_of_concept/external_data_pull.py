@@ -45,6 +45,7 @@ def ollama_llm_symptom_check(prompt, model):
             )
         }
         user_message = {"role": "user", "content": prompt}
+        print('symptom_check: ', user_message)
         # Combines the system rules with the existing chat history
         response = ollama.chat(model=model, messages=[system_instruction] + [user_message])
         response = response['message']['content']
@@ -59,4 +60,3 @@ def ollama_llm_symptom_check(prompt, model):
 if __name__ == "__main__":
     pass
     # conversation_log, symptom_log, article_log, umls_log = surface_patient_information(patient_statement_01)
-
