@@ -37,16 +37,36 @@ def add_session_data(session_state, session_id, model):
     #            'reviewed', 'v0', '2024-03-06 02:11:00']
     # add_data_to_db('Session', new_row)
 
-def add_turn_data(session_state, session_id, model):
+def add_turn_data(session_state, session_id):
     """
     Extracts information from streamlit's session_state to add to database's Turn table
     """
-    time_of_message = dt.now()
-    # TODO: figure out turn_id logic in db (will it create the number automatically?)
-    
-    print('session_state: ', session_state)
+    # grab two most recent messages (session_state will have all from session)
+    if len(session_state.messages) >= 2:
+        messages = [session_state.messages[-2], session_state.messages[-1]]
+    elif len(session_state.messages) == 1:
+        messages = [session_state.messages[0], None]
+    else:
+        messages = [None, None]
+    # note: turn_id will be created automatically by db
+    for msg in messages:
+        time_of_message = msg['time_of_message']
+        role = msg['role']
+        if role == 'assistant':
+            speaker = 'system'
+        elif role == 'user':
+            speaker = 'patient'
+        else:
+            speaker = 'unknown'
+        message = msg['content']
 
-def add_data_to_db(table_name, data):
+        # write message to db
+        new_row = [session_id, time_of_message, speaker, message]
+        columns = ['SessionId', 'TimeOfMessage', 'Speaker', 'Message']
+        add_data_to_db('Turn', new_row, columns)
+
+
+def add_data_to_db(table_name, data, columns=None):
     """
     Connects to a SQLite database, adds a new row to a table,
     and closes the connection.
@@ -56,15 +76,26 @@ def add_data_to_db(table_name, data):
         data (list): A list of values to insert into the table.  
                       The order of the values must match the columns
                       in the table.
+        columns (list): Optional. List of columns to update if not all
+                        are specified.
     """
     try:
         conn = sqlite3.connect('clerkship_dialogue.db')
         cursor = conn.cursor()
 
+        if columns == None:
         # Construct the SQL query, execute and commit
-        sql = f"INSERT INTO {table_name} VALUES ({','.join(['?'] * len(data))})"
-        cursor.execute(sql, data)
-        conn.commit()
+            sql = f"INSERT INTO {table_name} VALUES ({','.join(['?'] * len(data))})"
+            cursor.execute(sql, data)
+            conn.commit()
+        else:
+            sql = """INSERT INTO {table_name} ({columns}) VALUES ({data})""".format(
+                table_name=table_name,
+                columns=','.join(columns),
+                data=','.join(['?'] * len(data))
+            )
+            cursor.execute(sql, data)
+            conn.commit()
 
         print(f"Row added successfully to table '{table_name}'.")
 

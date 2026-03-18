@@ -103,7 +103,8 @@ st.title("🩺 Patient Intake Assistant")
 # Initialize the conversation log in session state
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hello. What symptoms are you experiencing today?"}
+        {"role": "assistant", "content": "Hello. What symptoms are you experiencing today?",
+         "time_of_message": datetime.now()}
     ]
 
 # Create unique session ID
@@ -117,7 +118,8 @@ for msg in st.session_state.messages:
 # Requirement: Text input box for the patient
 if prompt := st.chat_input("Type your response here..."):
     # Add patient response to the log
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.messages.append({"role": "user", "content": prompt,
+                                      "time_of_message": datetime.now()})
     st.chat_message("user").write(prompt)
 
     # TODO: pull symptoms here
@@ -131,7 +133,7 @@ if prompt := st.chat_input("Type your response here..."):
         add_session_data(st.session_state, session_id, MODEL)
         new_session == False
     
-    add_turn_data(st.session_state, session_id, MODEL)
+    add_turn_data(st.session_state, session_id)
     # new_row = [12, 1, '02:11:00', 'system', 'When did it start?']
     # add_data_to_db('Turn', new_row)
 
@@ -146,7 +148,8 @@ if prompt := st.chat_input("Type your response here..."):
     with st.spinner("Thinking..."):
         response = get_llm_response(st.session_state.messages)
         
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.messages.append({"role": "assistant", "content": response,
+                                          "time_of_message": datetime.now()})
         st.chat_message("assistant").write(response)
 
 # Sidebar for actions
