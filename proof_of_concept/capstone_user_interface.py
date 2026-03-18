@@ -40,7 +40,7 @@ def get_llm_response(messages):
             )
         }
         # Combines the system rules with the existing chat history
-        print(messages)
+        # print(messages)
         response = ollama.chat(model=MODEL, messages=[system_instruction] + messages)
         return response['message']['content']
     except Exception as e:
@@ -127,6 +127,16 @@ if prompt := st.chat_input("Type your response here..."):
                'chest_pain', "{'symptom': 'dizziness', 'symptom': 'urinary'}", 
                'reviewed', 'v0', '2024-03-06 02:11:00']
     add_data_to_db('Session', new_row)
+    
+    new_row = [12, 1, '02:11:00', 'system', 'When did it start?']
+    add_data_to_db('Turn', new_row)
+
+    new_row = [1, 'AI draft: ...', 'Clinician final: ...', '2024-03-06 02:11:00']
+    add_data_to_db('Summary', new_row)
+
+    new_row = [1, 8, 7, 6, 5, .833, 1, "{'symptom': 'radiation'}", 320, 1,
+               "{'symptom': 'radiation'}", .72, 1, 1, 0, "{'hallucinated phrases': 'None'}"]
+    add_data_to_db('SessionMetric', new_row)
 
     # Get and display LLM response
     with st.spinner("Thinking..."):

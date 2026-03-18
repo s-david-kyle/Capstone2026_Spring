@@ -14,8 +14,6 @@
 # - Currently using local LLM at url in code below (Use Ollama, LMStudio, etc)
 # - Create a python environment using `requirements.txt` to ensure you have all needed modules
 
-
-
 from metapub import PubMedFetcher
 import requests
 import json
