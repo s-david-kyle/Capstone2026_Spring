@@ -109,7 +109,7 @@ if "messages" not in st.session_state:
 # Create unique session ID
 # TODO: check if this is running each dialogue turn
 session_id = get_session_id()
-new_session = True
+# new_session = True
 session_start = datetime.now()
 
 # Display the conversation history
@@ -130,12 +130,6 @@ if prompt := st.chat_input("Type your response here..."):
     # TODO: see if this is printing False in UI
     print(symptoms)
 
-    # TODO: update database tables
-    # Initialize session table (will complete after information gathered)
-    if new_session == True:
-        add_new_session_data(session_id, MODEL, session_start)
-        new_session == False
-    
     # update turn table with current patient dialogue
     add_turn_data(session_id, datetime.now(), 'patient', prompt)
 
@@ -166,6 +160,10 @@ if st.sidebar.button("Finish & Generate Summary"):
             st.session_state.final_summary = clinical_summary
             print(st.session_state.final_summary)
 
+            # final DB updates for session
+            # Add to session table (complete after information gathered)
+            add_new_session_data(session_id, MODEL, session_start, datetime.now(),
+                                 clinical_summary)
             # summary
             add_summary_data(session_id, clinical_summary)
             # TODO: load session metric into database

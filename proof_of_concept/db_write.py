@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime as dt
+import re
 
 def get_session_id():
     """
@@ -20,21 +21,39 @@ def get_session_id():
     session_id = greatest_number + 1
     return session_id
 
-def add_new_session_data(session_id, model, session_start):
+def add_new_session_data(session_id, model, session_start, session_end, clinical_summary):
     """
     Extracts information from streamlit's session_state to add to database
     """
     session_name = f'Sess{session_id}'
+    # parse out primary_complaint with regex
+    match = re.search(r"Chief Complaint:\s*(.*)", clinical_summary)
+    if match:
+        extracted_text = match.group(1)
+        # remove ** from beginning of text
+        extracted_text = re.sub(r"\*\*|\*", "", extracted_text)
+        extracted_text = extracted_text.strip()
+        primary_complaint = extracted_text
+    else:
+        primary_complaint = "Primary Complaint not found."
+
+    # parse out secondary_complaint with regex
+    # TODO: may take additional parsing to match list format expected
+    match = re.search(r"Associated Symptoms:\s*(.*)", clinical_summary)
+    if match:
+        extracted_text = match.group(1)
+        # remove ** from beginning of text
+        extracted_text = re.sub(r"\*\*|\*", "", extracted_text)
+        extracted_text = extracted_text.strip()
+        secondary_complaint = extracted_text
+    else:
+        secondary_complaint = "Secondary Complaint not found."
+
     # start of conversation
     new_row = [session_id, session_name, session_start,
-               None, None, None, 'active', model, session_start]
+               session_end, primary_complaint, secondary_complaint, 
+               'active', model, session_start]
     add_data_to_db('Session', new_row)
-    # print('session_state: ', session_state)
-    # temporary static add to ensure database updates properly
-    # new_row = [1, 'Sess1', '2024-03-06 02:11:00', '2024-03-06 02:11:00',
-    #            'chest_pain', "{'symptom': 'dizziness', 'symptom': 'urinary'}", 
-    #            'reviewed', 'v0', '2024-03-06 02:11:00']
-    # add_data_to_db('Session', new_row)
 
 def add_turn_data(session_id, time_of_message, speaker, message):
     """
