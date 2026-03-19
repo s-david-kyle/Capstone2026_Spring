@@ -30,7 +30,7 @@ from config import UMLS_API_KEY, NCBI_API_KEY, UMLS_PATH
 def ollama_llm_symptom_check(prompt, model):
     """
     Queries the LLM API.
-    Returns back a list of symptoms based off of statement made
+    Returns back a list of symptoms based off of patient statement made
     """
     try:
         system_instruction = {

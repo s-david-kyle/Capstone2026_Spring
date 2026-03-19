@@ -4,6 +4,12 @@ import re
 def get_session_id():
     """
     Retreives new session ID for patient conversation. Performed at the start of interaction.
+
+    Args:
+        None
+
+    Returns:
+        session_id (int)
     """
     conn = sqlite3.connect('clerkship_dialogue.db')
     cursor = conn.cursor()
@@ -21,8 +27,19 @@ def get_session_id():
 
 def add_new_session_data(session_id, model, session_start, session_end, clinical_summary, symptoms):
     """
-    Extracts information from streamlit's session_state to add to database
-    """
+    Adds new session data to the database.
+
+    Args:
+        session_id (int): The unique identifier for the session.
+        model (str): The model used for the session.
+        session_start (datetime): The start time of the session.
+        session_end (datetime): The end time of the session.
+        clinical_summary (str): A textual summary of the clinical session.
+        symptoms (list): A list of symptoms associated with the session.
+
+    Returns:
+        None
+    """    
     session_name = f'Sess{session_id}'
     # parse out primary_complaint with regex
     match = re.search(r"Chief Complaint:\s*(.*)", clinical_summary)
@@ -49,7 +66,16 @@ def add_new_session_data(session_id, model, session_start, session_end, clinical
 
 def add_turn_data(session_id, time_of_message, speaker, message):
     """
-    Extracts information from streamlit's session_state to add to database's Turn table
+    Adds turn data to the database.
+
+    Args:
+        session_id (int): The unique identifier for the session.
+        time_of_message (datetime): The timestamp of the message.
+        speaker (str): The speaker of the message.
+        message (str): The content of the message.
+
+    Returns:
+        None
     """
     new_row = [session_id, time_of_message, speaker, message]
     columns = ['SessionId', 'TimeOfMessage', 'Speaker', 'Message']
@@ -57,14 +83,27 @@ def add_turn_data(session_id, time_of_message, speaker, message):
 
 def add_summary_data(session_id, pre_summary):
     """
-    Extracts information from streamlit's session_state to add to database's Summary table
+    Adds summary data to the database.
+
+    Args:
+        session_id (int): The unique identifier for the session.
+        pre_summary (str): The session summary.
+
+    Returns:
+        None
     """
     new_row = [session_id, pre_summary, None, None]
     add_data_to_db('Summary', new_row)
 
 def add_session_metric_data(session_id):
     """
-    Extracts information from streamlit's session_state to add to database's SessionMetric table
+    Adds session metric data to the database.
+
+    Args:
+        session_id (int): The unique identifier for the session.
+
+    Returns:
+        None
     """
     # calculate patient_turn_count
     sql = f"""
@@ -99,7 +138,13 @@ def add_session_metric_data(session_id):
 
 def run_sql_return_result(sql):
     """
-    Executes sql statment and returns query result
+    Runs a SQL query and returns the first result.
+
+    Args:
+        sql (str): The SQL query to execute.
+
+    Returns:
+        result (str): The first row returned by the query, or None if no rows are returned.
     """
     conn = sqlite3.connect('clerkship_dialogue.db')
     cursor = conn.cursor()
@@ -120,6 +165,8 @@ def add_data_to_db(table_name, data, columns=None):
                       in the table.
         columns (list): Optional. List of columns to update if not all
                         are specified.
+    Returns:
+        None
     """
     try:
         conn = sqlite3.connect('clerkship_dialogue.db')
