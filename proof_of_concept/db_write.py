@@ -45,6 +45,12 @@ def add_turn_data(session_id, time_of_message, speaker, message):
     columns = ['SessionId', 'TimeOfMessage', 'Speaker', 'Message']
     add_data_to_db('Turn', new_row, columns)
 
+def add_summary_data(session_id, pre_summary):
+    """
+    Extracts information from streamlit's session_state to add to database's Summary table
+    """
+    new_row = [session_id, pre_summary, None, None]
+    add_data_to_db('Summary', new_row)
 
 def add_data_to_db(table_name, data, columns=None):
     """

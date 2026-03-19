@@ -6,7 +6,7 @@ from datetime import datetime
 
 # team modules
 from external_data_pull import ollama_llm_symptom_check
-from db_write import add_data_to_db, add_new_session_data, get_session_id, add_turn_data
+from db_write import add_data_to_db, add_new_session_data, get_session_id, add_turn_data, add_summary_data
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -107,6 +107,7 @@ if "messages" not in st.session_state:
     ]
 
 # Create unique session ID
+# TODO: check if this is running each dialogue turn
 session_id = get_session_id()
 new_session = True
 session_start = datetime.now()
@@ -126,6 +127,7 @@ if prompt := st.chat_input("Type your response here..."):
     # TODO: pull symptoms here
     # temporary code - will place data inside db
     symptoms = ollama_llm_symptom_check(prompt, MODEL)
+    # TODO: see if this is printing False in UI
     print(symptoms)
 
     # TODO: update database tables
@@ -136,14 +138,6 @@ if prompt := st.chat_input("Type your response here..."):
     
     # update turn table with current patient dialogue
     add_turn_data(session_id, datetime.now(), 'patient', prompt)
-
-    # TODO: move these to final step (when user clicks end conversation)
-    # new_row = [1, 'AI draft: ...', 'Clinician final: ...', '2024-03-06 02:11:00']
-    # add_data_to_db('Summary', new_row)
-
-    # new_row = [1, 8, 7, 6, 5, .833, 1, "{'symptom': 'radiation'}", 320, 1,
-    #            "{'symptom': 'radiation'}", .72, 1, 1, 0, "{'hallucinated phrases': 'None'}"]
-    # add_data_to_db('SessionMetric', new_row)
 
     # Get and display LLM response
     with st.spinner("Thinking..."):
@@ -170,6 +164,15 @@ if st.sidebar.button("Finish & Generate Summary"):
             
             # Store in session state to keep it visible on screen
             st.session_state.final_summary = clinical_summary
+            print(st.session_state.final_summary)
+
+            # summary
+            add_summary_data(session_id, clinical_summary)
+            # TODO: load session metric into database
+            # new_row = [1, 8, 7, 6, 5, .833, 1, "{'symptom': 'radiation'}", 320, 1,
+            #            "{'symptom': 'radiation'}", .72, 1, 1, 0, "{'hallucinated phrases': 'None'}"]
+            # add_data_to_db('SessionMetric', new_row)
+
             st.sidebar.success("Intake Saved Successfully!")
 
 # Display the Summary Note
