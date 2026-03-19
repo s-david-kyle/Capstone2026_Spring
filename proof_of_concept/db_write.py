@@ -1,19 +1,17 @@
 import sqlite3
-from datetime import datetime as dt
 import re
 
 def get_session_id():
     """
     Retreives new session ID for patient conversation. Performed at the start of interaction.
     """
-    # sql = f'INSERT INTO {table_name} (id) VALUES (next(sqlite_sequence))'
     conn = sqlite3.connect('clerkship_dialogue.db')
     cursor = conn.cursor()
-    # 1. Fetch all values
+    # Fetch all values
     cursor.execute("SELECT SessionId FROM Session")
     values = [row[0] for row in cursor.fetchall()]
 
-    # 2. Find the maximum
+    # Find the maximum, increment
     if values:
         greatest_number = max(values)
     else:
@@ -21,7 +19,7 @@ def get_session_id():
     session_id = greatest_number + 1
     return session_id
 
-def add_new_session_data(session_id, model, session_start, session_end, clinical_summary):
+def add_new_session_data(session_id, model, session_start, session_end, clinical_summary, symptoms):
     """
     Extracts information from streamlit's session_state to add to database
     """
@@ -37,21 +35,15 @@ def add_new_session_data(session_id, model, session_start, session_end, clinical
     else:
         primary_complaint = "Primary Complaint not found."
 
-    # parse out secondary_complaint with regex
-    # TODO: may take additional parsing to match list format expected
-    match = re.search(r"Associated Symptoms:\s*(.*)", clinical_summary)
-    if match:
-        extracted_text = match.group(1)
-        # remove ** from beginning of text
-        extracted_text = re.sub(r"\*\*|\*", "", extracted_text)
-        extracted_text = extracted_text.strip()
-        secondary_complaint = extracted_text
-    else:
-        secondary_complaint = "Secondary Complaint not found."
+    # parse out secondary_complaint with symptom list
+    symptom_json = []
+    for sublist in symptoms:
+        symptom_json.append({'symptoms': sublist})
+    symptom_json = str(symptom_json)
 
-    # start of conversation
+    # format data for table
     new_row = [session_id, session_name, session_start,
-               session_end, primary_complaint, secondary_complaint, 
+               session_end, primary_complaint, symptom_json, 
                'active', model, session_start]
     add_data_to_db('Session', new_row)
 
@@ -59,7 +51,6 @@ def add_turn_data(session_id, time_of_message, speaker, message):
     """
     Extracts information from streamlit's session_state to add to database's Turn table
     """
-    # write message to db
     new_row = [session_id, time_of_message, speaker, message]
     columns = ['SessionId', 'TimeOfMessage', 'Speaker', 'Message']
     add_data_to_db('Turn', new_row, columns)
@@ -70,6 +61,21 @@ def add_summary_data(session_id, pre_summary):
     """
     new_row = [session_id, pre_summary, None, None]
     add_data_to_db('Summary', new_row)
+
+def add_session_metric_data(session_id):
+    """
+    Extracts information from streamlit's session_state to add to database's SessionMetric table
+    """
+    # TODO: calculate patient_turn_count
+
+    # TODO: calculate system_turn_count
+    # TODO: calculate required_fields_total
+    # TODO: calculate required_fields_filled
+    # TODO: calculate completion_rate
+    # TODO: calculate missing_fields_count
+    # TODO: create list of missing_fields
+    # TODO: calculate summary_length
+    pass
 
 def add_data_to_db(table_name, data, columns=None):
     """

@@ -6,7 +6,8 @@ from datetime import datetime
 
 # team modules
 from external_data_pull import ollama_llm_symptom_check
-from db_write import add_data_to_db, add_new_session_data, get_session_id, add_turn_data, add_summary_data
+from db_write import (add_data_to_db, add_new_session_data, get_session_id, 
+                      add_turn_data, add_summary_data, add_session_metric_data)
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -100,17 +101,19 @@ def save_patient_data(conversation_log, summary):
 st.set_page_config(page_title="Patient Intake", page_icon="🩺")
 st.title("🩺 Patient Intake Assistant")
 
+# Create unique session ID
+session_id = get_session_id()
+session_start = datetime.now()
+
 # Initialize the conversation log in session state
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "assistant", "content": "Hello. What symptoms are you experiencing today?"}
     ]
-
-# Create unique session ID
-# TODO: check if this is running each dialogue turn
-session_id = get_session_id()
-# new_session = True
-session_start = datetime.now()
+    # create new symptoms list
+    st.session_state.symptoms = []
+    # log first dialogue in database turn table
+    add_turn_data(session_id, datetime.now(), 'system', st.session_state.messages[0]['content'])
 
 # Display the conversation history
 for msg in st.session_state.messages:
@@ -121,14 +124,10 @@ if prompt := st.chat_input("Type your response here..."):
     # Add patient response to the log
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-    user_time_of_message = datetime.now()
-    system_time_of_message = datetime.now() # this will get updated below
 
-    # TODO: pull symptoms here
-    # temporary code - will place data inside db
-    symptoms = ollama_llm_symptom_check(prompt, MODEL)
-    # TODO: see if this is printing False in UI
-    print(symptoms)
+    # pull symptoms here, place data inside db Session.SecondaryComplaint at the end
+    st.session_state.symptoms.append(ollama_llm_symptom_check(prompt, MODEL))
+    print('Symptoms: ', st.session_state.symptoms)
 
     # update turn table with current patient dialogue
     add_turn_data(session_id, datetime.now(), 'patient', prompt)
@@ -158,15 +157,18 @@ if st.sidebar.button("Finish & Generate Summary"):
             
             # Store in session state to keep it visible on screen
             st.session_state.final_summary = clinical_summary
-            print(st.session_state.final_summary)
 
             # final DB updates for session
             # Add to session table (complete after information gathered)
             add_new_session_data(session_id, MODEL, session_start, datetime.now(),
-                                 clinical_summary)
+                                 clinical_summary, st.session_state.symptoms)
             # summary
             add_summary_data(session_id, clinical_summary)
+
+            # session_metric
             # TODO: load session metric into database
+            add_session_metric_data(session_id)
+  
             # new_row = [1, 8, 7, 6, 5, .833, 1, "{'symptom': 'radiation'}", 320, 1,
             #            "{'symptom': 'radiation'}", .72, 1, 1, 0, "{'hallucinated phrases': 'None'}"]
             # add_data_to_db('SessionMetric', new_row)
@@ -180,6 +182,12 @@ if "final_summary" in st.session_state:
     st.info(st.session_state.final_summary)
 
 if st.sidebar.button("Clear Chat / New Patient"):
+    # save session to db
+    clinical_summary = generate_summary(st.session_state.messages)
+    add_new_session_data(session_id, MODEL, session_start, datetime.now(),
+                                 clinical_summary, st.session_state.symptoms)
+    add_summary_data(session_id, clinical_summary)
+    # remove previous session data
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.rerun()
