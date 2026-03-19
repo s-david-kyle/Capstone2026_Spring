@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # # MetaPub
 # 
 # ## Documentation links
@@ -23,46 +20,16 @@ import pandas as pd
 import os
 from umls_python_client import UMLSClient
 import ollama
+mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv')
 
 # API keys
 from config import UMLS_API_KEY, NCBI_API_KEY, UMLS_PATH
-
-def ollama_llm_symptom_check(prompt, model):
-    """
-    Queries the LLM API.
-    Returns back a list of symptoms based off of patient statement made
-    """
-    try:
-        system_instruction = {
-            "role": "system",
-            "content": (
-                "You are a clinical intake bot. "
-                "STRICT RULES: "
-                "1. List keywords for medical symptoms in this statement with bullet points and no additional information. "
-                "2. Avoid vague singular words like 'pain'. "
-                "3. No pleasantries or small talk. "
-                "4. Be direct and precise."
-            )
-        }
-        user_message = {"role": "user", "content": prompt}
-        # print('symptom_check: ', user_message)
-        # Combines the system rules with the existing chat history
-        response = ollama.chat(model=model, messages=[system_instruction] + [user_message])
-        response = response['message']['content']
-        symptoms = re.findall(r'\*\s[^\n]+', response)
-        symptoms = [symptom.replace('* ', '') for symptom in symptoms]
-        # remove any starting/ending spaces from each item
-        symptoms = [symptom.strip() for symptom in symptoms]
-        return symptoms
-    except Exception as e:
-        return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
 def umls_retrieval(symptoms):
     # base_uri = 'https://uts-ws.nlm.nih.gov/rest'
 
     # intialize API
     search_api = UMLSClient(api_key=UMLS_API_KEY).searchAPI
-    # TODO: add try/catch in case server goes down again
     # basic search
     for symptom in symptoms:
         search_results = search_api.search(
@@ -85,17 +52,17 @@ def umls_retrieval(symptoms):
     symptom_names = []
     semantic_types = []
     
-    # TODO: check for error retreiving from API
-    # extract search results
-    for result in search_results['result']['results']:
-        # add items to lists
-        symptom_names.append(result['name'])
-        semantic_types.append(result['semanticTypes'][0])
-    # TODO: change this into JSON object to place in session_state
-    # Create a list of JSON pairs
-    umls_json = [{'Symptom': symptom_names[i], 'SemanticType': semantic_types[i]} for i in range(len(symptom_names))]
-    # umls_json = {'symptom_name': symptom_names,
-    #              'semantic_types': semantic_types}
+    # try/catch in case server goes down again
+    try:
+        # extract search results
+        for result in search_results['result']['results']:
+            # add items to lists
+            symptom_names.append(result['name'])
+            semantic_types.append(result['semanticTypes'][0])
+        # create a list of JSON pairs
+        umls_json = [{'Symptom': symptom_names[i], 'SemanticType': semantic_types[i]} for i in range(len(symptom_names))]
+    except:
+        umls_json = [{'Symptom': None, 'SemanticType': None}]
     return umls_json
 
 if __name__ == "__main__":

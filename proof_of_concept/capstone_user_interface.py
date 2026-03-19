@@ -5,9 +5,11 @@ import os
 from datetime import datetime
 
 # team modules
-from external_data_pull import ollama_llm_symptom_check, umls_retrieval
-from db_write import (add_data_to_db, add_new_session_data, get_session_id, 
-                      add_turn_data, add_summary_data, add_session_metric_data)
+from external_data_pull import umls_retrieval
+from db_write import (add_new_session_data, get_session_id, 
+                      add_turn_data, add_summary_data, 
+                      add_session_metric_data)
+from llm_processing import ollama_llm_symptom_check
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -129,12 +131,13 @@ if prompt := st.chat_input("Type your response here..."):
     # pull symptoms here, place data inside db Session.SecondaryComplaint at the end
     new_symptoms = ollama_llm_symptom_check(prompt, MODEL)
     st.session_state.symptoms.append(new_symptoms)
-    # for testing (can remove - results are written to db at session close)
+    # for testing/refinement (can remove - results are written to db at session close)
     print('Symptoms: ', st.session_state.symptoms)
 
     # call UMLS API and push terms to session_state
     new_umls_terms = umls_retrieval(new_symptoms)
     st.session_state.umls_terms.append(new_umls_terms)
+    # for testing/refinement
     print('UMLS terms: ', st.session_state.umls_terms)
 
     # update turn table with current patient dialogue
@@ -167,6 +170,8 @@ if st.sidebar.button("Finish & Generate Summary"):
             st.session_state.final_summary = clinical_summary
 
             # final DB updates for session
+            # TODO: use LLM to filter down UMLS terms based on conversation data
+
             # Session
             add_new_session_data(session_id, MODEL, session_start, datetime.now(),
                                  clinical_summary, st.session_state.symptoms)
