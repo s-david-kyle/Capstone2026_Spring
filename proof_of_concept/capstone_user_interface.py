@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 # team modules
-from external_data_pull import ollama_llm_symptom_check
+from external_data_pull import ollama_llm_symptom_check, umls_retrieval
 from db_write import (add_data_to_db, add_new_session_data, get_session_id, 
                       add_turn_data, add_summary_data, add_session_metric_data)
 
@@ -110,8 +110,9 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "assistant", "content": "Hello. What symptoms are you experiencing today?"}
     ]
-    # create new symptoms list
+    # create new symptoms and umls_terms lists
     st.session_state.symptoms = []
+    st.session_state.umls_terms = []
     # log first dialogue in database turn table
     add_turn_data(session_id, datetime.now(), 'system', st.session_state.messages[0]['content'])
 
@@ -126,8 +127,15 @@ if prompt := st.chat_input("Type your response here..."):
     st.chat_message("user").write(prompt)
 
     # pull symptoms here, place data inside db Session.SecondaryComplaint at the end
-    st.session_state.symptoms.append(ollama_llm_symptom_check(prompt, MODEL))
+    new_symptoms = ollama_llm_symptom_check(prompt, MODEL)
+    st.session_state.symptoms.append(new_symptoms)
+    # for testing (can remove - results are written to db at session close)
     print('Symptoms: ', st.session_state.symptoms)
+
+    # call UMLS API and push terms to session_state
+    new_umls_terms = umls_retrieval(new_symptoms)
+    st.session_state.umls_terms.append(new_umls_terms)
+    print('UMLS terms: ', st.session_state.umls_terms)
 
     # update turn table with current patient dialogue
     add_turn_data(session_id, datetime.now(), 'patient', prompt)
@@ -152,7 +160,7 @@ if st.sidebar.button("Finish & Generate Summary"):
         with st.spinner("Generating clinical summary..."):
             clinical_summary = generate_summary(st.session_state.messages)
             
-            # Save to JSON
+            # Save to JSON - can remove since data pushed to db
             save_patient_data(st.session_state.messages, clinical_summary)
             
             # Store in session state to keep it visible on screen

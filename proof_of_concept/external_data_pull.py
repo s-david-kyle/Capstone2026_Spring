@@ -57,6 +57,47 @@ def ollama_llm_symptom_check(prompt, model):
     except Exception as e:
         return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
+def umls_retrieval(symptoms):
+    # base_uri = 'https://uts-ws.nlm.nih.gov/rest'
+
+    # intialize API
+    search_api = UMLSClient(api_key=UMLS_API_KEY).searchAPI
+    # TODO: add try/catch in case server goes down again
+    # basic search
+    for symptom in symptoms:
+        search_results = search_api.search(
+            search_string=symptom,  # The term to search for
+            input_type=None,  # None implies search for any input type
+            include_obsolete=False,  # Don't include obsolete terms
+            include_suppressible=False,  # Don't include suppressible terms
+            return_id_type="concept",  # Return UMLS Concept Unique Identifiers (CUIs)
+            search_type="words",  # Search using word-based matching
+            page_number=1,  # Start from the first page
+            page_size=10,  # Limit the result to 10 items per page
+            save_to_file=False, # make true if needed later
+            file_path=UMLS_PATH
+        )
+        # convert from string to dictionary for indexing
+        # print(search_results)
+        search_results = eval(search_results)
+    
+    # create list of name and semanticTypes
+    symptom_names = []
+    semantic_types = []
+    
+    # TODO: check for error retreiving from API
+    # extract search results
+    for result in search_results['result']['results']:
+        # add items to lists
+        symptom_names.append(result['name'])
+        semantic_types.append(result['semanticTypes'][0])
+    # TODO: change this into JSON object to place in session_state
+    # Create a list of JSON pairs
+    umls_json = [{'Symptom': symptom_names[i], 'SemanticType': semantic_types[i]} for i in range(len(symptom_names))]
+    # umls_json = {'symptom_name': symptom_names,
+    #              'semantic_types': semantic_types}
+    return umls_json
+
 if __name__ == "__main__":
     pass
     # conversation_log, symptom_log, article_log, umls_log = surface_patient_information(patient_statement_01)
