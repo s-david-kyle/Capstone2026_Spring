@@ -1,7 +1,114 @@
 import sqlite3
+import re
 
+def get_session_id():
+    """
+    Retreives new session ID for patient conversation. Performed at the start of interaction.
+    """
+    conn = sqlite3.connect('clerkship_dialogue.db')
+    cursor = conn.cursor()
+    # Fetch all values
+    cursor.execute("SELECT SessionId FROM Session")
+    values = [row[0] for row in cursor.fetchall()]
 
-def add_data_to_db(table_name, data):
+    # Find the maximum, increment
+    if values:
+        greatest_number = max(values)
+    else:
+        greatest_number = 0
+    session_id = greatest_number + 1
+    return session_id
+
+def add_new_session_data(session_id, model, session_start, session_end, clinical_summary, symptoms):
+    """
+    Extracts information from streamlit's session_state to add to database
+    """
+    session_name = f'Sess{session_id}'
+    # parse out primary_complaint with regex
+    match = re.search(r"Chief Complaint:\s*(.*)", clinical_summary)
+    if match:
+        extracted_text = match.group(1)
+        # remove ** from beginning of text
+        extracted_text = re.sub(r"\*\*|\*", "", extracted_text)
+        extracted_text = extracted_text.strip()
+        primary_complaint = extracted_text
+    else:
+        primary_complaint = "Primary Complaint not found."
+
+    # parse out secondary_complaint with symptom list
+    symptom_json = []
+    for sublist in symptoms:
+        symptom_json.append({'symptoms': sublist})
+    symptom_json = str(symptom_json)
+
+    # format data for table
+    new_row = [session_id, session_name, session_start,
+               session_end, primary_complaint, symptom_json, 
+               'active', model, session_start]
+    add_data_to_db('Session', new_row)
+
+def add_turn_data(session_id, time_of_message, speaker, message):
+    """
+    Extracts information from streamlit's session_state to add to database's Turn table
+    """
+    new_row = [session_id, time_of_message, speaker, message]
+    columns = ['SessionId', 'TimeOfMessage', 'Speaker', 'Message']
+    add_data_to_db('Turn', new_row, columns)
+
+def add_summary_data(session_id, pre_summary):
+    """
+    Extracts information from streamlit's session_state to add to database's Summary table
+    """
+    new_row = [session_id, pre_summary, None, None]
+    add_data_to_db('Summary', new_row)
+
+def add_session_metric_data(session_id):
+    """
+    Extracts information from streamlit's session_state to add to database's SessionMetric table
+    """
+    # calculate patient_turn_count
+    sql = f"""
+            SELECT COUNT(TurnId) 
+            FROM Turn 
+            WHERE SessionId = {session_id} AND Speaker = 'patient';
+            """
+    patient_turn_count = run_sql_return_result(sql)[0]
+    # calculate system_turn_count
+    sql = f"""
+            SELECT COUNT(TurnId) 
+            FROM Turn 
+            WHERE SessionId = {session_id} AND Speaker = 'system';
+            """
+    system_turn_count = run_sql_return_result(sql)[0]
+    # TODO: calculate required_fields_total
+    # TODO: calculate required_fields_filled
+    # TODO: calculate completion_rate
+    # TODO: calculate missing_fields_count
+    # TODO: create list of missing_fields
+    # calculate summary_length - NOTE: this is presummary not postsummary
+    sql = f"""
+            SELECT LENGTH(PreSummary) 
+            FROM Summary 
+            WHERE SessionId = {session_id};
+            """
+    summary_length = run_sql_return_result(sql)[0]
+    # update what you can currently
+    new_row = [session_id, patient_turn_count, system_turn_count, summary_length]
+    columns = ['SessionId', 'PatientTurnCount', 'SystemTurnCount', 'SummaryLength']
+    add_data_to_db('SessionMetric', new_row, columns)
+
+def run_sql_return_result(sql):
+    """
+    Executes sql statment and returns query result
+    """
+    conn = sqlite3.connect('clerkship_dialogue.db')
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    conn.close()
+    return result
+
+def add_data_to_db(table_name, data, columns=None):
     """
     Connects to a SQLite database, adds a new row to a table,
     and closes the connection.
@@ -11,15 +118,26 @@ def add_data_to_db(table_name, data):
         data (list): A list of values to insert into the table.  
                       The order of the values must match the columns
                       in the table.
+        columns (list): Optional. List of columns to update if not all
+                        are specified.
     """
     try:
         conn = sqlite3.connect('clerkship_dialogue.db')
         cursor = conn.cursor()
 
+        if columns == None:
         # Construct the SQL query, execute and commit
-        sql = f"INSERT INTO {table_name} VALUES ({','.join(['?'] * len(data))})"
-        cursor.execute(sql, data)
-        conn.commit()
+            sql = f"INSERT INTO {table_name} VALUES ({','.join(['?'] * len(data))})"
+            cursor.execute(sql, data)
+            conn.commit()
+        else:
+            sql = """INSERT INTO {table_name} ({columns}) VALUES ({data})""".format(
+                table_name=table_name,
+                columns=','.join(columns),
+                data=','.join(['?'] * len(data))
+            )
+            cursor.execute(sql, data)
+            conn.commit()
 
         print(f"Row added successfully to table '{table_name}'.")
 
