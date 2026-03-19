@@ -66,16 +66,47 @@ def add_session_metric_data(session_id):
     """
     Extracts information from streamlit's session_state to add to database's SessionMetric table
     """
-    # TODO: calculate patient_turn_count
-
-    # TODO: calculate system_turn_count
+    # calculate patient_turn_count
+    sql = f"""
+            SELECT COUNT(TurnId) 
+            FROM Turn 
+            WHERE SessionId = {session_id} AND Speaker = 'patient';
+            """
+    patient_turn_count = run_sql_return_result(sql)[0]
+    # calculate system_turn_count
+    sql = f"""
+            SELECT COUNT(TurnId) 
+            FROM Turn 
+            WHERE SessionId = {session_id} AND Speaker = 'system';
+            """
+    system_turn_count = run_sql_return_result(sql)[0]
     # TODO: calculate required_fields_total
     # TODO: calculate required_fields_filled
     # TODO: calculate completion_rate
     # TODO: calculate missing_fields_count
     # TODO: create list of missing_fields
-    # TODO: calculate summary_length
-    pass
+    # calculate summary_length - NOTE: this is presummary not postsummary
+    sql = f"""
+            SELECT LENGTH(PreSummary) 
+            FROM Summary 
+            WHERE SessionId = {session_id};
+            """
+    summary_length = run_sql_return_result(sql)[0]
+    # update what you can currently
+    new_row = [session_id, patient_turn_count, system_turn_count, summary_length]
+    columns = ['SessionId', 'PatientTurnCount', 'SystemTurnCount', 'SummaryLength']
+    add_data_to_db('SessionMetric', new_row, columns)
+
+def run_sql_return_result(sql):
+    """
+    Executes sql statment and returns query result
+    """
+    conn = sqlite3.connect('clerkship_dialogue.db')
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    conn.close()
+    return result
 
 def add_data_to_db(table_name, data, columns=None):
     """

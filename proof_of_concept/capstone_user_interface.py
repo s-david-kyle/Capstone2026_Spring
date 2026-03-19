@@ -159,19 +159,14 @@ if st.sidebar.button("Finish & Generate Summary"):
             st.session_state.final_summary = clinical_summary
 
             # final DB updates for session
-            # Add to session table (complete after information gathered)
+            # Session
             add_new_session_data(session_id, MODEL, session_start, datetime.now(),
                                  clinical_summary, st.session_state.symptoms)
-            # summary
+            # Summary
             add_summary_data(session_id, clinical_summary)
 
-            # session_metric
-            # TODO: load session metric into database
+            # SessionMetric
             add_session_metric_data(session_id)
-  
-            # new_row = [1, 8, 7, 6, 5, .833, 1, "{'symptom': 'radiation'}", 320, 1,
-            #            "{'symptom': 'radiation'}", .72, 1, 1, 0, "{'hallucinated phrases': 'None'}"]
-            # add_data_to_db('SessionMetric', new_row)
 
             st.sidebar.success("Intake Saved Successfully!")
 
@@ -187,6 +182,7 @@ if st.sidebar.button("Clear Chat / New Patient"):
     add_new_session_data(session_id, MODEL, session_start, datetime.now(),
                                  clinical_summary, st.session_state.symptoms)
     add_summary_data(session_id, clinical_summary)
+    add_session_metric_data(session_id)
     # remove previous session data
     for key in list(st.session_state.keys()):
         del st.session_state[key]
