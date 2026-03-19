@@ -132,7 +132,7 @@ if prompt := st.chat_input("Type your response here..."):
     new_symptoms = ollama_llm_symptom_check(prompt, MODEL)
     st.session_state.symptoms.append(new_symptoms)
     # for testing/refinement (can remove - results are written to db at session close)
-    print('Symptoms: ', st.session_state.symptoms)
+    print('LLM-extracted symptoms: ', st.session_state.symptoms)
 
     # call UMLS API and push terms to session_state
     new_umls_terms = umls_retrieval(new_symptoms)
