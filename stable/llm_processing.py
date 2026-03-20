@@ -3,11 +3,11 @@
 # - Currently using local LLM at url in code below (Use Ollama, LMStudio, etc)
 # - Create a python environment using `requirements.txt` to ensure you have all needed modules
 
-import json
 from pprint import pprint
 import re
 import pandas as pd
 import ollama
+from config import MODEL
 
 # external data needed for MTS dialogue doctor conversation mimic
 mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv')
@@ -15,19 +15,19 @@ mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv'
 # API keys
 from config import UMLS_API_KEY, NCBI_API_KEY, UMLS_PATH
 
+
 # ==========================================
 # PAADA'S ORIGINAL DIALOGUE FUNCTIONS 
 # MODULAR BRAINS (LLM LOGIC)
 # (capstone user interface.py)
 # ==========================================
 
-def get_llm_response(messages, model):
+def get_llm_response(messages):
     """
     Handles the chat. Forces short, precise questions using SOCRATES.
 
     Args:
         messages (list): A list of message dictionaries, including a system instruction.
-        model (str): The name of the Ollama model to use.
     Returns:
         str: The LLM's response as a string.
     """
@@ -45,18 +45,17 @@ def get_llm_response(messages, model):
         }
         # Combines the system rules with the existing chat history
         # print(messages)
-        response = ollama.chat(model=model, messages=[system_instruction] + messages)
+        response = ollama.chat(model=MODEL, messages=[system_instruction] + messages)
         return response['message']['content']
     except Exception as e:
         return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
-def generate_summary(messages, model):
+def generate_summary(messages):
     """
     Generates a summary of a patient interview.
 
     Args:
         messages (list): A list of message dictionaries representing the patient interview.
-        model (str): The name of the Ollama model to use.
     Returns:
         str: A summary of the patient interview in a clinical note format.
     """
@@ -74,7 +73,7 @@ def generate_summary(messages, model):
         }
         
         response = ollama.chat(
-            model=model, 
+            model=MODEL, 
             messages=[summary_instruction, {"role": "user", "content": chat_history}]
         )
         return response['message']['content']
@@ -85,13 +84,12 @@ def generate_summary(messages, model):
 # SYMPTOM DIALOGUE FUNCTIONS
 # ==========================================
 
-def ollama_llm_symptom_check(prompt, model):
+def llm_symptom_check(prompt):
     """
     Checks a user's symptom statement against an Ollama LLM.
 
     Args:
         prompt (str): The user's symptom statement to analyze.
-        model (str): The name of the Ollama model to use.
 
     Returns:
         list: A list of extracted symptoms from the LLM response.
@@ -112,7 +110,7 @@ def ollama_llm_symptom_check(prompt, model):
         user_message = {"role": "user", "content": prompt}
         # print('symptom_check: ', user_message)
         # Combines the system rules with the existing chat history
-        response = ollama.chat(model=model, messages=[system_instruction] + [user_message])
+        response = ollama.chat(model=MODEL, messages=[system_instruction] + [user_message])
         response = response['message']['content']
         symptoms = re.findall(r'\*\s[^\n]+', response)
         symptoms = [symptom.replace('* ', '') for symptom in symptoms]
@@ -122,13 +120,12 @@ def ollama_llm_symptom_check(prompt, model):
     except Exception as e:
         return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
-def llm_question_formation(symptoms, model):
+def llm_question_formation(symptoms):
     """
     Formulates a clinical question based on a list of symptoms using a language model.
 
     Args:
         symptoms (str): A string containing a list of symptoms.
-        model (str): The name of the Ollama model to use.
 
     Returns:
         str: A single, direct question formulated from the symptoms, or an error message if there was a problem.
@@ -146,7 +143,7 @@ def llm_question_formation(symptoms, model):
                 "4. Be direct and precise."
             )
         }
-        response = ollama.chat(model=model, messages=[system_instruction])
+        response = ollama.chat(model=MODEL, messages=[system_instruction])
         response = response['message']['content']
 
         return response
@@ -158,14 +155,13 @@ def llm_question_formation(symptoms, model):
 # (metapub_llm proof of concept)
 # ==========================================
 
-def llm_process_mts_dialogue(dialogues, patient_question, model):
+def llm_process_mts_dialogue(dialogues, patient_question):
     """
     Processes a dialogue and patient question to generate a follow-up question.
 
     Args:
         dialogues (str): A string containing the dialogue examples.
         patient_question (str): The patient's original question.
-        model (str): The name of the Ollama model to use.
 
     Returns:
         str: A follow-up question generated by the LLM, or an error message if an exception occurs.
@@ -185,7 +181,7 @@ def llm_process_mts_dialogue(dialogues, patient_question, model):
                 "5. Include only a question in the response"
             )
         }
-        response = ollama.chat(model=model, messages=[system_instruction])
+        response = ollama.chat(model=MODEL, messages=[system_instruction])
         response = response['message']['content']
 
         return response
@@ -225,14 +221,13 @@ def remove_floats(text):
     else:
         return text
 
-def doctor_dialogue_mimic(symptoms, patient_question, model):
+def doctor_dialogue_mimic(symptoms, patient_question):
     """
     Generates a follow-up question based on patient symptoms and dialogue examples.
 
     Args:
         symptoms (str): A string containing the patient's symptoms.
         patient_question (str): The patient's original question.
-        model (str): The name of the Ollama model to use.
 
     Returns:
         tuple: A tuple containing the generated question, a boolean indicating whether
@@ -260,11 +255,11 @@ def doctor_dialogue_mimic(symptoms, patient_question, model):
         for index, row in dialogues.iterrows():
             processed_dialogue += f"\ndialogue {index}: {row['dialogue']} "
         # print(processed_dialogue)
-        question = llm_process_mts_dialogue(processed_dialogue, patient_question, model)
+        question = llm_process_mts_dialogue(processed_dialogue, patient_question)
         mts_dialogue_used = True
     else:
         # generate general question using symptoms only if no dialogue available
-        question = llm_question_formation(symptoms, model)
+        question = llm_question_formation(symptoms)
         mts_dialogue_used = False
         processed_dialogue = ''
 
