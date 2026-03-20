@@ -1,5 +1,6 @@
 import sqlite3
 import re
+from config import MODEL
 
 def get_session_id():
     """
@@ -25,13 +26,12 @@ def get_session_id():
     session_id = greatest_number + 1
     return session_id
 
-def add_new_session_data(session_id, model, session_start, session_end, clinical_summary, symptoms):
+def add_new_session_data(session_id, session_start, session_end, clinical_summary, symptoms):
     """
     Adds new session data to the database.
 
     Args:
         session_id (int): The unique identifier for the session.
-        model (str): The model used for the session.
         session_start (datetime): The start time of the session.
         session_end (datetime): The end time of the session.
         clinical_summary (str): A textual summary of the clinical session.
@@ -61,7 +61,7 @@ def add_new_session_data(session_id, model, session_start, session_end, clinical
     # format data for table
     new_row = [session_id, session_name, session_start,
                session_end, primary_complaint, symptom_json, 
-               'active', model, session_start]
+               'active', MODEL, session_start]
     add_data_to_db('Session', new_row)
 
 def add_turn_data(session_id, time_of_message, speaker, message):

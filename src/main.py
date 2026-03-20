@@ -1,5 +1,4 @@
 import streamlit as st
-import ollama
 import json
 import os
 from datetime import datetime
@@ -11,7 +10,7 @@ from db_write import (add_new_session_data,
                       add_turn_data, 
                       add_summary_data, 
                       add_session_metric_data)
-from llm_processing import (ollama_llm_symptom_check,
+from llm_processing import (llm_symptom_check,
                             get_llm_response,
                             generate_summary)
 
@@ -21,8 +20,6 @@ from llm_processing import (ollama_llm_symptom_check,
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 FILE_PATH = os.path.join(SCRIPT_DIR, "patient_records.json")
-
-MODEL = 'gemma3:4b' # modify as needed
 
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
@@ -89,7 +86,7 @@ if prompt := st.chat_input("Type your response here..."):
     st.chat_message("user").write(prompt)
 
     # pull symptoms here, place data inside db Session.SecondaryComplaint at the end
-    new_symptoms = ollama_llm_symptom_check(prompt, MODEL)
+    new_symptoms = llm_symptom_check(prompt)
     st.session_state.symptoms.append(new_symptoms)
     # for testing/refinement (can remove - results are written to db at session close)
     print('LLM-extracted symptoms: ', st.session_state.symptoms)
@@ -105,7 +102,7 @@ if prompt := st.chat_input("Type your response here..."):
 
     # Get and display LLM response
     with st.spinner("Thinking..."):
-        response = get_llm_response(st.session_state.messages, MODEL)
+        response = get_llm_response(st.session_state.messages)
         
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.chat_message("assistant").write(response)
@@ -121,7 +118,7 @@ if st.sidebar.button("Finish & Generate Summary"):
         st.sidebar.warning("Please describe symptoms first.")
     else:
         with st.spinner("Generating clinical summary..."):
-            clinical_summary = generate_summary(st.session_state.messages, MODEL)
+            clinical_summary = generate_summary(st.session_state.messages)
             
             # Save to JSON - can remove since data pushed to db
             save_patient_data(st.session_state.messages, clinical_summary)
@@ -134,7 +131,7 @@ if st.sidebar.button("Finish & Generate Summary"):
 
             # Session
             # TODO: session_end does not appear to be using the correct timestamp
-            add_new_session_data(session_id, MODEL, session_start, datetime.now(),
+            add_new_session_data(session_id, session_start, datetime.now(),
                                  clinical_summary, st.session_state.symptoms)
             # Summary
             add_summary_data(session_id, clinical_summary)
@@ -152,9 +149,9 @@ if "final_summary" in st.session_state:
 
 if st.sidebar.button("Clear Chat / New Patient"):
     # save session to db
-    clinical_summary = generate_summary(st.session_state.messages, MODEL)
-    add_new_session_data(session_id, MODEL, session_start, datetime.now(),
-                                 clinical_summary, st.session_state.symptoms)
+    clinical_summary = generate_summary(st.session_state.messages)
+    add_new_session_data(session_id, session_start, datetime.now(),
+                        clinical_summary, st.session_state.symptoms)
     add_summary_data(session_id, clinical_summary)
     add_session_metric_data(session_id)
     # remove previous session data
