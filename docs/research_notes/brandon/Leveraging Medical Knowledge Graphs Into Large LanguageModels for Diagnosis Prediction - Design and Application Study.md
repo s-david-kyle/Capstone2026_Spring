@@ -8,7 +8,7 @@ A study on problem list summarization in electronic health records (EHRs).
 **Datasets Used:** The study utilizes two main datasets:
 
 - **MIMIC-III:** A dataset containing approximately 1005 progress notes with active diagnoses annotated from the "plan" sections.
-- **In-house EHR dataset:** A dataset containing 4815 progress notes, which was created by parsing text using a medical concept extractor based on the [[UMLS]] [[SNOWMED CT]] vocabulary.
+- **In-house EHR dataset:** A dataset containing 4815 progress notes, which was created by parsing text using a medical concept extractor based on the [[Unified Medical Language System (UMLS)]] [[SNOWMED CT]] vocabulary.
 
 **Methods and Models:** The research explores various approaches for summarization, including:
 

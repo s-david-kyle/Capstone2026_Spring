@@ -9,7 +9,7 @@ The second part of the project involves getting information on the symptoms the 
 	- RAG
 	- Knowledge graphs
 		- Pre-existing
-			- [[UMLS]]
+			- [[Unified Medical Language System (UMLS)]]
 		- Building tools
 			- [[Neo4j]]
 	- GraphRAG (no papers citing this yet)
@@ -50,7 +50,7 @@ Process information from part 1, query additional data sources for greater conte
 		- [[BioBERT]]
 		- [[BioGPT]]
 	- Data source alternatives
-		- [[UMLS]]
+		- [[Unified Medical Language System (UMLS)]]
 			- Referenced in [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]]
 				- David's generated notes also include this
 		- [[DDXPlus]]

@@ -9,7 +9,6 @@ The proposal should address challenges identified in existing literature, highli
 	- Work on data collection
 	- Create the plan for doing the project
 - Share completed proposal in teams with Dr. Yasaei (make sure to @mention her for visibility)
-
 # Proposed System Architecture and Subtasks
 ## Part 1
 ![[Pasted image 20260303181806.png]]
@@ -82,7 +81,7 @@ Brandon
 - Proof of concept
 	- Take patient response and list of symptoms from conversation log. Prototype can use  generic place holder data for this
 		- example: "I have stomach pain and it hurts more after I eat", Symptoms: Stomach pain, Pain, Eating, Postprandial (after eating)
-	- Query datasource [[DDXPlus]] / [[UMLS]] / [[PubMed]]
+	- Query datasource [[DDXPlus]] / [[Unified Medical Language System (UMLS)]] / [[PubMed]]
 	- Summarize / extract / clean returned data
 - <mark>Potentially involve Knowledge Graph at this stage (research)</mark>
 ### LLM processing related symptom information and patient history
@@ -90,20 +89,20 @@ Brandon
 All of us tackle this, through meetings, independent research, etc
 - Proof of concept
 	- Skip fine-tuning initially; try prompt engineering techniques to make use of [[MTS Dialogue Clinical Note]] and data returned from the external data query to form a good question for the patient
-		- Use place holder data initially from this (pull sample articles from [[DDXPlus]] / [[UMLS]] / [[PubMed]])
+		- Use place holder data initially from this (pull sample articles from [[DDXPlus]] / [[Unified Medical Language System (UMLS)]] / [[PubMed]])
 	- Output text for follow-up question, save to conversation log
 	- When patient interface is created, pass this text into that interface
 
 ## Part 2
 - Data sources for surfacing follow-up questions with patient
-	- [[UMLS]] (terminology, classification, coding standards)
+	- [[Unified Medical Language System (UMLS)]] (terminology, classification, coding standards)
 	- [[PubMed]] (medical articles, book citations)
 - Storage for LLM context and explainability
 	- RAG
 	- [[Knowledge Graphs (KGs)]]
 - Output for doctor differential diagnosis
 	- (same as above for follow-up questions)
-		- [[UMLS]] (terminology, classification, coding standards)
+		- [[Unified Medical Language System (UMLS)]] (terminology, classification, coding standards)
 		- [[PubMed]] (medical articles, book citations)
 
 # Time-saving opportunities
@@ -111,7 +110,7 @@ All of us tackle this, through meetings, independent research, etc
 	- [[Knowledge graph–based thought - a knowledge graph-enhanced LLM framework for pan-cancer question answering]]
 		- KGT framework is openly available at: https://github.com/yichun10/bioKGQA-KGT
 			- Hardware requirements will necessitate running it on the University's servers
-	- [[UMLS]]
+	- [[Unified Medical Language System (UMLS)]]
 		- Contains key terminology, classification, coding standards, and resources for biomedical information systems and services
 		- Includes health records
 		- Files can be downloaded
@@ -152,11 +151,11 @@ All of us tackle this, through meetings, independent research, etc
 		- This could be very interesting for part 1 - where we are gathering information from the patient. Here it may be referring to the ability of family to act as consultants, but for our purposes they can provide additional insight (perhaps less biased) than the patient themselves.
 	- Short-term study completed - look at long-term effects and trends
 - [[Leveraging Medical Knowledge Graphs Into Large LanguageModels for Diagnosis Prediction - Design and Application Study]] (published February 24 2025)
-	- [[UMLS]] concept extractors (Clinical Text Analysis and Knowledge Extraction System and [[QuickUMLS]]) have limitations with identifying indirect or nuanced medical concepts
+	- [[Unified Medical Language System (UMLS)]] concept extractors (Clinical Text Analysis and Knowledge Extraction System and [[QuickUMLS]]) have limitations with identifying indirect or nuanced medical concepts
 	- <mark>Relies on cosine similarity (common in RAG framework) and is limited by the quality of embedding representations</mark>
 		- These need to capture the semantic nuances of medical concepts
 		- This can lead to retrieving less relevant or noisy knowledge paths
-- [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]] ()
+- [[DKG-LLM - A Framework for Medical Diagnosis and Personalized Treatment Recommendations via Dynamic Knowledge Graph and Large Language Model Integration]] (August 2025)
 	- Ensuring data privacy
 		- <mark>Using federated learning to protect patient data</mark>
 	- Optimizing for larger datasets
@@ -166,3 +165,6 @@ All of us tackle this, through meetings, independent research, etc
 	- Expanding its symptom database for better medical coverage
 	- Integrating live-expert consultations for real-time support
 	- <mark>Enhancing conversational AI for a more interactive experience</mark>
+
+# See also
+- [[Meeting Notes]]

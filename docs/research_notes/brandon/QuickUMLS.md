@@ -4,5 +4,5 @@ QuickUMLS (Soldaini and Goharian, 2016) is a tool for fast, unsupervised biomedi
 - https://pypi.org/project/quickumls/
 - https://www.semanticscholar.org/paper/QuickUMLS%3A-a-fast%2C-unsupervised-approach-for-Soldaini/92e428bcd578f504974103f7201be21807f13615
 # See also
-- [[UMLS]]
+- [[Unified Medical Language System (UMLS)]]
 - [[Leveraging Medical Knowledge Graphs Into Large LanguageModels for Diagnosis Prediction - Design and Application Study]]
