@@ -1,7 +1,7 @@
 # Real-world data
 - [[PubMed]]
 - [[MIMIC-III Clinical Database]]
-- [[UMLS]]
+- [[Unified Medical Language System (UMLS)]]
 
 # Simulated data
 - [[Synthetic Scenarios]]

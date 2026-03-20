@@ -1,5 +1,12 @@
 # Overview
 "The UMLS integrates and distributes key terminology, classification, and coding standards, and associated resources to promote creation of more effective and interoperable biomedical information systems and services, including electronic health records."
+
+## Wikipedia
+The **Unified Medical Language System** (**UMLS**) is a [compendium](https://en.wikipedia.org/wiki/Compendium "Compendium") of many [controlled vocabularies](https://en.wikipedia.org/wiki/Controlled_vocabulary "Controlled vocabulary") in the [biomedical](https://en.wikipedia.org/wiki/Biomedical "Biomedical") sciences (created 1986).[citation 1](https://en.wikipedia.org/wiki/Unified_Medical_Language_System#cite_note-1) It provides a mapping structure among these vocabularies and thus allows one to translate among the various terminology systems; it may also be viewed as a comprehensive [thesaurus](https://en.wikipedia.org/wiki/Thesaurus "Thesaurus") and [ontology](https://en.wikipedia.org/wiki/Ontology_\(computer_science\) "Ontology (computer science)") of biomedical concepts. UMLS further provides facilities for [natural language processing](https://en.wikipedia.org/wiki/Natural_language_processing "Natural language processing"). It is intended to be used mainly by developers of systems in [medical informatics](https://en.wikipedia.org/wiki/Medical_informatics "Medical informatics").
+
+UMLS consists of Knowledge Sources (databases) and a set of software tools. 
+
+The UMLS was designed and is maintained by the [US](https://en.wikipedia.org/wiki/United_States "United States") [National Library of Medicine](https://en.wikipedia.org/wiki/National_Library_of_Medicine "National Library of Medicine"), is updated quarterly and may be used for free. The project was initiated in 1986 by [Donald A.B. Lindberg](https://en.wikipedia.org/wiki/Donald_A.B._Lindberg "Donald A.B. Lindberg"), [M.D.](https://en.wikipedia.org/wiki/Doctor_of_Medicine "Doctor of Medicine"), then Director of the Library of Medicine, and directed by [Betsy Humphreys](https://en.wikipedia.org/wiki/Betsy_Humphreys "Betsy Humphreys").[citation 2](https://en.wikipedia.org/wiki/Unified_Medical_Language_System#cite_note-2)
 # License for UMLS Terminology Services (UTS) account
 - <mark>UMLS licenses are issued only to individuals and not to groups or organizations</mark>
 - No charge to license for use in United States and other member countries
@@ -48,5 +55,6 @@ Full text: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC308795/](https://www.n
 - [[Knowledge Graphs (KGs)]]
 
 # Source
-https://www.nlm.nih.gov/research/umls/index.html
+- https://www.nlm.nih.gov/research/umls/index.html
+- https://en.wikipedia.org/wiki/Unified_Medical_Language_System
 

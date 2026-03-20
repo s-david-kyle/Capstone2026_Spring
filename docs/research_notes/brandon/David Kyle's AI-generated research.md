@@ -36,7 +36,7 @@ Multi-center ICU dataset containing structured patient data across multiple hosp
 **3. [[PubMed]] Abstracts and Clinical Case Reports**
 Large corpus of peer-reviewed biomedical literature. Useful for retrieval-augmented generation and knowledge base construction. Requires NLP preprocessing and filtering.
 
-**4. [[SNOWMED CT]] / [[UMLS]] Ontologies**
+**4. [[SNOWMED CT]] / [[Unified Medical Language System (UMLS)]] Ontologies**
 Structured medical ontologies mapping symptoms to diagnoses. Enables standardized symptom normalization and knowledge graph construction.
 
 **5. WebMD and Public Health Information Sites**
