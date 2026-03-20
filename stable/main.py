@@ -1,15 +1,18 @@
 import streamlit as st
-import ollama
 import json
 import os
 from datetime import datetime
 
 # team modules
 from external_data_pull import umls_retrieval
-from db_write import (add_new_session_data, get_session_id, 
-                      add_turn_data, add_summary_data, 
+from db_write import (add_new_session_data, 
+                      get_session_id, 
+                      add_turn_data, 
+                      add_summary_data, 
                       add_session_metric_data)
-from llm_processing import ollama_llm_symptom_check
+from llm_processing import (llm_symptom_check,
+                            get_llm_response,
+                            generate_summary)
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -18,59 +21,13 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 FILE_PATH = os.path.join(SCRIPT_DIR, "patient_records.json")
 
-MODEL = 'gemma3:4b' # modify as needed
-
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
 # ==========================================
 # PART 2: MODULAR BRAINS (LLM LOGIC)
 # ==========================================
 
-def get_llm_response(messages):
-    """
-    Handles the chat. Forces short, precise questions using SOCRATES.
-    """
-    try:
-        system_instruction = {
-            "role": "system",
-            "content": (
-                "You are a clinical intake bot. "
-                "STRICT RULES: "
-                "1. Ask only ONE question at a time. "
-                "2. Keep responses under 15 words. "
-                "3. No pleasantries or small talk. "
-                "4. Be direct and precise."
-            )
-        }
-        # Combines the system rules with the existing chat history
-        # print(messages)
-        response = ollama.chat(model=MODEL, messages=[system_instruction] + messages)
-        return response['message']['content']
-    except Exception as e:
-        return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
-
-def generate_summary(messages):
-    
-    try:
-        # Formats the chat into a single string for easier summarization
-        chat_history = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
-        
-        summary_instruction = {
-            "role": "system",
-            "content": (
-                "Summarize this patient interview into a professional clinical note. "
-                "Include: Chief Complaint, Duration, Severity, and Associated Symptoms. "
-                "Use bullet points. Max 60 words."
-            )
-        }
-        
-        response = ollama.chat(
-            model=MODEL, 
-            messages=[summary_instruction, {"role": "user", "content": chat_history}]
-        )
-        return response['message']['content']
-    except Exception as e:
-        return f"Summary failed: {str(e)}"
+# Note: LLM functions moved to llm_processing.py
 
 # ==========================================
 # PART 3: STORAGE LOGIC
@@ -129,7 +86,7 @@ if prompt := st.chat_input("Type your response here..."):
     st.chat_message("user").write(prompt)
 
     # pull symptoms here, place data inside db Session.SecondaryComplaint at the end
-    new_symptoms = ollama_llm_symptom_check(prompt, MODEL)
+    new_symptoms = llm_symptom_check(prompt)
     st.session_state.symptoms.append(new_symptoms)
     # for testing/refinement (can remove - results are written to db at session close)
     print('LLM-extracted symptoms: ', st.session_state.symptoms)
@@ -174,7 +131,7 @@ if st.sidebar.button("Finish & Generate Summary"):
 
             # Session
             # TODO: session_end does not appear to be using the correct timestamp
-            add_new_session_data(session_id, MODEL, session_start, datetime.now(),
+            add_new_session_data(session_id, session_start, datetime.now(),
                                  clinical_summary, st.session_state.symptoms)
             # Summary
             add_summary_data(session_id, clinical_summary)
@@ -193,8 +150,8 @@ if "final_summary" in st.session_state:
 if st.sidebar.button("Clear Chat / New Patient"):
     # save session to db
     clinical_summary = generate_summary(st.session_state.messages)
-    add_new_session_data(session_id, MODEL, session_start, datetime.now(),
-                                 clinical_summary, st.session_state.symptoms)
+    add_new_session_data(session_id, session_start, datetime.now(),
+                        clinical_summary, st.session_state.symptoms)
     add_summary_data(session_id, clinical_summary)
     add_session_metric_data(session_id)
     # remove previous session data
