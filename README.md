@@ -17,7 +17,7 @@ This project aims to build a system that utilizes a Large Language Model (LLM) t
 ## 4. Installation & Setup
 ### 4.1. Prerequisites
 * Python 3.13+
-	* `conda create -n myenv python=3.13`
+	* `conda create -n myenv python=3.12`
 * Install [Ollama](https://ollama.com)
 * [UMLS](https://www.nlm.nih.gov/research/umls/index.html) API key
 * [PubMed](https://account.ncbi.nlm.nih.gov/signup/) API key
