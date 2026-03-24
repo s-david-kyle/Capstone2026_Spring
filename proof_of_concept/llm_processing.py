@@ -270,7 +270,6 @@ def doctor_dialogue_mimic(symptoms, patient_question):
 
 # ==========================================
 # KNOWLEDGE GRAPH FUNCTIONS
-# (metapub_llm proof of concept)
 # ==========================================
 
 def llm_process_knowledge_graph(session):
@@ -286,6 +285,7 @@ def llm_process_knowledge_graph(session):
         message = row["Message"]
         result += f"'{speaker}: {message}'"
 
+    # TODO: add try/catch to prevent crashes if parsing fails
     # try:
     system_instruction = {
         "role": "system",
@@ -297,7 +297,7 @@ def llm_process_knowledge_graph(session):
             "1. Head: a concept or idea. "
             "2. Relation: the relationship attached the concept or idea. "
             "3. Tail: the concept or idea that the relationship connects to the head."
-            "4. Format the text as: <Head value>, <Relation value>, <Tail value>;"
+            "4. Format the text as: Head, Relation, Tail value;"
             "5. Only include the formatted text in the response."
         )
     }
