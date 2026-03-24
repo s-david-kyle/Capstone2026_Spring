@@ -35,7 +35,6 @@ st.title("🩺 Diagnosis Tool")
 # initial state vars
 if "checkbox_list" not in st.session_state:
     st.session_state.checkbox_list = []
-# st.session_state.update_graph = bool()
 
 # Sidebar for actions
 st.sidebar.header("Session filters")
@@ -62,7 +61,7 @@ selected_session = st.sidebar.selectbox(
 # summary
 summary = get_summary(selected_session)
 edited_summary = st.data_editor(summary)
-# TODO: write edited_summary to database
+# write edited_summary to database
 update_summary(selected_session, edited_summary)
 
 # conversations
@@ -92,15 +91,17 @@ graph.show()
 options = df_kg.relation.drop_duplicates().to_list()
 
 # store selections in the checkbox list
-checkbox_list = st.sidebar.multiselect("Filter relationships:", options, default=[])
+checkbox_list = st.sidebar.multiselect("Filter relationships:", 
+                                       options, default=[])
 
 # Example of how to use the Apply Button or Agent Mode
-if st.sidebar.button("Apply Changes"):
-    # filter_conversation_kg(selected_session, checkbox_list)
-    st.sidebar.write("Changes applied (simulated).")
-    # trigger graph refresh (use session object)
-    print(checkbox_list)
+# TODO: fix lag (have to click filter button twice to refresh)
+if st.sidebar.button("Filter relationships"):
+    # filter conversation_kg by checkbox_list
     st.session_state.checkbox_list = checkbox_list
 
-# TODO: add button to regenerate knowledge graph
-
+# TODO: button to regenerate knowledge graph - needs more testing
+if st.sidebar.button("Generate Knowledge Graph"):
+    new_df_kg = llm_process_knowledge_graph(selected_session)
+    print('New kg:', new_df_kg.head())
+    push_kg_to_db(new_df_kg, selected_session, overwrite=True)

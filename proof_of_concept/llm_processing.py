@@ -278,7 +278,7 @@ def llm_process_knowledge_graph(session):
     """
     # read in coversation for the current session
     df = get_conversations(session)
-    # TODO: convert conversation to single string
+    # convert conversation to single string
     result = ""
     for index, row in df.iterrows():
         speaker = row["Speaker"]

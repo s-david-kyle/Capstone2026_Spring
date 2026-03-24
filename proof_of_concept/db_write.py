@@ -199,7 +199,7 @@ def add_data_to_db(table_name, data, columns=None):
         if conn:
             conn.close()
 
-def push_kg_to_db(df, session):
+def push_kg_to_db(df, session, overwrite=False):
     """
     Pushes a pandas DataFrame to a SQLite database, filtering by SessionId
     and adding only if the data doesn't already exist.
@@ -225,6 +225,18 @@ def push_kg_to_db(df, session):
                 # Add the DataFrame to the database if no duplicates are found
                 df.to_sql('KnowledgeGraphs', conn, if_exists='append', index=False)
                 print(f"DataFrame added to table 'KnowledgeGraphs'.")
+            # TODO: check for overwrite flag
+            elif overwrite:
+                print('overwriting kg')
+                # wipe out data then push
+                sql_query = f"""DELETE 
+                            FROM KnowledgeGraphs
+                            WHERE SessionId = '{session}';
+                            """
+                cursor.execute(sql_query)
+                conn.commit()
+                df.to_sql('KnowledgeGraphs', conn, if_exists='append', index=False)
+                
             else:
                 print(f"Data with SessionId '{df['SessionId'].iloc[0]}' already exists in table 'KnowledgeGraphs'.")
 
