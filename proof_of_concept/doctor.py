@@ -9,6 +9,7 @@ from external_data_pull import umls_retrieval
 from db_read import (get_session_ids, get_conversations,
                      get_summary, update_summary)
 from knowledge_graph import (create_demo_graph)
+from llm_processing import (llm_process_knowledge_graph)
 
 # ==========================================
 # SYSTEM CONFIGURATION
@@ -32,7 +33,7 @@ st.title("🩺 Doctor Patient Diagnosis")
 st.sidebar.header("Controls")
 # add dropdowns
 session_ids = get_session_ids()
-option1 = st.sidebar.selectbox(
+selected_session = st.sidebar.selectbox(
     'Choose session',
     session_ids
 )
@@ -41,7 +42,7 @@ option1 = st.sidebar.selectbox(
 # col1, col2 = st.columns(2)
 # with col1:
 #     # conversations
-#     conversations = get_conversations(option1)
+#     conversations = get_conversations(selected_session)
 #     st.dataframe(conversations)
 
 # with col2:
@@ -51,20 +52,22 @@ option1 = st.sidebar.selectbox(
 
 # TODO: stack interface elements for now, until you refine use
 # summary
-summary = get_summary(option1)
+summary = get_summary(selected_session)
 edited_summary = st.data_editor(summary)
 # TODO: write edited_summary to database
-update_summary(option1, edited_summary)
+update_summary(selected_session, edited_summary)
 
 # favorite_command = edited_df.loc[edited_df["rating"].idxmax()]["command"]
 # st.markdown(f"Your favorite command is **{favorite_command}** 🎈")
 
 # conversations
-conversations = get_conversations(option1)
+conversations = get_conversations(selected_session)
 st.dataframe(conversations)
 
 # knowledge graph
+print(llm_process_knowledge_graph(selected_session))
+
 graph = StreamlitGraphWidget.from_graph(create_demo_graph())
 graph.show()
 
-# st.sidebar.write('Selected:', option1)
+# st.sidebar.write('Selected:', selected_session)
