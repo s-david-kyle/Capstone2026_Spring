@@ -57,7 +57,35 @@ def update_summary(session_id, df):
     cursor.execute(sql)
     conn.commit()
     conn.close()
-    
+
+def check_for_conversation_kg(session_id):
+    """
+    Checks if there are results in the 'KnowledgeGraphs' table filtered by SessionId.
+
+    Args:
+        db_path (str): The path to the SQLite database file.
+        session_id (str or int): The SessionId to filter by.
+
+    Returns:
+        list: A list of tuples representing the rows that match the criteria.
+              Returns an empty list if no matching rows are found.
+    """
+    conn, cursor = get_connection()
+
+    # Execute the SQL query
+    sql = f"""
+        SELECT * 
+        FROM KnowledgeGraphs 
+        WHERE SessionId = {session_id}
+        """
+    cursor.execute(sql)
+
+    # See if there are results returned
+    results = cursor.fetchall()
+    if len(results) > 0:
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     pass

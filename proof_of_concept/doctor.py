@@ -7,7 +7,8 @@ from datetime import datetime
 # team modules
 from external_data_pull import umls_retrieval
 from db_read import (get_session_ids, get_conversations,
-                     get_summary, update_summary)
+                     get_summary, update_summary,
+                     check_for_conversation_kg)
 from db_write import (push_kg_to_db)
 from knowledge_graph import (create_demo_graph, convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
@@ -27,7 +28,7 @@ if not os.path.exists(SCRIPT_DIR):
 # ==========================================
 
 st.set_page_config(page_title="Doctor Summary", page_icon="🩺")
-st.title("🩺 Doctor Patient Diagnosis")
+st.title("🩺 Diagnosis Tool")
 
 
 # Sidebar for actions
@@ -51,7 +52,7 @@ selected_session = st.sidebar.selectbox(
 #     graph = StreamlitGraphWidget.from_graph(create_demo_graph())
 #     graph.show()
 
-# TODO: stack interface elements for now, until you refine use
+# TODO: stack interface elements for now, until you refine usage
 # summary
 summary = get_summary(selected_session)
 edited_summary = st.data_editor(summary)
@@ -66,11 +67,16 @@ conversations = get_conversations(selected_session)
 st.dataframe(conversations)
 
 # knowledge graph
+# check to see if graph exists in database
+is_conversation_kg = check_for_conversation_kg(selected_session)
+print("is conversation_id: ", is_conversation_kg)
+# TODO: if knowledge graph exists, load it instead of processing
 df_kg = llm_process_knowledge_graph(selected_session)
-# TODO: push this to database for retreival/filtering
+# push this to database for retreival/filtering/persistence
 push_kg_to_db(df_kg, selected_session)
 graph = convert_df_to_kg(df_kg)
 
+# convert graph for visualization
 graph = StreamlitGraphWidget.from_graph(graph)
 graph.show()
 
