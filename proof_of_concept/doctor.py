@@ -8,7 +8,7 @@ from datetime import datetime
 from external_data_pull import umls_retrieval
 from db_read import (get_session_ids, get_conversations,
                      get_summary, update_summary)
-from knowledge_graph import (create_demo_graph)
+from knowledge_graph import (create_demo_graph, convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
 
 # ==========================================
@@ -65,9 +65,10 @@ conversations = get_conversations(selected_session)
 st.dataframe(conversations)
 
 # knowledge graph
-print(llm_process_knowledge_graph(selected_session))
+df_kg = llm_process_knowledge_graph(selected_session)
+graph = convert_df_to_kg(df_kg)
 
-graph = StreamlitGraphWidget.from_graph(create_demo_graph())
+graph = StreamlitGraphWidget.from_graph(graph)
 graph.show()
 
 # st.sidebar.write('Selected:', selected_session)

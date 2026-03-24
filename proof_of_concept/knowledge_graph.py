@@ -16,3 +16,9 @@ def create_demo_graph():
         G.add_edge(row['head'], row['tail'], label=row['relation'])
     
     return G
+
+def convert_df_to_kg(df):
+    G = nx.Graph()
+    for _, row in df.iterrows():
+        G.add_edge(row['head'], row['tail'], label=row['relation'])
+    return G
