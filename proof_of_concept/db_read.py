@@ -87,5 +87,44 @@ def check_for_conversation_kg(session_id):
     else:
         return False
 
+def get_conversation_kg(session_id, relation_list):
+    conn, cursor = get_connection()
+    # Execute the SQL query
+    if len(relation_list) > 0:
+        print(f'Filtering by {relation_list}')
+        sql_list = "', '".join(map(str, relation_list))
+        sql = f"""
+            SELECT * 
+            FROM KnowledgeGraphs 
+            WHERE SessionId = {session_id}
+            AND relation IN ('{sql_list}')
+            """
+    else:
+        sql = f"""
+            SELECT * 
+            FROM KnowledgeGraphs 
+            WHERE SessionId = {session_id}
+            """
+    df = pd.read_sql(sql, conn)
+    # print(df.head())
+    return df
+
+def filter_conversation_kg(session_id, relation_list):
+
+    conn, cursor = get_connection()
+    # convet list into SQL-friendly format
+    sql_list = "', '".join(map(str, relation_list))
+    # Execute the SQL query
+    sql = f"""
+        SELECT * 
+        FROM KnowledgeGraphs 
+        WHERE SessionId = {session_id}
+        AND relation IN ('{sql_list}')
+        """
+    df = pd.read_sql(sql, conn)
+    # print("Filtered kg", df.head())
+    # might remove SessionId before returning (not in original kg)
+    return df  # .drop('SessionId', axis=1)
+
 if __name__ == '__main__':
     pass

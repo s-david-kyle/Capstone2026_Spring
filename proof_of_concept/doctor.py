@@ -3,12 +3,15 @@ from yfiles_graphs_for_streamlit import StreamlitGraphWidget, Node, Edge
 import json
 import os
 from datetime import datetime
+import pandas as pd
 
 # team modules
 from external_data_pull import umls_retrieval
 from db_read import (get_session_ids, get_conversations,
                      get_summary, update_summary,
-                     check_for_conversation_kg)
+                     check_for_conversation_kg,
+                     get_conversation_kg,
+                     filter_conversation_kg)
 from db_write import (push_kg_to_db)
 from knowledge_graph import (create_demo_graph, convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
@@ -29,7 +32,10 @@ if not os.path.exists(SCRIPT_DIR):
 
 st.set_page_config(page_title="Doctor Summary", page_icon="🩺")
 st.title("🩺 Diagnosis Tool")
-
+# initial state vars
+if "checkbox_list" not in st.session_state:
+    st.session_state.checkbox_list = []
+# st.session_state.update_graph = bool()
 
 # Sidebar for actions
 st.sidebar.header("Session filters")
@@ -59,19 +65,21 @@ edited_summary = st.data_editor(summary)
 # TODO: write edited_summary to database
 update_summary(selected_session, edited_summary)
 
-# favorite_command = edited_df.loc[edited_df["rating"].idxmax()]["command"]
-# st.markdown(f"Your favorite command is **{favorite_command}** 🎈")
-
 # conversations
 conversations = get_conversations(selected_session)
 st.dataframe(conversations)
 
-# knowledge graph
+# knowledge graph rendering
 # check to see if graph exists in database
 is_conversation_kg = check_for_conversation_kg(selected_session)
-print("is conversation_id: ", is_conversation_kg)
-# TODO: if knowledge graph exists, load it instead of processing
-df_kg = llm_process_knowledge_graph(selected_session)
+# if knowledge graph exists in db, load it instead of processing
+if is_conversation_kg:
+    # load database kg
+    print('Using db conversation kg')
+    print(st.session_state.checkbox_list)
+    df_kg = get_conversation_kg(selected_session, st.session_state.checkbox_list)
+else:
+    df_kg = llm_process_knowledge_graph(selected_session)
 # push this to database for retreival/filtering/persistence
 push_kg_to_db(df_kg, selected_session)
 graph = convert_df_to_kg(df_kg)
@@ -81,19 +89,18 @@ graph = StreamlitGraphWidget.from_graph(graph)
 graph.show()
 
 # checkboxes for knowledge graph relationships
-# Create a list of checkboxes
 options = df_kg.relation.drop_duplicates().to_list()
 
-# Create the checkbox list
+# store selections in the checkbox list
 checkbox_list = st.sidebar.multiselect("Filter relationships:", options, default=[])
-
-# Display the selected options
-st.sidebar.write("Visible relationships:", checkbox_list)
-
-# TODO: filter df_kg by checkbox_list
 
 # Example of how to use the Apply Button or Agent Mode
 if st.sidebar.button("Apply Changes"):
+    # filter_conversation_kg(selected_session, checkbox_list)
     st.sidebar.write("Changes applied (simulated).")
+    # trigger graph refresh (use session object)
+    print(checkbox_list)
+    st.session_state.checkbox_list = checkbox_list
 
-# st.sidebar.write('Selected:', selected_session)
+# TODO: add button to regenerate knowledge graph
+
