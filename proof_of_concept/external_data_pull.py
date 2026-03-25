@@ -20,12 +20,22 @@ import pandas as pd
 import os
 from umls_python_client import UMLSClient
 import ollama
-mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv')
 
 # API keys
 from config import UMLS_API_KEY, NCBI_API_KEY, UMLS_PATH
 
 def umls_retrieval(symptoms):
+    """
+    Retrieves UMLS concepts based on a list of symptoms.
+
+    Args:
+        symptoms (list): A list of symptoms to search for in the UMLS database.
+
+    Returns:
+        list: A list of dictionaries, where each dictionary contains a 'Symptom' 
+        and its corresponding 'SemanticType' based on the UMLS search results.
+        Returns an empty list if an error occurs during the search.
+    """
     # base_uri = 'https://uts-ws.nlm.nih.gov/rest'
 
     # intialize API
