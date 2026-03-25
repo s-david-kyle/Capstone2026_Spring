@@ -274,7 +274,15 @@ def doctor_dialogue_mimic(symptoms, patient_question):
 
 def llm_process_knowledge_graph(session):
     """
-    Converts conversation to knowledge graph
+    Processes conversation dialogue to extract knowledge graph components.
+
+    Args:
+        session (int): the SessionId to filter conversations.
+
+    Returns:
+        pd.DataFrame: A Pandas DataFrame containing the extracted 
+        'head', 'relation', and 'tail' components from the 
+        conversation dialogue.
     """
     # read in coversation for the current session
     df = get_conversations(session)

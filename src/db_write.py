@@ -202,7 +202,17 @@ def add_data_to_db(table_name, data, columns=None):
 def push_kg_to_db(df, session, overwrite=False):
     """
     Pushes a pandas DataFrame to a SQLite database, filtering by SessionId
-    and adding only if the data doesn't already exist.
+    and adding only if the data doesn't already exist or overwrite arg set
+    to True.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the knowledge graph data.
+        session (str or int): The SessionId to associate with the data.
+        overwrite (bool, optional): If True, overwrites the existing KnowledgeGraphs table. 
+                                     Defaults to False.
+    
+    Returns:
+        None
     """
     # add session to dataframe
     df['SessionId'] = session
@@ -225,7 +235,7 @@ def push_kg_to_db(df, session, overwrite=False):
                 # Add the DataFrame to the database if no duplicates are found
                 df.to_sql('KnowledgeGraphs', conn, if_exists='append', index=False)
                 print(f"DataFrame added to table 'KnowledgeGraphs'.")
-            # TODO: check for overwrite flag
+            # check for overwrite flag
             elif overwrite:
                 print('overwriting kg')
                 # wipe out data then push
@@ -247,6 +257,16 @@ def push_kg_to_db(df, session, overwrite=False):
         conn.close()
 
 def update_post_summary(session_id, post_summary):
+    """
+    Updates the PostSummary in the Summary table for a given session ID.
+
+    Args:
+        session_id (str or int): The SessionId of the summary to update.
+        post_summary (str): The new PostSummary to set.
+
+    Returns:
+        None
+    """
     conn, cursor = get_connection()
     sql = f'''
         UPDATE Summary

@@ -11,7 +11,7 @@ This project aims to build a system that utilizes a Large Language Model (LLM) t
 ## 3. Technology Stack
 *   **LLM:** Llama, Gemma
 *   **Programming Language:** Python
-*   **Frameworks/Libraries:**  Ollama
+*   **Frameworks/Libraries:**  Ollama, NetworkX, yFiles
 *   **Database (if applicable):** SQLite
 *   **UI Framework (if applicable):** Streamlit
 ## 4. Installation & Setup
@@ -34,12 +34,18 @@ This project aims to build a system that utilizes a Large Language Model (LLM) t
 ## 5. Usage
 * **Running the Application:** 
 	* `cd src`
-	* `streamlit run main.py`
+	* `streamlit run patient.py` (patient interface) or
+	* `streamlit run doctor.py` (doctor interface)
 * **Inputting Patient Data:** The UI will display patient questions, with a dialogue box for typing responses below. 
 	* Continue engaging with the chatbot, typing responses and hitting enter
 	* The top left of the UI has a clickable << button which will display controls for ending the conversation
 	* Click "Finish & Generate Summary" or "Clear Chat / New Patient" to end the conversation
-* **Interpreting Results:** **TBD**
+* **Interpreting Results:** The UI wil display pre and post summaries of patient conversations, the coversations themselves, and a knowledge graph of the conversation
+    * Click the << button on the upper left if Session filters are not visible
+    * Choose a patient session from the Choose session dropdown
+    * Review Pre Summary and conversation
+    * Relationships in the knowledge graph can be filtered by choosing available relationships and clicking the Filter relationships button
+    * Enter additional notes in the Post Summary section, and click Save Post Summary to save them to the database
 ## 6. Code Structure
 *  `src/`: Contains the main application code.
     * `main.py`:  Entry point for the application. Contains Streamlit interface, and all calls to llm and database functions.

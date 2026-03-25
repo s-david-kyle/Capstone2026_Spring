@@ -13,7 +13,7 @@ from db_read import (get_session_ids, get_conversations,
                      get_conversation_kg,
                      filter_conversation_kg)
 from db_write import (push_kg_to_db, update_post_summary)
-from knowledge_graph import (create_demo_graph, convert_df_to_kg)
+from knowledge_graph import (convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
 
 # ==========================================
