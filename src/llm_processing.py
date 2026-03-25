@@ -9,6 +9,9 @@ import pandas as pd
 import ollama
 from config import MODEL
 
+# team libraries
+from db_read import get_conversations
+
 # external data needed for MTS dialogue doctor conversation mimic
 mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv')
 
@@ -265,6 +268,66 @@ def doctor_dialogue_mimic(symptoms, patient_question):
 
     return question, mts_dialogue_used, processed_dialogue
 
+# ==========================================
+# KNOWLEDGE GRAPH FUNCTIONS
+# ==========================================
+
+def llm_process_knowledge_graph(session):
+    """
+    Converts conversation to knowledge graph
+    """
+    # read in coversation for the current session
+    df = get_conversations(session)
+    # convert conversation to single string
+    result = ""
+    for index, row in df.iterrows():
+        speaker = row["Speaker"]
+        message = row["Message"]
+        result += f"'{speaker}: {message}'"
+
+    # TODO: add try/catch to prevent crashes if parsing fails
+    # try:
+    system_instruction = {
+        "role": "system",
+        "content": (
+            "You parse doctor and patient dialogue into three components that summarize the patient's attributes and symptoms"
+            f"Use the following dialogue: {result}"
+            "STRICT RULES: "
+            "Each relationship you see in the dialogue can only be one of the following: "
+            "1. Head: a concept or idea. "
+            "2. Relation: the relationship attached the concept or idea. "
+            "3. Tail: the concept or idea that the relationship connects to the head."
+            "4. Format the text as: Head, Relation, Tail value;"
+            "5. Only include the formatted text in the response."
+        )
+    }
+    response = ollama.chat(model=MODEL, messages=[system_instruction])
+    response = response['message']['content']
+    # print(response)
+
+    # Split the string into individual entries
+    entries = response.strip().split('; ')
+    # print(entries)
+
+    # Create an empty list to store the data
+    df_data = []
+
+    # Iterate over the entries and extract the Head, Relation, and Tail
+    for entry in entries:
+        parts = entry.split(', ')
+        head = parts[0]
+        relation = parts[1]
+        tail = parts[2]
+        df_data.append({'head': head, 'relation': relation, 'tail': tail})
+    
+    # Create the pandas DataFrame
+    # print(df_data)
+    df = pd.DataFrame(df_data)
+    return df
+    
+    # except Exception as e:
+    #     return None
+    #     # return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
 if __name__ == "__main__":
     pass

@@ -46,6 +46,18 @@ def get_summary(session_id):
     df = pd.read_sql(sql, conn)
     return df
 
+def update_summary(session_id, df):
+    conn, cursor = get_connection()
+    post_summary = df['PostSummary'].values[0]
+    sql = f'''
+        UPDATE Summary
+        SET PostSummary = '{post_summary}'
+        WHERE SessionId = {session_id};
+        '''
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
 def check_for_conversation_kg(session_id):
     """
     Checks if there are results in the 'KnowledgeGraphs' table filtered by SessionId.
@@ -59,6 +71,23 @@ def check_for_conversation_kg(session_id):
               Returns an empty list if no matching rows are found.
     """
     conn, cursor = get_connection()
+
+    # check for KnowledgeGraph table
+    try:
+        # Check if KnowledgeGraphs table exists
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='KnowledgeGraphs'")
+        table_exists = cursor.fetchone() is not None
+
+        if not table_exists:
+            # Create the table if it doesn't exist
+            df = pd.DataFrame({'head': [],
+                               'relation': [],
+                               'tail': [],
+                               'SessionId': []})
+            df.to_sql('KnowledgeGraphs', conn, if_exists='replace', index=False)
+            print(f"Table 'KnowledgeGraphs' created successfully.")
+    except:
+        print('Unable to create KnowledgeGraph table')
 
     # Execute the SQL query
     sql = f"""
