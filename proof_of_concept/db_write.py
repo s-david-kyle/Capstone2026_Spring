@@ -236,7 +236,7 @@ def push_kg_to_db(df, session, overwrite=False):
                 cursor.execute(sql_query)
                 conn.commit()
                 df.to_sql('KnowledgeGraphs', conn, if_exists='append', index=False)
-                
+
             else:
                 print(f"Data with SessionId '{df['SessionId'].iloc[0]}' already exists in table 'KnowledgeGraphs'.")
 
@@ -245,6 +245,18 @@ def push_kg_to_db(df, session, overwrite=False):
 
     finally:
         conn.close()
+
+def update_post_summary(session_id, post_summary):
+    conn, cursor = get_connection()
+    sql = f'''
+        UPDATE Summary
+        SET PostSummary = '{post_summary}'
+        WHERE SessionId = {session_id};
+        '''
+    cursor.execute(sql)
+    print('Updating summary')
+    conn.commit()
+    conn.close()
 
 if __name__ == '__main__':
     pass

@@ -8,11 +8,11 @@ import pandas as pd
 # team modules
 from external_data_pull import umls_retrieval
 from db_read import (get_session_ids, get_conversations,
-                     get_summary, update_summary,
+                     get_summary,
                      check_for_conversation_kg,
                      get_conversation_kg,
                      filter_conversation_kg)
-from db_write import (push_kg_to_db)
+from db_write import (push_kg_to_db, update_post_summary)
 from knowledge_graph import (create_demo_graph, convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
 
@@ -45,26 +45,25 @@ selected_session = st.sidebar.selectbox(
     session_ids
 )
 
-# # create side-by-side views
-# col1, col2 = st.columns(2)
-# with col1:
-#     # conversations
-#     conversations = get_conversations(selected_session)
-#     st.dataframe(conversations)
-
-# with col2:
-#     # knowledge graph
-#     graph = StreamlitGraphWidget.from_graph(create_demo_graph())
-#     graph.show()
-
-# TODO: stack interface elements for now, until you refine usage
-# summary
-summary = get_summary(selected_session)
-edited_summary = st.data_editor(summary)
-# write edited_summary to database
-update_summary(selected_session, edited_summary)
+col1, col2 = st.columns(2)
+with col1:
+    st.write('#### Pre Summary')
+    # presummary
+    summary = get_summary(selected_session)
+    st.markdown(summary['PreSummary'][0])
+with col2:
+    st.write('#### Post Summary')
+    # Editable text box
+    summary = get_summary(selected_session)
+    post_summary = st.text_area("Enter notes:", 
+                                summary['PostSummary'][0],
+                                height="stretch")
+    if st.button("Save Post Summary", width='stretch'):
+        # update database
+        update_post_summary(selected_session, post_summary)
 
 # conversations
+st.write('#### Conversation Log')
 conversations = get_conversations(selected_session)
 st.dataframe(conversations)
 
@@ -85,7 +84,7 @@ graph = convert_df_to_kg(df_kg)
 
 # convert graph for visualization
 graph = StreamlitGraphWidget.from_graph(graph)
-graph.show()
+graph.show(overview=False)
 
 # checkboxes for knowledge graph relationships
 options = df_kg.relation.drop_duplicates().to_list()
