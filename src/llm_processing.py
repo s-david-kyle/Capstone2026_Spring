@@ -292,6 +292,7 @@ def llm_process_knowledge_graph(session):
         speaker = row["Speaker"]
         message = row["Message"]
         result += f"'{speaker}: {message}'"
+    # TODO: add a list of source nodes to build off of
 
     # TODO: add try/catch to prevent crashes if parsing fails
     # try:

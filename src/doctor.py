@@ -1,9 +1,10 @@
 import streamlit as st
-from yfiles_graphs_for_streamlit import StreamlitGraphWidget, Node, Edge
+from yfiles_graphs_for_streamlit import StreamlitGraphWidget, Node, Edge, Layout, EdgeStyle
 import json
 import os
 from datetime import datetime
 import pandas as pd
+from external_data_pull import umls_knowledge_graph, symptom_drill_down
 
 # team modules
 from external_data_pull import umls_retrieval
@@ -35,6 +36,9 @@ st.title("🩺 Diagnosis Tool")
 # initial state vars
 if "checkbox_list" not in st.session_state:
     st.session_state.checkbox_list = []
+
+if "selected_symptom" not in st.session_state:
+    st.session_state.selected_symptom = None
 
 # Sidebar for actions
 st.sidebar.header("Session filters")
@@ -104,3 +108,28 @@ if st.sidebar.button("Generate Knowledge Graph"):
     new_df_kg = llm_process_knowledge_graph(selected_session)
     print('New kg:', new_df_kg.head())
     push_kg_to_db(new_df_kg, selected_session, overwrite=True)
+
+# place temporary input box to type a primary symptom for UMLS query
+primary_symptom = st.sidebar.text_input("Enter Symptom for UMLS:")
+if st.session_state.selected_symptom:
+    primary_symptom = st.session_state.selected_symptom
+umls_symptoms = umls_knowledge_graph(primary_symptom, 20)
+print(umls_symptoms)
+# print(umls_symptoms['semantic_type'].unique())
+symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom)
+# convert graph for visualization
+symptom_graph = StreamlitGraphWidget.from_graph(symptom_graph)
+# symptom_graph.show(overview=False)
+
+selected_nodes, selected_edges = symptom_graph.show(sync_selection=True, graph_layout=Layout.HIERARCHIC)
+# st.sidebar.write("Selected Edges: ", ", ".join(str(edge["id"]) for edge in selected_edges))
+st.sidebar.write("Selected Nodes: ", ", ".join(str(node["properties"]["label"]) for node in selected_nodes))
+# TODO: if node selected, run another UMLS query and refresh
+# print(type(selected_nodes))
+if selected_nodes:
+    st.session_state.selected_symptom = selected_nodes[0]['properties']['label']
+    print(selected_nodes[0]['properties']['label'])
+else:
+    pass
+
+
