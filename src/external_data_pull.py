@@ -128,21 +128,23 @@ def umls_knowledge_graph(symptom, num_results):
         df = pd.DataFrame({'Symptom': [None], 'SemanticType': [None]})
     return df
 
-def symptom_drill_down(df, primary_symptom):
+def symptom_drill_down(df, primary_symptom, include_other_types=False):
     """
     ['Sign or Symptom' 'Disease or Syndrome' 'Pathologic Function' 'Finding'
     'Manufactured Object' 'Clinical Attribute' 'Medical Device'
     'Organic Chemical' 'Injury or Poisoning' 'Intellectual Product']
     """
-    df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
+    # remove other semantic types for first search
+    if include_other_types is False:
+        df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
     # TODO: filter out any matches with primary_symptom to remove circular reference
-    
+
     # build a KG out of this
     df['head'] = primary_symptom
     # rename columns for knowledge graph translation
     df.columns = ['tail', 'relation', 'head']
     graph = convert_df_to_kg(df)
-    # print(df)
+    print(df)
     return graph
 
 if __name__ == "__main__":

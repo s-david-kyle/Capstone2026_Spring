@@ -27,18 +27,23 @@ FILE_PATH = os.path.join(SCRIPT_DIR, "patient_records.json")
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
 
-# ==========================================
-# USER INTERFACE (STREAMLIT)
-# ==========================================
-
-st.set_page_config(page_title="Doctor Summary", page_icon="🩺")
-st.title("🩺 Diagnosis Tool")
 # initial state vars
 if "checkbox_list" not in st.session_state:
     st.session_state.checkbox_list = []
 
 if "selected_symptom" not in st.session_state:
     st.session_state.selected_symptom = None
+
+if "include_all_semantics" not in st.session_state:
+    st.session_state.include_all_semantics = False
+
+# ==========================================
+# USER INTERFACE (STREAMLIT)
+# ==========================================
+
+st.set_page_config(page_title="Doctor Summary", page_icon="🩺")
+st.title("🩺 Diagnosis Tool")
+
 
 # Sidebar for actions
 st.sidebar.header("Session filters")
@@ -114,22 +119,33 @@ primary_symptom = st.sidebar.text_input("Enter Symptom for UMLS:")
 if st.session_state.selected_symptom:
     primary_symptom = st.session_state.selected_symptom
 umls_symptoms = umls_knowledge_graph(primary_symptom, 20)
-print(umls_symptoms)
+# print(umls_symptoms)
 # print(umls_symptoms['semantic_type'].unique())
-symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom)
+if st.session_state.include_all_semantics is True:
+    symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom, True)
+else:
+    symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom)
+    st.session_state.include_all_semantics = False
 # convert graph for visualization
 symptom_graph = StreamlitGraphWidget.from_graph(symptom_graph)
 # symptom_graph.show(overview=False)
-
-selected_nodes, selected_edges = symptom_graph.show(sync_selection=True, graph_layout=Layout.HIERARCHIC)
+st.write('#### Symptom Drill Down')
+selected_nodes, selected_edges = symptom_graph.show(sync_selection=True, 
+                                                    graph_layout=Layout.HIERARCHIC, 
+                                                    overview=False)
 # st.sidebar.write("Selected Edges: ", ", ".join(str(edge["id"]) for edge in selected_edges))
 st.sidebar.write("Selected Nodes: ", ", ".join(str(node["properties"]["label"]) for node in selected_nodes))
-# TODO: if node selected, run another UMLS query and refresh
+# if node selected, run another UMLS query and refresh
 # print(type(selected_nodes))
 if selected_nodes:
+    # assuming only 1 node is ever selected
     st.session_state.selected_symptom = selected_nodes[0]['properties']['label']
     print(selected_nodes[0]['properties']['label'])
-else:
-    pass
+    st.session_state.include_all_semantics = True
 
+# TODO: add button to clear symptom
+if st.sidebar.button("Clear symptom graph"):
+    # filter conversation_kg by checkbox_list
+    st.session_state.selected_symptom = None
+    st.session_state.include_all_semantics = False
 
