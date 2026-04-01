@@ -143,7 +143,7 @@ if selected_nodes:
     print(selected_nodes[0]['properties']['label'])
     st.session_state.include_all_semantics = True
 
-# TODO: add button to clear symptom
+# button to clear symptom
 if st.sidebar.button("Clear symptom graph"):
     # filter conversation_kg by checkbox_list
     st.session_state.selected_symptom = None

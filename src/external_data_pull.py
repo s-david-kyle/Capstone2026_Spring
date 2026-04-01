@@ -138,7 +138,8 @@ def symptom_drill_down(df, primary_symptom, include_other_types=False):
     if include_other_types is False:
         df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
     # TODO: filter out any matches with primary_symptom to remove circular reference
-
+    # BUT only if include_other_types = False (may be useful for final selection)
+    
     # build a KG out of this
     df['head'] = primary_symptom
     # rename columns for knowledge graph translation

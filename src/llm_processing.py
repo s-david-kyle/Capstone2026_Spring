@@ -293,7 +293,27 @@ def llm_process_knowledge_graph(session):
         message = row["Message"]
         result += f"'{speaker}: {message}'"
     # TODO: add a list of source nodes to build off of
-
+    """
+    Constitutional: fever, chills, night sweats, fatigue, weakness, weight loss, weight gain, loss of appetite
+    Cardiovascular: chest pain, chest pressure/tightness, palpitations, irregular heartbeat, syncope, near syncope, orthopnea, paroxysmal nocturnal dyspnea, exertional dyspnea, leg swelling, Claudication
+    Respiratory: shortness of breath, cough, sputum production, hemoptysis, wheezing, chest congestion, pleuritic pain
+    Gastrointestinal: abdominal pain, nausea, vomiting, diarrhea, constipation, blood in stool, heartburn, bloating, loss of appetite
+    Genitourinary: dysuria, urinary frequency, urgency, hematuria, flank pain, incontinence, vaginal bleeding, vaginal discharge, pregnancy status, testicular pain
+    Neurological: headache, dizziness, lightheadedness, syncope, weakness, numbness, tingling, seizures, confusion, memory loss, speech difficulty, vision changes
+    Musculoskeletal: joint pain, muscle pain, back pain, neck pain, joint swelling, stiffness, limited range of motion
+    Skin: rash, itching, lesions, bruising, changes in moles, hair loss
+    Endocrine: heat intolerance, cold intolerance, excessive thirst, excessive urination, excessive hunger
+    Hematologic/Lymphatic: easy bruising, easy bleeding, swollen lymph nodes, anemia symptoms
+    Psychiatric: anxiety, depression, mood changes, sleep disturbances, suicidal ideation, hallucinations
+    Pertinent positives
+    Pertinent negatives
+    PMH / PSH
+    Medications
+    Allergies
+    Social factors 
+    Missing clarifications – this will be useful for estimating the coverage counts etc. 
+    Flags (red-flag prompts)
+    """
     # TODO: add try/catch to prevent crashes if parsing fails
     # try:
     system_instruction = {
@@ -307,7 +327,8 @@ def llm_process_knowledge_graph(session):
             "2. Relation: the relationship attached the concept or idea. "
             "3. Tail: the concept or idea that the relationship connects to the head."
             "4. Format the text as: Head, Relation, Tail value;"
-            "5. Only include the formatted text in the response."
+            "5. All relations must be one of these values: Constitutional, Cardiovascular, Respiratory, Gastrointestinal, Genitourinary, Neurological, Musculoskeletal, or Skin"
+            "6. Only include the formatted text in the response."
         )
     }
     response = ollama.chat(model=MODEL, messages=[system_instruction])
