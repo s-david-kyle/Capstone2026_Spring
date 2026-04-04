@@ -11,8 +11,6 @@ from config import MODEL
 
 # team libraries
 from db_read import get_conversations
-from knowledge_graph import convert_df_to_kg
-from db_write import push_kg_to_db
 
 # external data needed for MTS dialogue doctor conversation mimic
 mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv')
@@ -276,15 +274,7 @@ def doctor_dialogue_mimic(symptoms, patient_question):
 
 def llm_process_knowledge_graph(session):
     """
-    Processes conversation dialogue to extract knowledge graph components.
-
-    Args:
-        session (int): the SessionId to filter conversations.
-
-    Returns:
-        pd.DataFrame: A Pandas DataFrame containing the extracted 
-        'head', 'relation', and 'tail' components from the 
-        conversation dialogue.
+    Converts conversation to knowledge graph
     """
     # read in coversation for the current session
     df = get_conversations(session)
@@ -294,28 +284,7 @@ def llm_process_knowledge_graph(session):
         speaker = row["Speaker"]
         message = row["Message"]
         result += f"'{speaker}: {message}'"
-    # TODO: add a list of source nodes to build off of
-    """
-    Constitutional: fever, chills, night sweats, fatigue, weakness, weight loss, weight gain, loss of appetite
-    Cardiovascular: chest pain, chest pressure/tightness, palpitations, irregular heartbeat, syncope, near syncope, orthopnea, paroxysmal nocturnal dyspnea, exertional dyspnea, leg swelling, Claudication
-    Respiratory: shortness of breath, cough, sputum production, hemoptysis, wheezing, chest congestion, pleuritic pain
-    Gastrointestinal: abdominal pain, nausea, vomiting, diarrhea, constipation, blood in stool, heartburn, bloating, loss of appetite
-    Genitourinary: dysuria, urinary frequency, urgency, hematuria, flank pain, incontinence, vaginal bleeding, vaginal discharge, pregnancy status, testicular pain
-    Neurological: headache, dizziness, lightheadedness, syncope, weakness, numbness, tingling, seizures, confusion, memory loss, speech difficulty, vision changes
-    Musculoskeletal: joint pain, muscle pain, back pain, neck pain, joint swelling, stiffness, limited range of motion
-    Skin: rash, itching, lesions, bruising, changes in moles, hair loss
-    Endocrine: heat intolerance, cold intolerance, excessive thirst, excessive urination, excessive hunger
-    Hematologic/Lymphatic: easy bruising, easy bleeding, swollen lymph nodes, anemia symptoms
-    Psychiatric: anxiety, depression, mood changes, sleep disturbances, suicidal ideation, hallucinations
-    Pertinent positives
-    Pertinent negatives
-    PMH / PSH
-    Medications
-    Allergies
-    Social factors 
-    Missing clarifications – this will be useful for estimating the coverage counts etc. 
-    Flags (red-flag prompts)
-    """
+
     # TODO: add try/catch to prevent crashes if parsing fails
     # try:
     system_instruction = {
@@ -329,8 +298,7 @@ def llm_process_knowledge_graph(session):
             "2. Relation: the relationship attached the concept or idea. "
             "3. Tail: the concept or idea that the relationship connects to the head."
             "4. Format the text as: Head, Relation, Tail value;"
-            "5. All relations must be one of these values: Constitutional, Cardiovascular, Respiratory, Gastrointestinal, Genitourinary, Neurological, Musculoskeletal, or Skin"
-            "6. Only include the formatted text in the response."
+            "5. Only include the formatted text in the response."
         )
     }
     response = ollama.chat(model=MODEL, messages=[system_instruction])
@@ -360,72 +328,6 @@ def llm_process_knowledge_graph(session):
     # except Exception as e:
     #     return None
     #     # return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
-
-def system_grouping(df, symptom, selected_session):
-    # generate system groupings for tail column data
-    # use only symptoms for now
-    df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
-    symptom_list = df['symptom'].tolist()
-    # remove system searched for in UMLS
-    if symptom in symptom_list:
-        symptom_list.remove(symptom)
-    # prep list for LLM
-    symptom_string = ', '.join(symptom_list)
-    # llm prompt
-    system_instruction = {
-        "role": "system",
-        "content": (
-            "Assign a biological system to each item in the following list of symptoms:"
-            f"{symptom_string}"
-            "STRICT RULES: "
-            "The response must be formatted as followed: "
-            "1. Each symtom must be followed by an : and then the biological system "
-            "2. Each symtom and biological pair must be followed by a newline "
-            "3. Only include this formatted text in the response."
-        )
-    }
-    response = ollama.chat(model=MODEL, messages=[system_instruction])
-    response = response['message']['content']
-    # print(response)
-    """
-    1. Occipital headache : Migraine, 2. Temporal headache : Migraine, 
-    3. Throbbing Headache : Migraine, 4. Frontal headache : Migraine, 
-    5. Post-Lumbar Puncture Headache : Idiopathic Intracranial Hypertension, 
-    6. Headache recurrent : Migraine, 7. Intermittent headache : Migraine
-    """
-    # Parse response into dataframe
-    lines = response.strip().split('\n')
-    data = []
-    for line in lines:
-        # print(line)
-        # match = re.match(r"(\d+\.) (\w+) : (\w+)", line)
-        match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
-        if match:
-            symptom = match.group(1)
-            system = match.group(2)
-            data.append({'symptom': symptom, 'system': system})
-    symptom_system = pd.DataFrame(data)
-    print(symptom_system)
-
-    # TODO: check if there is only one single system and requery to get at least 2
-
-    # create a graph out of this with each system as it's own central node
-    symptom_kg_df = symptom_system.copy()
-    symptom_kg_df.columns = ['tail', 'head']
-    symptom_kg_df['relation'] = 'symptom'
-    symptom_kg = convert_df_to_kg(symptom_kg_df)
-
-    # push this to database - include session number and turn number
-    # temporary assignment
-    symptom_system['turn'] = 1
-    push_kg_to_db(symptom_system, selected_session, 'SymptomSystemKG', overwrite=True)
-
-    # TODO: create a list of unique systems
-    # TODO: ask a question that will hint at which system may be affected
-    # TODO: once system is picked, create list of symptoms associate with system
-    # TODO: requery UMLS for chosen system and repeate process until no more nodes
-
-    return symptom_kg
 
 if __name__ == "__main__":
     pass

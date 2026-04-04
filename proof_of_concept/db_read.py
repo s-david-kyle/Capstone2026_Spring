@@ -5,6 +5,16 @@ import pandas as pd
 
 
 def get_connection():
+    """
+    Connects to database
+
+    Args:
+        None
+
+    Returns:
+        conn - db connection object
+        cursor - db cursor object    
+    """
     conn = sqlite3.connect('clerkship_dialogue.db')
     cursor = conn.cursor()
     return conn, cursor
@@ -27,6 +37,16 @@ def get_session_ids():
     return session_ids
 
 def get_conversations(session_id):
+    """
+    Retrieves conversations from the Turn table based on the session ID.
+
+    Args:
+        session_id (int): The ID of the session to retrieve conversations for.
+
+    Returns:
+        df (pd.DataFrame): A DataFrame containing the Message and Speaker columns 
+        from the Turn table for the specified session ID.
+    """
     conn, cursor = get_connection()
     sql = f'''
         SELECT Message, Speaker
@@ -37,6 +57,17 @@ def get_conversations(session_id):
     return df
 
 def get_summary(session_id):
+    """
+    Retrieves summaries for a given session ID from the Summary table.
+
+    Args:
+        session_id (int): The ID of the session to retrieve summaries for.
+
+    Returns:
+        df (pd.DataFrame): A DataFrame containing the PreSummary and 
+        PostSummary columns from the Summary table for the specified 
+        session ID.
+    """
     conn, cursor = get_connection()
     sql = f'''
         SELECT PreSummary, PostSummary
@@ -45,6 +76,31 @@ def get_summary(session_id):
         '''
     df = pd.read_sql(sql, conn)
     return df
+
+def update_summary(session_id, df):
+    """
+    Updates the PostSummary for a given session ID in the Summary table.
+
+    Args:
+        session_id (int): The ID of the session to update.
+        df (pd.DataFrame): A DataFrame containing the PostSummary data.  The function
+                           assumes that the DataFrame has exactly one row and that
+                           the 'PostSummary' column contains the value to be
+                           inserted.
+
+    Returns:
+        None
+    """
+    conn, cursor = get_connection()
+    post_summary = df['PostSummary'].values[0]
+    sql = f'''
+        UPDATE Summary
+        SET PostSummary = '{post_summary}'
+        WHERE SessionId = {session_id};
+        '''
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
 
 def check_for_conversation_kg(session_id):
     """
@@ -59,6 +115,23 @@ def check_for_conversation_kg(session_id):
               Returns an empty list if no matching rows are found.
     """
     conn, cursor = get_connection()
+
+    # check for KnowledgeGraph table
+    try:
+        # Check if KnowledgeGraphs table exists
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='KnowledgeGraphs'")
+        table_exists = cursor.fetchone() is not None
+
+        if not table_exists:
+            # Create the table if it doesn't exist
+            df = pd.DataFrame({'head': [],
+                               'relation': [],
+                               'tail': [],
+                               'SessionId': []})
+            df.to_sql('KnowledgeGraphs', conn, if_exists='replace', index=False)
+            print(f"Table 'KnowledgeGraphs' created successfully.")
+    except:
+        print('Unable to create KnowledgeGraph table')
 
     # Execute the SQL query
     sql = f"""
@@ -76,6 +149,16 @@ def check_for_conversation_kg(session_id):
         return False
 
 def get_conversation_kg(session_id, relation_list):
+    """
+    Retrieves conversation knowledge graph data from the database.
+
+    Args:
+        session_id (str or int): The ID of the conversation session.
+        relation_list (list): A list of relationships to filter the results.
+
+    Returns:
+        df (pd.DataFrame): A pandas DataFrame containing the filtered knowledge graph data.
+    """
     conn, cursor = get_connection()
     # Execute the SQL query
     if len(relation_list) > 0:
@@ -98,7 +181,16 @@ def get_conversation_kg(session_id, relation_list):
     return df
 
 def filter_conversation_kg(session_id, relation_list):
+    """
+    Filters conversation knowledge graph data based on session ID and relation list.
 
+    Args:
+        session_id (str or int): The ID of the conversation session.
+        relation_list (list): A list of relationships to filter the results.
+
+    Returns:
+        df (pd.DataFrame): A pandas DataFrame containing the filtered knowledge graph data.
+    """
     conn, cursor = get_connection()
     # convet list into SQL-friendly format
     sql_list = "', '".join(map(str, relation_list))

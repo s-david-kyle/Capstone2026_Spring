@@ -199,20 +199,10 @@ def add_data_to_db(table_name, data, columns=None):
         if conn:
             conn.close()
 
-def push_kg_to_db(df, session, table_name, overwrite=False):
+def push_kg_to_db(df, session, overwrite=False):
     """
     Pushes a pandas DataFrame to a SQLite database, filtering by SessionId
-    and adding only if the data doesn't already exist or overwrite arg set
-    to True.
-
-    Args:
-        df (pd.DataFrame): The DataFrame containing the knowledge graph data.
-        session (str or int): The SessionId to associate with the data.
-        overwrite (bool, optional): If True, overwrites the existing KnowledgeGraphs table. 
-                                     Defaults to False.
-    
-    Returns:
-        None
+    and adding only if the data doesn't already exist.
     """
     # add session to dataframe
     df['SessionId'] = session
@@ -220,35 +210,35 @@ def push_kg_to_db(df, session, table_name, overwrite=False):
     conn, cursor = get_connection()
 
     try:
-        # Check if table_name table exists
-        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
+        # Check if KnowledgeGraphs table exists
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='KnowledgeGraphs'")
         table_exists = cursor.fetchone() is not None
 
         if not table_exists:
             # Create the table if it doesn't exist
-            df.to_sql(table_name, conn, if_exists='replace', index=False)
-            print(f"Table '{table_name}' created successfully.")
+            df.to_sql('KnowledgeGraphs', conn, if_exists='replace', index=False)
+            print(f"Table 'KnowledgeGraphs' created successfully.")
         else:
             # Filter the DataFrame by SessionId and check for duplicates
-            existing_data = pd.read_sql_query(f"SELECT * FROM {table_name} WHERE SessionId = '{df['SessionId'].iloc[0]}';", conn)
+            existing_data = pd.read_sql_query(f"SELECT * FROM KnowledgeGraphs WHERE SessionId = '{df['SessionId'].iloc[0]}';", conn)
             if existing_data.empty:
                 # Add the DataFrame to the database if no duplicates are found
-                df.to_sql(table_name, conn, if_exists='append', index=False)
-                print(f"DataFrame added to table {table_name}.")
-            # check for overwrite flag
+                df.to_sql('KnowledgeGraphs', conn, if_exists='append', index=False)
+                print(f"DataFrame added to table 'KnowledgeGraphs'.")
+            # TODO: check for overwrite flag
             elif overwrite:
                 print('overwriting kg')
                 # wipe out data then push
                 sql_query = f"""DELETE 
-                            FROM {table_name}
+                            FROM KnowledgeGraphs
                             WHERE SessionId = '{session}';
                             """
                 cursor.execute(sql_query)
                 conn.commit()
-                df.to_sql(table_name, conn, if_exists='append', index=False)
+                df.to_sql('KnowledgeGraphs', conn, if_exists='append', index=False)
 
             else:
-                print(f"Data with SessionId '{df['SessionId'].iloc[0]}' already exists in table {table_name}.")
+                print(f"Data with SessionId '{df['SessionId'].iloc[0]}' already exists in table 'KnowledgeGraphs'.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -257,16 +247,6 @@ def push_kg_to_db(df, session, table_name, overwrite=False):
         conn.close()
 
 def update_post_summary(session_id, post_summary):
-    """
-    Updates the PostSummary in the Summary table for a given session ID.
-
-    Args:
-        session_id (str or int): The SessionId of the summary to update.
-        post_summary (str): The new PostSummary to set.
-
-    Returns:
-        None
-    """
     conn, cursor = get_connection()
     sql = f'''
         UPDATE Summary
