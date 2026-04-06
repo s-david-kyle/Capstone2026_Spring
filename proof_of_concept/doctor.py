@@ -13,7 +13,8 @@ from db_read import (get_session_ids, get_conversations,
                      get_summary,
                      check_for_conversation_kg,
                      get_conversation_kg,
-                     filter_conversation_kg)
+                     filter_conversation_kg,
+                     retreive_system_symptom_kg)
 from db_write import (push_kg_to_db, update_post_summary)
 from knowledge_graph import (convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
@@ -125,8 +126,9 @@ if st.session_state.selected_symptom:
     primary_symptom = st.session_state.selected_symptom
 umls_symptoms = umls_knowledge_graph(primary_symptom, 50) # 20 is good for testing
 
-# TODO: ask focused question within a system
-symtom_system_graph = system_grouping(umls_symptoms, primary_symptom, selected_session)
+# TODO: modify this to pull from database
+# symptom_system_graph = system_grouping(umls_symptoms, primary_symptom, selected_session)
+symptom_system_graph = retreive_system_symptom_kg(selected_session)
 # TODO: generate question to 
 # print(umls_symptoms)
 # print(umls_symptoms['semantic_type'].unique())
@@ -137,29 +139,31 @@ else:
     st.session_state.include_all_semantics = False
 
 
-# convert graph for visualization
-symptom_graph = StreamlitGraphWidget.from_graph(symptom_graph)
-# symptom_graph.show(overview=False)
-st.write('#### Symptom Drill Down')
-selected_nodes, selected_edges = symptom_graph.show(sync_selection=True, 
-                                                    graph_layout=Layout.HIERARCHIC, 
-                                                    overview=False)
+# TODO: remove this section once testing set
+# # convert graph for visualization
+# symptom_graph = StreamlitGraphWidget.from_graph(symptom_graph)
+# # symptom_graph.show(overview=False)
+# st.write('#### Symptom Drill Down')
+# selected_nodes, selected_edges = symptom_graph.show(sync_selection=True, 
+#                                                     graph_layout=Layout.HIERARCHIC, 
+#                                                     overview=False)
 
 # show grouped systems
 st.write('#### Symptom System Group Drill Down')
-symtom_system_graph = StreamlitGraphWidget.from_graph(symtom_system_graph)
-symtom_system_graph.show(overview=False)
+symptom_system_graph = StreamlitGraphWidget.from_graph(symptom_system_graph)
+symptom_system_graph.show(overview=False)
 
 # st.sidebar.write("Selected Edges: ", ", ".join(str(edge["id"]) for edge in selected_edges))
-st.sidebar.write("Selected Nodes: ", ", ".join(str(node["properties"]["label"]) for node in selected_nodes))
+# st.sidebar.write("Selected Nodes: ", ", ".join(str(node["properties"]["label"]) for node in selected_nodes))
 
+# TODO: try implmenting this search functionality later
 # if node selected, run another UMLS query and refresh
 # print(type(selected_nodes))
-if selected_nodes:
-    # assuming only 1 node is ever selected
-    st.session_state.selected_symptom = selected_nodes[0]['properties']['label']
-    print(selected_nodes[0]['properties']['label'])
-    st.session_state.include_all_semantics = True
+# if selected_nodes:
+#     # assuming only 1 node is ever selected
+#     st.session_state.selected_symptom = selected_nodes[0]['properties']['label']
+#     print(selected_nodes[0]['properties']['label'])
+#     st.session_state.include_all_semantics = True
 
 # button to clear symptom
 if st.sidebar.button("Clear symptom graph"):

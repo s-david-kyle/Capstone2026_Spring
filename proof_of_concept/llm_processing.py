@@ -124,6 +124,43 @@ def llm_symptom_check(prompt):
         return symptoms
     except Exception as e:
         return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+    
+def llm_single_symptom_check(prompt):
+    """
+    Checks a user's symptom statement against an Ollama LLM.
+
+    Args:
+        prompt (str): The user's symptom statement to analyze.
+
+    Returns:
+        list: A list of extracted symptoms from the LLM response.
+              Returns an error message if an exception occurs.
+    """
+    try:
+        system_instruction = {
+            "role": "system",
+            "content": (
+                "You are a clinical intake bot. "
+                "STRICT RULES: "
+                "1. Come up with a single keyword to represent the medical symptom in this statement and no additional information. "
+                "2. Avoid vague non-descriptive words like 'pain'. "
+                "3. No pleasantries or small talk. "
+                "4. Be direct and precise."
+            )
+        }
+        user_message = {"role": "user", "content": prompt}
+        # print('symptom_check: ', user_message)
+        # Combines the system rules with the existing chat history
+        response = ollama.chat(model=MODEL, messages=[system_instruction] + [user_message])
+        response = response['message']['content']
+        print('LLM symptom extracted:', response)
+        # symptoms = re.findall(r'\*\s[^\n]+', response)
+        # symptoms = [symptom.replace('* ', '') for symptom in symptoms]
+        # remove any starting/ending spaces from each item
+        # symptoms = [symptom.strip() for symptom in symptoms]
+        return [response]  # returning as list to match previous constraint
+    except Exception as e:
+        return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
 def llm_question_formation(symptoms):
     """
@@ -361,7 +398,7 @@ def llm_process_knowledge_graph(session):
     #     return None
     #     # return f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
-def system_grouping(df, symptom, selected_session):
+def system_grouping(df, symptom, selected_session, turn_number):
     # generate system groupings for tail column data
     # use only symptoms for now
     df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
@@ -411,20 +448,14 @@ def system_grouping(df, symptom, selected_session):
             "STRICT RULES: "
             "The response must be formatted as followed: "
             "1. Each symptom must be followed by an : and then the biological system followed by a : and the relationship"
-            "2. Each symptom, biological pair, and relationship must be followed by a newline "
+            "2. Each symptom, biological system, and relationship must be followed by a newline "
             "3. There must be at least 2 biological systems"
-            "4. Only include this formatted text in the response."
+            "4. Only include this formatted text in the response, do not add number to rows."
         )
     }
     response = ollama.chat(model=MODEL, messages=[system_instruction])
     response = response['message']['content']
-    # print(response)
-    """
-    1. Occipital headache : Migraine, 2. Temporal headache : Migraine, 
-    3. Throbbing Headache : Migraine, 4. Frontal headache : Migraine, 
-    5. Post-Lumbar Puncture Headache : Idiopathic Intracranial Hypertension, 
-    6. Headache recurrent : Migraine, 7. Intermittent headache : Migraine
-    """
+    print(response)
     # Parse response into dataframe
     lines = response.strip().split('\n')
     data = []
@@ -434,9 +465,10 @@ def system_grouping(df, symptom, selected_session):
         # match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
         match = re.match(r"([^:]+)\s+:\s+([^:]+)\s+:\s+([^:]+)", line)
         if match:
+            # TODO: it seems to be formatting symptom - relation - system for some reason
             symptom = match.group(1)
-            system = match.group(2)
-            relationship = match.group(3)
+            system = match.group(3)
+            relationship = match.group(2)
             data.append({'symptom': symptom, 'system': system, 'relation': relationship})
     symptom_system = pd.DataFrame(data)
     print(symptom_system)
@@ -449,10 +481,14 @@ def system_grouping(df, symptom, selected_session):
 
     # push this to database - include session number and turn number
     # temporary assignment
-    symptom_system['turn'] = 1
-    push_kg_to_db(symptom_system, selected_session, 'SymptomSystemKG', overwrite=True)
+    symptom_system['turn'] = turn_number
+    push_kg_to_db(symptom_system, 
+                  selected_session, 
+                  'SymptomSystemKG', 
+                  overwrite=False,
+                  continue_session=True)
 
-    # TODO: create a list of unique systems
+    # TODO: create a list of unique systems?
     # TODO: ask a question that will hint at which system may be affected
     # TODO: once system is picked, create list of symptoms associate with system
     # TODO: requery UMLS for chosen system and repeate process until no more nodes

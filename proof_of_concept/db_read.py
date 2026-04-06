@@ -3,6 +3,9 @@ import re
 from config import MODEL
 import pandas as pd
 
+# team imports
+from knowledge_graph import convert_df_to_kg 
+
 
 def get_connection():
     """
@@ -205,6 +208,24 @@ def filter_conversation_kg(session_id, relation_list):
     # print("Filtered kg", df.head())
     # might remove SessionId before returning (not in original kg)
     return df  # .drop('SessionId', axis=1)
+
+def retreive_system_symptom_kg(session_id, turn_number=1):
+    conn, cursor = get_connection()
+    # query SymptomSystemKG, filtering by session_id and turn_number
+    sql = f"""
+        SELECT * 
+        FROM SymptomSystemKG 
+        WHERE SessionId = {session_id}
+        AND turn = {turn_number};
+        """
+    # read this into a dataframe
+    df = pd.read_sql(sql, conn)
+    # convert to kg
+    # TODO: check order of columns - system and relation are swapped
+    df = df[['symptom', 'system', 'relation']].copy()
+    df.columns = ['head', 'tail', 'relation']
+    kg = convert_df_to_kg(df)
+    return kg
 
 if __name__ == '__main__':
     pass

@@ -4,15 +4,17 @@ import os
 from datetime import datetime
 
 # team modules
-from external_data_pull import umls_retrieval
+from external_data_pull import umls_retrieval, umls_knowledge_graph
 from db_write import (add_new_session_data, 
                       get_session_id, 
                       add_turn_data, 
                       add_summary_data, 
                       add_session_metric_data)
 from llm_processing import (llm_symptom_check,
+                            llm_single_symptom_check,
                             get_llm_response,
-                            generate_summary)
+                            generate_summary,
+                            system_grouping)
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -20,6 +22,10 @@ from llm_processing import (llm_symptom_check,
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 FILE_PATH = os.path.join(SCRIPT_DIR, "patient_records.json")
+
+# state vars
+if "turn_number" not in st.session_state:
+    st.session_state.turn_number = 1
 
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
@@ -124,40 +130,52 @@ if prompt:
     st.chat_message("user").write(prompt)
 
     # pull symptoms here, place data inside db Session.SecondaryComplaint at the end
-    new_symptoms = llm_symptom_check(prompt)
-    st.session_state.symptoms.append(new_symptoms)
+    # new_symptoms = llm_symptom_check(prompt)
+    new_symptom = llm_single_symptom_check(prompt)
+    st.session_state.symptoms.append(new_symptom)
     # for testing/refinement (can remove - results are written to db at session close)
     print('LLM-extracted symptoms: ', st.session_state.symptoms)
 
     # call UMLS API and push terms to session_state
     # UI-Safe UMLS call: Prevents crashing if API Key is missing
     try:
-        new_umls_terms = umls_retrieval(new_symptoms)
+        # TODO: put UMLS KG function call here
+        # new_umls_terms = umls_retrieval(new_symptom)
+        umls_symptoms = umls_knowledge_graph(new_symptom, 50)  # modify number for tests
+        symtom_system_graph = system_grouping(umls_symptoms, 
+                                              new_symptom, 
+                                              session_id, 
+                                              st.session_state.turn_number)
     except Exception:
-        new_umls_terms = [] # Fallback to empty list so UI stays active
+        # new_umls_terms = [] # Fallback to empty list so UI stays active
         st.sidebar.warning(" UMLS Offline (API Key Required)")
     
-    st.session_state.umls_terms.append(new_umls_terms)
+    # removing session_state storage to use database instead
+    # st.session_state.umls_terms.append(new_umls_terms)
     # for testing/refinement
-    print('UMLS terms: ', st.session_state.umls_terms)
+    # print('UMLS terms: ', st.session_state.umls_terms)
 
     # update turn table with current patient dialogue
     add_turn_data(session_id, datetime.now(), 'patient', prompt)
 
 # UPGRADE: Use Status container for a smoother UI animation
     with st.status("Analyzing symptoms...", expanded=False) as status:
+        # increment turn
+        st.session_state.turn_number += 1
         response = get_llm_response(st.session_state.messages)
         status.update(label="Response ready!", state="complete", expanded=False)
+
         
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
     add_turn_data(session_id, datetime.now(), 'system', response)
 
+    # TODO: temporarily disabling while question logic is being modified
     # UI LOGIC: Check if the AI is closing the conversation
-    exit_keywords = ["book an appointment", "schedule", "goodbye", "take care"]
-    if any(keyword in response.lower() for keyword in exit_keywords):
-        st.session_state.conversation_complete = True
-        st.rerun()   
+    # exit_keywords = ["book an appointment", "schedule", "goodbye", "take care"]
+    # if any(keyword in response.lower() for keyword in exit_keywords):
+    #     st.session_state.conversation_complete = True
+    #     st.rerun()   
 
 # Sidebar for actions
 st.sidebar.header("Controls")
