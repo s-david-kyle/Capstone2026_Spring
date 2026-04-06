@@ -14,7 +14,8 @@ from llm_processing import (llm_symptom_check,
                             llm_single_symptom_check,
                             get_llm_response,
                             generate_summary,
-                            system_grouping)
+                            system_grouping,
+                            form_system_question)
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -26,6 +27,9 @@ FILE_PATH = os.path.join(SCRIPT_DIR, "patient_records.json")
 # state vars
 if "turn_number" not in st.session_state:
     st.session_state.turn_number = 1
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = get_session_id()
 
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
@@ -91,7 +95,7 @@ st.sidebar.info(f"📅 Date: **{st.session_state.intake_date}**")
 
 
 # Create unique session ID
-session_id = get_session_id()
+session_id = st.session_state.session_id
 session_start = datetime.now()
 
 # Initialize completion flag to track the UI state
@@ -160,9 +164,11 @@ if prompt:
 
 # UPGRADE: Use Status container for a smoother UI animation
     with st.status("Analyzing symptoms...", expanded=False) as status:
+        # TODO: put call to form_system_question here
+        response = form_system_question(session_id, st.session_state.turn_number, new_symptom)
         # increment turn
         st.session_state.turn_number += 1
-        response = get_llm_response(st.session_state.messages)
+        # response = get_llm_response(st.session_state.messages)
         status.update(label="Response ready!", state="complete", expanded=False)
 
         

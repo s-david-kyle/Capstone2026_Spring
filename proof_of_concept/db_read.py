@@ -34,7 +34,8 @@ def get_session_ids():
     """
     conn, cursor = get_connection()
     # Fetch all values
-    cursor.execute("SELECT SessionId FROM Session")
+    # TODO: modifty this to search Turn for live updates
+    cursor.execute("SELECT DISTINCT SessionId FROM Turn;")
     session_ids = [row[0] for row in cursor.fetchall()]
 
     return session_ids
@@ -226,6 +227,38 @@ def retreive_system_symptom_kg(session_id, turn_number=1):
     df.columns = ['head', 'tail', 'relation']
     kg = convert_df_to_kg(df)
     return kg
+
+def get_system_symptom_df(session_id, turn_number):
+    """
+    Returns system_symptom data for given session_id, turn_number
+    """
+    conn, cursor = get_connection()
+    # query SymptomSystemKG, filtering by session_id and turn_number
+    sql = f"""
+        SELECT * 
+        FROM SymptomSystemKG 
+        WHERE SessionId = {session_id}
+        AND turn = {turn_number};
+        """
+    # read this into a dataframe
+    df = pd.read_sql(sql, conn)
+    return df
+
+def get_turns(session_id):
+    """
+    Returns a list of turns for a given session
+    """
+    conn, cursor = get_connection()
+    # query SymptomSystemKG, filtering by session_id and turn_number
+    sql = f"""
+        SELECT DISTINCT turn 
+        FROM SymptomSystemKG 
+        WHERE SessionId = {session_id};
+        """
+    cursor.execute(sql)
+    turns = [row[0] for row in cursor.fetchall()]
+    return turns
+    
 
 if __name__ == '__main__':
     pass

@@ -14,7 +14,8 @@ from db_read import (get_session_ids, get_conversations,
                      check_for_conversation_kg,
                      get_conversation_kg,
                      filter_conversation_kg,
-                     retreive_system_symptom_kg)
+                     retreive_system_symptom_kg,
+                     get_turns)
 from db_write import (push_kg_to_db, update_post_summary)
 from knowledge_graph import (convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
@@ -56,19 +57,36 @@ selected_session = st.sidebar.selectbox(
     session_ids
 )
 
+# dropdown for conversation turns
+turn_numbers = get_turns(selected_session)
+selected_turn = st.sidebar.selectbox(
+    'Choose conversation turn',
+    turn_numbers
+)
+
 col1, col2 = st.columns(2)
 with col1:
     st.write('#### Pre Summary')
     # presummary
     summary = get_summary(selected_session)
-    st.markdown(summary['PreSummary'][0])
+    # need to have check here to avoid crash if summary not generated
+    try:
+        st.markdown(summary['PreSummary'][0])
+    except:
+        st.markdown('No Pre Summary available')
 with col2:
     st.write('#### Post Summary')
     # Editable text box
     summary = get_summary(selected_session)
-    post_summary = st.text_area("Enter notes:", 
-                                summary['PostSummary'][0],
-                                height="stretch")
+    # check for data present
+    try:
+        post_summary = st.text_area("Enter notes:", 
+                                    summary['PostSummary'][0],
+                                    height="stretch")
+    except:
+        post_summary = st.text_area("Enter notes:", 
+                                    '',
+                                    height="stretch")
     if st.button("Save Post Summary", width='stretch'):
         # update database
         update_post_summary(selected_session, post_summary)
@@ -121,22 +139,21 @@ if st.sidebar.button("Generate Knowledge Graph"):
 # ==========================================
 
 # place temporary input box to type a primary symptom for UMLS query
-primary_symptom = st.sidebar.text_input("Enter Symptom for UMLS:")
-if st.session_state.selected_symptom:
-    primary_symptom = st.session_state.selected_symptom
-umls_symptoms = umls_knowledge_graph(primary_symptom, 50) # 20 is good for testing
+# primary_symptom = st.sidebar.text_input("Enter Symptom for UMLS:")
+# if st.session_state.selected_symptom:
+#     primary_symptom = st.session_state.selected_symptom
+# umls_symptoms = umls_knowledge_graph(primary_symptom, 50) # 20 is good for testing
 
 # TODO: modify this to pull from database
 # symptom_system_graph = system_grouping(umls_symptoms, primary_symptom, selected_session)
-symptom_system_graph = retreive_system_symptom_kg(selected_session)
-# TODO: generate question to 
+symptom_system_graph = retreive_system_symptom_kg(selected_session, selected_turn)
 # print(umls_symptoms)
 # print(umls_symptoms['semantic_type'].unique())
-if st.session_state.include_all_semantics is True:
-    symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom, True)
-else:
-    symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom)
-    st.session_state.include_all_semantics = False
+# if st.session_state.include_all_semantics is True:
+#     symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom, True)
+# else:
+#     symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom)
+#     st.session_state.include_all_semantics = False
 
 
 # TODO: remove this section once testing set

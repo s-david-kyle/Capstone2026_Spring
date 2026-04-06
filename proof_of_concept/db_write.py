@@ -19,7 +19,9 @@ def get_session_id():
     conn = sqlite3.connect('clerkship_dialogue.db')
     cursor = conn.cursor()
     # Fetch all values
-    cursor.execute("SELECT SessionId FROM Session")
+    # check Turn table so both interfaces can be run live
+    # cursor.execute("SELECT SessionId FROM Session")
+    cursor.execute("SELECT MAX(SessionId) FROM Turn")
     values = [row[0] for row in cursor.fetchall()]
 
     # Find the maximum, increment

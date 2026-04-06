@@ -10,7 +10,7 @@ import ollama
 from config import MODEL
 
 # team libraries
-from db_read import get_conversations
+from db_read import get_conversations, get_system_symptom_df
 from knowledge_graph import convert_df_to_kg
 from db_write import push_kg_to_db
 
@@ -444,10 +444,10 @@ def system_grouping(df, symptom, selected_session, turn_number):
         "role": "system",
         "content": (
             "Assign a biological system to each item in the following list of symptoms:"
-            f"{symptom_string} and the relation to the system using these relationships {edge_string}"
+            f"{symptom_string} and the relation to the system using these relationships: {edge_string}"
             "STRICT RULES: "
             "The response must be formatted as followed: "
-            "1. Each symptom must be followed by an : and then the biological system followed by a : and the relationship"
+            "1. Each symptom must be followed by an :  the relationship : the biological system "
             "2. Each symptom, biological system, and relationship must be followed by a newline "
             "3. There must be at least 2 biological systems"
             "4. Only include this formatted text in the response, do not add number to rows."
@@ -460,15 +460,15 @@ def system_grouping(df, symptom, selected_session, turn_number):
     lines = response.strip().split('\n')
     data = []
     for line in lines:
-        print(line)
+        print('LLM response for KG:', line)
         # match = re.match(r"(\d+\.) (\w+) : (\w+)", line)
         # match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
         match = re.match(r"([^:]+)\s+:\s+([^:]+)\s+:\s+([^:]+)", line)
         if match:
-            # TODO: it seems to be formatting symptom - relation - system for some reason
+            # formatting symptom - relation - system
             symptom = match.group(1)
-            system = match.group(3)
             relationship = match.group(2)
+            system = match.group(3)
             data.append({'symptom': symptom, 'system': system, 'relation': relationship})
     symptom_system = pd.DataFrame(data)
     print(symptom_system)
@@ -494,6 +494,40 @@ def system_grouping(df, symptom, selected_session, turn_number):
     # TODO: requery UMLS for chosen system and repeate process until no more nodes
 
     return symptom_kg
+
+def form_system_question(session_id, turn_number, symptom):
+    """
+    Forms a question to narrow down affected systems
+    """
+    # pull a list of the current systems
+    df = get_system_symptom_df(session_id, turn_number)
+    systems = df['system'].drop_duplicates().to_list()
+    # TODO: convert list to a string and feed to LLM to form question
+    systems_str = ", ".join(systems)
+    try:
+        system_instruction = {
+            "role": "system",
+            "content": (
+                "You are a clinical intake bot. "
+                f"""Take the following list of biological systems: {systems_str} and 
+                    form a question that narrows down which system to focus on for a 
+                    patient with a symptom of {symptom}
+                """
+                "STRICT RULES: "
+                "1. Ask only ONE question at a time. "
+                "2. Keep responses under 15 words. "
+                "3. Make sure language is easily understandable and non-threatening. "
+                "4. Refer to biological systems in layman's terms that anyone could understand. "
+                "5. Assume the patient cannot describe the systems themselves, and refer to something they may feel or see. "
+                "6. No pleasantries or small talk. "
+                # "6. Be direct and precise."
+            )
+        }
+        response = ollama.chat(model=MODEL, messages=[system_instruction])
+        response = response['message']['content']
+    except Exception as e:
+        response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+    return response
 
 if __name__ == "__main__":
     pass
