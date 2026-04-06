@@ -371,17 +371,49 @@ def system_grouping(df, symptom, selected_session):
         symptom_list.remove(symptom)
     # prep list for LLM
     symptom_string = ', '.join(symptom_list)
+    # TODO: add edges list
+    edges = [
+        "Causal",
+        "Therapeutic",
+        "Associative",
+        "Contraindicative",
+        "Diagnostic",
+        "Preventive",
+        "Exacerbative",
+        "Ameliorative",
+        "Temporal",
+        "Dosage-Related",
+        "Side Effect",
+        "Interaction",
+        "Epidemiological",
+        "Genetic",
+        "Allergic",
+        "Monitoring",
+        "Supportive",
+        "Concomitant",
+        "Risk-Associated",
+        "Symptom-Symptom",
+        "Procedure-Related",
+        "Outcome-Related",
+        "Age-Related",
+        "Lifestyle-Related",
+        "Biomarker-Related",
+        "Comorbidity-Related"
+    ]
+    edge_string = ', '.join(edges)
     # llm prompt
+    # TODO: the 2 biological systems requirement will need to be modified when drilldown to final system is reached
     system_instruction = {
         "role": "system",
         "content": (
             "Assign a biological system to each item in the following list of symptoms:"
-            f"{symptom_string}"
+            f"{symptom_string} and the relation to the system using these relationships {edge_string}"
             "STRICT RULES: "
             "The response must be formatted as followed: "
-            "1. Each symtom must be followed by an : and then the biological system "
-            "2. Each symtom and biological pair must be followed by a newline "
-            "3. Only include this formatted text in the response."
+            "1. Each symptom must be followed by an : and then the biological system followed by a : and the relationship"
+            "2. Each symptom, biological pair, and relationship must be followed by a newline "
+            "3. There must be at least 2 biological systems"
+            "4. Only include this formatted text in the response."
         )
     }
     response = ollama.chat(model=MODEL, messages=[system_instruction])
@@ -397,22 +429,22 @@ def system_grouping(df, symptom, selected_session):
     lines = response.strip().split('\n')
     data = []
     for line in lines:
-        # print(line)
+        print(line)
         # match = re.match(r"(\d+\.) (\w+) : (\w+)", line)
-        match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
+        # match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
+        match = re.match(r"([^:]+)\s+:\s+([^:]+)\s+:\s+([^:]+)", line)
         if match:
             symptom = match.group(1)
             system = match.group(2)
-            data.append({'symptom': symptom, 'system': system})
+            relationship = match.group(3)
+            data.append({'symptom': symptom, 'system': system, 'relation': relationship})
     symptom_system = pd.DataFrame(data)
     print(symptom_system)
 
-    # TODO: check if there is only one single system and requery to get at least 2
-
     # create a graph out of this with each system as it's own central node
     symptom_kg_df = symptom_system.copy()
-    symptom_kg_df.columns = ['tail', 'head']
-    symptom_kg_df['relation'] = 'symptom'
+    symptom_kg_df.columns = ['tail', 'head', 'relation']
+    # symptom_kg_df['relation'] = 'symptom'
     symptom_kg = convert_df_to_kg(symptom_kg_df)
 
     # push this to database - include session number and turn number
