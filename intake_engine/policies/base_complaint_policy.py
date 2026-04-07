@@ -92,18 +92,12 @@ class BaseComplaintPolicy:
         return False
 
     def _is_target_resolved(self, intake, target):
-        """
-        Generic target resolution check.
+        question_status = (
+            intake.get("conversation_meta", {})
+            .get("question_status", {})
+            .get(target)
+        )
 
-        If the target maps to a simple scalar field such as hpi.onset, we check
-        whether that field is missing.
-
-        If the target maps to a list-like bucket such as pertinent_positives,
-        pertinent_negatives, or flags, presence of the target name in that bucket
-        counts as resolved.
-
-        If the spec provides an explicit resolve_mode, we honor it.
-        """
         spec = self.get_target_spec(target)
         state_path = spec.get("state_path")
 
@@ -113,6 +107,27 @@ class BaseComplaintPolicy:
         value = self.get_field_value(intake, state_path)
         resolve_mode = spec.get("resolve_mode")
 
+        is_list_target = (
+            spec.get("default_update_mode") == "append"
+            or spec.get("fallback_parse_mode") == "list_append"
+            or isinstance(value, (list, set, tuple))
+        )
+
+        # These statuses always resolve a target regardless of list vs scalar
+        if question_status in {
+            "asked_declined",
+            "asked_unknown",
+            "asked_answered_empty",
+        }:
+            return True
+
+        # FIX: asked_answered now resolves list targets too.
+        # Previously list targets fell through to the len(value) > 0 check,
+        # which meant an empty list answer (e.g. "No other symptoms") would
+        # never resolve the target and the engine would loop forever.
+        if question_status == "asked_answered":
+            return True
+
         if resolve_mode == "presence_in_collection":
             return self._list_contains_target_value(value, target)
 
@@ -120,7 +135,7 @@ class BaseComplaintPolicy:
             return not self.is_missing(value)
 
         if isinstance(value, (list, set, tuple)):
-            return self._list_contains_target_value(value, target)
+            return len(value) > 0
 
         return not self.is_missing(value)
 

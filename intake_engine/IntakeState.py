@@ -131,7 +131,13 @@ class IntakeState:
         if not hpi["severity"]:
             missing.append("how severe it is")
 
-        if not hpi["associated_symptoms"]:
+        associated_symptoms_status = (
+            self.data["conversation_meta"]["question_status"].get("associated_symptoms")
+        )
+        associated_symptoms_asked = associated_symptoms_status in {
+            "asked_answered", "asked_answered_empty", "asked_declined", "asked_unknown"
+        }
+        if not hpi["associated_symptoms"] and not associated_symptoms_asked:
             missing.append("associated symptoms")
 
         return missing
@@ -146,14 +152,18 @@ class IntakeState:
         associated_symptoms = [
             symptom.lower() for symptom in self.data["hpi"]["associated_symptoms"]
         ]
+        policy_answers = self.data["policy_answers"]
 
         flags = []
 
         if "chest pain" in chief_complaint:
-            if "shortness of breath" in associated_symptoms:
+            # Check associated_symptoms list OR policy_answers.shortness_of_breath
+            sob_in_symptoms = "shortness of breath" in associated_symptoms
+            sob_in_policy = policy_answers.get("shortness_of_breath") is True
+            if sob_in_symptoms or sob_in_policy:
                 flags.append("chest_pain_with_shortness_of_breath")
 
-            if "sweating" in associated_symptoms:
+            if "sweating" in associated_symptoms or policy_answers.get("diaphoresis") is True:
                 flags.append("chest_pain_with_diaphoresis")
 
         if severity in {"8/10", "9/10", "10/10"}:
@@ -204,7 +214,7 @@ class IntakeState:
             )
 
         if intent == "ask_main_reason_for_visit":
-            return "Could you tell me what’s been bothering you today?"
+            return "Could you tell me what's been bothering you today?"
 
         if intent == "end_intake_early":
             return (
@@ -267,17 +277,17 @@ class IntakeState:
         answer = text.strip().lower()
 
         stop_phrases = [
-            "stop",
-            "quit",
-            "end",
-            "end this",
-            "stop this",
             "i want to stop",
             "i want to end this",
             "i'm done",
             "im done",
             "no more questions",
+            "end this",
+            "stop this",
         ]
+
+        # Match bare single words only as exact answers
+        stop_words = {"stop", "quit", "end"}
 
         decline_phrases = [
             "prefer not to answer",
@@ -302,7 +312,7 @@ class IntakeState:
             "idk",
         ]
 
-        if any(phrase in answer for phrase in stop_phrases):
+        if answer in stop_words or any(phrase in answer for phrase in stop_phrases):
             return "stop"
 
         if any(phrase in answer for phrase in decline_phrases):
@@ -425,6 +435,7 @@ class IntakeState:
             "answered": "asked_answered",
             "unknown": "asked_unknown",
             "declined": "asked_declined",
+            "answered_empty": "asked_answered_empty",
         }
         return mapping.get(answer_status)
 
@@ -504,9 +515,29 @@ class IntakeState:
             )
 
         special_status = self._classify_special_answer_status(patient_answer)
+        target = self._intent_to_target(current_intent)
+        answer_text = patient_answer.strip().lower()
+
+        from intake_engine.policies.target_specs import TARGET_SPECS
+        spec = TARGET_SPECS.get(target, {}) if target is not None else {}
+
+        is_list_target = (
+            spec.get("default_update_mode") == "append"
+            or spec.get("fallback_parse_mode") == "list_append"
+        )
 
         if special_status is not None:
             applied_update = self._build_special_answer_update(special_status)
+        elif is_list_target and answer_text in {"no", "nope", "nothing", "none", "next"}:
+            applied_update = {
+                "set_fields": {
+                    "conversation_meta.last_answer_status": "answered_empty",
+                    "conversation_meta.early_exit_reason": None,
+                },
+                "append_fields": {},
+                "flags_to_add": [],
+                "missing_clarifications_to_add": [],
+            }
         else:
             applied_update = self.build_update_from_answer(current_intent, patient_answer)
 
@@ -542,10 +573,32 @@ class IntakeState:
             )
 
         special_status = self._classify_special_answer_status(patient_answer)
+        target = self._intent_to_target(current_intent)
+        answer_text = patient_answer.strip().lower()
+
+        from intake_engine.policies.target_specs import TARGET_SPECS
+        spec = TARGET_SPECS.get(target, {}) if target is not None else {}
+
+        is_list_target = (
+            spec.get("default_update_mode") == "append"
+            or spec.get("fallback_parse_mode") == "list_append"
+        )
 
         if special_status is not None:
             applied_update = self._build_special_answer_update(special_status)
             parser_name = "special_answer"
+
+        elif is_list_target and answer_text in {"no", "nope", "nothing", "none", "next"}:
+            applied_update = {
+                "set_fields": {
+                    "conversation_meta.last_answer_status": "answered_empty",
+                    "conversation_meta.early_exit_reason": None,
+                },
+                "append_fields": {},
+                "flags_to_add": [],
+                "missing_clarifications_to_add": [],
+            }
+            parser_name = "empty_list_answer"
 
         elif self._should_use_rule_based_first(current_intent):
             applied_update = self.build_update_from_answer(
@@ -617,6 +670,7 @@ class IntakeState:
         parse_mode = spec.get("fallback_parse_mode")
 
         always_rule_based_targets = {
+            # yes/no safety targets
             "sudden_severe_onset",
             "visual_changes",
             "fever_or_neck_stiffness",
@@ -625,6 +679,7 @@ class IntakeState:
             "shortness_of_breath",
             "syncope_or_presyncope",
             "rapid_worsening",
+            # HPI characterization
             "onset",
             "duration",
             "severity",
@@ -632,6 +687,15 @@ class IntakeState:
             "course",
             "location",
             "character",
+            # list fields — rule-based is reliable enough and avoids LLM JSON issues
+            "aggravating_factors",
+            "relieving_factors",
+            "associated_symptoms",
+            "medications",
+            "allergies",
+            "radiation",
+            "aura_features",
+            "urinary_symptoms",
         }
 
         if target in always_rule_based_targets:

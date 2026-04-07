@@ -29,8 +29,28 @@ def normalize_chief_complaint(text):
     return complaint
 
 
+def _strip_trailing_punctuation(text):
+    """Strip trailing sentence punctuation from a clinical text value."""
+    return text.rstrip(" .,!?:;")
+
+
 def split_free_text_list(text):
     normalized = text.strip().lower()
+
+    # Strip leading negation phrases before splitting so "No, it does not..."
+    # doesn't produce ["no", "it does not..."]
+    negation_prefixes = [
+        "no, ",
+        "no it ",
+        "no other",
+        "none, ",
+        "not, ",
+    ]
+    for prefix in negation_prefixes:
+        if normalized.startswith(prefix):
+            normalized = normalized[len(prefix):].strip()
+            break
+
     normalized = normalized.replace(", and ", ", ")
     normalized = normalized.replace(" and ", ", ")
 
@@ -40,6 +60,8 @@ def split_free_text_list(text):
     for part in parts:
         if part.startswith("and "):
             part = part[4:].strip()
+
+        part = _strip_trailing_punctuation(part)
 
         if part:
             cleaned_parts.append(part)
@@ -83,7 +105,7 @@ def extract_duration(text):
     if answer.startswith("for "):
         answer = answer[4:].strip()
 
-    return answer
+    return _strip_trailing_punctuation(answer)
 
 
 def extract_escalation_signals(text):
@@ -111,9 +133,10 @@ def extract_escalation_signals(text):
 
     worsening_terms = [
         "getting worse",
-        "worse",
         "much worse",
         "rapidly worse",
+        "rapidly worsening",
+        "getting worse quickly",
     ]
 
     for term in breathing_terms:
@@ -150,36 +173,10 @@ def extract_yes_no_unknown(text):
     if answer in no_terms:
         return False
 
-    negative_starts = [
-        "no ",
-        "denies ",
-        "deny ",
-        "without ",
-        "not ",
-    ]
-
-    affirmative_starts = [
-        "yes ",
-        "yeah ",
-        "yep ",
-        "i have ",
-        "i am ",
-        "i'm ",
-        "have had ",
-    ]
-
-    for prefix in negative_starts:
-        if answer.startswith(prefix):
-            return False
-
-    for prefix in affirmative_starts:
-        if answer.startswith(prefix):
-            return True
-
-    if " yes " in f" {answer} ":
+    if "yes" in answer:
         return True
 
-    if " no " in f" {answer} ":
+    if "no" in answer:
         return False
 
     return None
@@ -308,19 +305,39 @@ def build_generic_update_from_target_spec(target, answer):
         else:
             update["set_fields"][state_path] = value
 
+        # Only append to extra fields when the answer is affirmative
+        if value is True:
+            for extra_field in extra_append_fields:
+                update["append_fields"][extra_field] = [answer.strip()]
+
     elif parse_mode == "list_append":
-        values = split_free_text_list(answer) or [answer]
+        # Treat clear negations as empty answers rather than parsing them as items
+        answer_lower = answer.strip().lower()
+        is_negation = (
+            answer_lower.startswith("no,")
+            or answer_lower.startswith("no ")
+            or answer_lower.startswith("no other")
+            or answer_lower.startswith("nothing")
+            or answer_lower.startswith("none")
+            or answer_lower in {"no", "nope", "nothing", "none", "not really"}
+        )
 
-        if default_update_mode == "append":
-            update["append_fields"][state_path] = values
+        if is_negation:
+            # Empty list — target resolves via asked_answered_empty path
+            update["set_fields"]["conversation_meta.last_answer_status"] = "answered_empty"
         else:
-            update["set_fields"][state_path] = values
+            values = split_free_text_list(answer) or [_strip_trailing_punctuation(answer.strip().lower())]
 
-        for extra_field in extra_append_fields:
-            update["append_fields"][extra_field] = list(values)
+            if default_update_mode == "append":
+                update["append_fields"][state_path] = values
+            else:
+                update["set_fields"][state_path] = values
+
+            for extra_field in extra_append_fields:
+                update["append_fields"][extra_field] = list(values)
 
     elif parse_mode == "text":
-        value = answer
+        value = _strip_trailing_punctuation(answer.strip())
 
         if default_update_mode == "append":
             update["append_fields"][state_path] = [value]
