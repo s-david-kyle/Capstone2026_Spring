@@ -87,6 +87,26 @@ class BoundedLLMExtractor:
             {"set_fields": set(), "append_fields": set()},
         )
 
+    def _trim_intake_state_for_extraction(self, intake_state):
+        """
+        Keep only the fields the extractor actually needs.
+        Exclude transcript and most of conversation_meta to prevent prompt bloat.
+        """
+        return {
+            "chief_complaint_primary": intake_state.get("chief_complaint_primary"),
+            "other_concerns": intake_state.get("other_concerns", []),
+            "hpi": intake_state.get("hpi", {}),
+            "pertinent_positives": intake_state.get("pertinent_positives", []),
+            "pertinent_negatives": intake_state.get("pertinent_negatives", []),
+            "pmh_psh": intake_state.get("pmh_psh", {}),
+            "medications": intake_state.get("medications", []),
+            "allergies": intake_state.get("allergies", []),
+            "social_factors": intake_state.get("social_factors", []),
+            "policy_answers": intake_state.get("policy_answers", {}),
+            "missing_clarifications": intake_state.get("missing_clarifications", []),
+            "flags": intake_state.get("flags", []),
+        }
+
     def build_prompt(self, intent, patient_answer, intake_state):
         intent_specific_rules = []
 
@@ -112,6 +132,7 @@ class BoundedLLMExtractor:
                 )
 
         rules_block = "\n".join(intent_specific_rules)
+        compact_state = self._trim_intake_state_for_extraction(intake_state)
 
         return f"""
 You are a medical intake information extraction assistant.
@@ -126,8 +147,8 @@ Current intent:
 Patient answer:
 {patient_answer}
 
-Current intake state:
-{json.dumps(intake_state, indent = 2)}
+Compact intake state:
+{json.dumps(compact_state, indent = 2)}
 
 Return ONLY valid JSON with this exact structure:
 {{

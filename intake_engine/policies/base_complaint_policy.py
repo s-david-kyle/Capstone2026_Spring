@@ -2,112 +2,211 @@ from intake_engine.policies.target_specs import TARGET_SPECS
 
 
 class BaseComplaintPolicy:
-    policy_name = "base"
-    critical_followups = []
-    must_characterize = []
-    high_priority_followups = []
-    red_flags = []
+    """
+    Generic runtime wrapper around a plain complaint policy dictionary.
+
+    This replaces complaint-specific subclasses. Complaint-specific differences
+    now live in the data passed into this class.
+    """
+
+    def __init__(self, policy_definition):
+        self.policy_definition = policy_definition
+
+        self.policy_name = policy_definition.get("policy_name")
+        self.display_name = policy_definition.get("display_name", self.policy_name)
+        self.aliases = policy_definition.get("aliases", [])
+
+        self.critical_followups = policy_definition.get("critical_followups", [])
+        self.must_characterize = policy_definition.get("must_characterize", [])
+        self.high_priority_followups = policy_definition.get("high_priority_followups", [])
+        self.red_flags = policy_definition.get("red_flags", [])
+        self.wrap_up_rule = policy_definition.get("wrap_up_rule", {})
+
+    def target_to_state_path(self, target):
+        spec = TARGET_SPECS.get(target, {})
+        return spec.get("state_path")
+
+    def get_target_spec(self, target):
+        return TARGET_SPECS.get(target, {})
+
+    def target_to_intent(self, target):
+        """
+        Backward-compatible method expected by IntakeState.
+
+        Prefer an explicit question_intent from TARGET_SPECS.
+        Fall back to ask_<target>.
+        """
+        if target is None:
+            return None
+
+        spec = self.get_target_spec(target)
+        return spec.get("question_intent", f"ask_{target}")
 
     def is_missing(self, value):
         if value is None:
             return True
-        if isinstance(value, list) and len(value) == 0:
+
+        if isinstance(value, str) and value.strip() == "":
             return True
+
+        if isinstance(value, (list, dict, set, tuple)) and len(value) == 0:
+            return True
+
         return False
 
-    def get_field_value(self, intake, field):
+    def get_field_value(self, intake, state_path, default = None):
         """
-        Supports dotted paths like 'hpi.onset' or 'policy_answers.visual_changes'.
+        Supports dotted paths like 'hpi.onset'.
+        Accepts either dict-like intake or object-like intake.
         """
-        value = intake
-        for part in field.split("."):
-            value = value.get(part)
-            if value is None:
-                return None
-        return value
+        if not state_path:
+            return default
 
-    def target_to_state_path(self, target):
-        spec = TARGET_SPECS.get(target)
-        if spec is not None:
-            return spec["state_path"]
+        current = intake
 
-        if target == "recommend_immediate_attention":
-            return target
+        for part in state_path.split("."):
+            if current is None:
+                return default
 
-        return target
+            if isinstance(current, dict):
+                current = current.get(part, default)
+            else:
+                current = getattr(current, part, default)
 
-    def missing_fields(self, intake, fields):
-        for field in fields:
-            state_path = self.target_to_state_path(field)
-            value = self.get_field_value(intake, state_path)
-            if self.is_missing(value):
-                yield field
+        return current
 
-    def has_urgent_flag(self, intake):
-        flags = set(intake.get("flags", []))
-        acuity = set(intake.get("conversation_meta", {}).get("acuity_signal", []))
+    def _list_contains_target_value(self, value, target):
+        """
+        Handles targets whose state_path points to a list-like bucket such as
+        pertinent_positives, pertinent_negatives, or flags.
+        """
+        if value is None:
+            return False
 
-        return (
-            "active_breathing_difficulty" in acuity
-            or "syncope_or_presyncope" in acuity
-            or "recommend_immediate_attention" in flags
-        )
+        if isinstance(value, str):
+            return target in value
 
-    def _get_question_status_map(self, intake):
-        return intake.get("conversation_meta", {}).get("question_status", {})
+        if isinstance(value, (list, set, tuple)):
+            return target in value
+
+        return False
 
     def _is_target_resolved(self, intake, target):
-        question_status = self._get_question_status_map(intake)
-        return question_status.get(target) in {
-            "asked_answered",
-            "asked_unknown",
-            "asked_declined",
-        }
+        """
+        Generic target resolution check.
 
-    def _count_resolved_targets(self, intake, targets):
-        return sum(
-            1 for target in targets
+        If the target maps to a simple scalar field such as hpi.onset, we check
+        whether that field is missing.
+
+        If the target maps to a list-like bucket such as pertinent_positives,
+        pertinent_negatives, or flags, presence of the target name in that bucket
+        counts as resolved.
+
+        If the spec provides an explicit resolve_mode, we honor it.
+        """
+        spec = self.get_target_spec(target)
+        state_path = spec.get("state_path")
+
+        if not state_path:
+            return False
+
+        value = self.get_field_value(intake, state_path)
+        resolve_mode = spec.get("resolve_mode")
+
+        if resolve_mode == "presence_in_collection":
+            return self._list_contains_target_value(value, target)
+
+        if resolve_mode == "non_missing_field":
+            return not self.is_missing(value)
+
+        if isinstance(value, (list, set, tuple)):
+            return self._list_contains_target_value(value, target)
+
+        return not self.is_missing(value)
+
+    def choose_next_target(self, intake):
+        """
+        Prioritize unresolved targets in this order:
+        critical_followups -> must_characterize -> high_priority_followups
+        """
+        ordered_groups = [
+            self.critical_followups,
+            self.must_characterize,
+            self.high_priority_followups,
+        ]
+
+        for group in ordered_groups:
+            for target in group:
+                if not self._is_target_resolved(intake, target):
+                    return target
+
+        return None
+
+    def choose_next_question_intent(self, intake):
+        """
+        Returns the question intent for the next unresolved target.
+        """
+        target = self.choose_next_target(intake)
+        return self.target_to_intent(target)
+
+    def _evaluate_all_required_rule(self, intake, rule):
+        required_targets = rule.get("required_targets", [])
+
+        if rule.get("require_all_critical", False):
+            critical_resolved = all(
+                self._is_target_resolved(intake, target)
+                for target in self.critical_followups
+            )
+
+            if not critical_resolved:
+                return False
+
+        return all(
+            self._is_target_resolved(intake, target)
+            for target in required_targets
+        )
+
+    def _evaluate_characterization_threshold_rule(self, intake, rule):
+        if rule.get("require_all_critical", False):
+            critical_resolved = all(
+                self._is_target_resolved(intake, target)
+                for target in self.critical_followups
+            )
+
+            if not critical_resolved:
+                return False
+
+        required_characterization_targets = rule.get(
+            "required_characterization_targets",
+            [],
+        )
+        min_required_characterization_count = rule.get(
+            "min_required_characterization_count",
+            len(required_characterization_targets),
+        )
+
+        characterization_resolved_count = sum(
+            1
+            for target in required_characterization_targets
             if self._is_target_resolved(intake, target)
         )
 
+        return characterization_resolved_count >= min_required_characterization_count
+
     def is_ready_to_wrap_up(self, intake):
-        return False
+        """
+        Generic wrap-up evaluator driven entirely by policy data.
+        """
+        rule = self.wrap_up_rule or {}
 
-    def choose_next_target(self, intake):
-        if self.has_urgent_flag(intake):
-            return "recommend_immediate_attention"
+        rule_type = rule.get("type", "all_required")
 
-        if self.is_ready_to_wrap_up(intake):
-            return None
+        if rule_type == "all_required":
+            return self._evaluate_all_required_rule(intake, rule)
 
-        for field in self.critical_followups:
-            if not self._is_target_resolved(intake, field):
-                state_path = self.target_to_state_path(field)
-                value = self.get_field_value(intake, state_path)
-                if self.is_missing(value):
-                    return field
+        if rule_type == "characterization_threshold":
+            return self._evaluate_characterization_threshold_rule(intake, rule)
 
-        for field in self.must_characterize:
-            state_path = self.target_to_state_path(field)
-            value = self.get_field_value(intake, state_path)
-            if self.is_missing(value):
-                return field
-
-        for field in self.high_priority_followups:
-            if not self._is_target_resolved(intake, field):
-                state_path = self.target_to_state_path(field)
-                value = self.get_field_value(intake, state_path)
-                if self.is_missing(value):
-                    return field
-
-        return None
-
-    def target_to_intent(self, target):
-        spec = TARGET_SPECS.get(target)
-        if spec is not None:
-            return spec["intent"]
-
-        if target == "recommend_immediate_attention":
-            return "recommend_immediate_attention"
-
-        return None
+        raise ValueError(
+            f"Unsupported wrap_up_rule type '{rule_type}' for policy '{self.policy_name}'"
+        )

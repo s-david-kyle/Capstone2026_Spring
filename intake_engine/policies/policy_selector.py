@@ -1,11 +1,13 @@
-from intake_engine.policies.complaint_policies import HeadachePolicy, ChestPainPolicy
 from intake_engine.policies.base_complaint_policy import BaseComplaintPolicy
+from intake_engine.policies.complaint_policies import get_all_policy_dicts, get_policy_dict
 
 
-class GenericPolicy(BaseComplaintPolicy):
-    policy_name = "generic"
-
-    must_characterize = [
+GENERIC_POLICY = {
+    "policy_name": "generic",
+    "display_name": "Generic",
+    "aliases": [],
+    "critical_followups": [],
+    "must_characterize": [
         "onset",
         "location",
         "duration",
@@ -16,24 +18,25 @@ class GenericPolicy(BaseComplaintPolicy):
         "aggravating_factors",
         "relieving_factors",
         "associated_symptoms",
-    ]
-
-    high_priority_followups = [
+    ],
+    "high_priority_followups": [
         "medications",
         "allergies",
-    ]
-
-
-POLICY_REGISTRY = [
-    {
-        "policy_class": HeadachePolicy,
-        "match_terms": ["headache", "migraine", "head pain"],
+    ],
+    "red_flags": [],
+    "wrap_up_rule": {
+        "type": "characterization_threshold",
+        "require_all_critical": False,
+        "required_characterization_targets": [
+            "onset",
+            "location",
+            "duration",
+            "severity",
+            "associated_symptoms",
+        ],
+        "min_required_characterization_count": 3,
     },
-    {
-        "policy_class": ChestPainPolicy,
-        "match_terms": ["chest pain", "chest pressure", "chest tightness"],
-    },
-]
+}
 
 
 def _normalize_complaint(chief_complaint):
@@ -43,8 +46,24 @@ def _normalize_complaint(chief_complaint):
 def get_policy_for_complaint(chief_complaint):
     complaint = _normalize_complaint(chief_complaint)
 
-    for entry in POLICY_REGISTRY:
-        if any(term in complaint for term in entry["match_terms"]):
-            return entry["policy_class"]()
+    if not complaint:
+        return BaseComplaintPolicy(GENERIC_POLICY)
 
-    return GenericPolicy()
+    normalized_policy_name = complaint.replace(" ", "_")
+    policy_definition = get_policy_dict(normalized_policy_name)
+
+    if policy_definition is not None:
+        return BaseComplaintPolicy(policy_definition)
+
+    all_policies = get_all_policy_dicts()
+
+    for policy_definition in all_policies.values():
+        aliases = [alias.lower() for alias in policy_definition.get("aliases", [])]
+
+        if complaint in aliases:
+            return BaseComplaintPolicy(policy_definition)
+
+        if any(alias in complaint for alias in aliases):
+            return BaseComplaintPolicy(policy_definition)
+
+    return BaseComplaintPolicy(GENERIC_POLICY)
