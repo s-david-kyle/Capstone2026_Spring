@@ -12,7 +12,7 @@ from config import MODEL
 # team libraries
 from db_read import get_conversations, get_system_symptom_df
 from knowledge_graph import convert_df_to_kg
-from db_write import push_kg_to_db
+from db_write import push_kg_to_db, push_ranking_to_db
 
 # external data needed for MTS dialogue doctor conversation mimic
 mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv')
@@ -528,6 +528,62 @@ def form_system_question(session_id, turn_number, symptom):
     except Exception as e:
         response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
     return response
+
+def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
+    # query DB with session_id, turn_number
+    df = get_system_symptom_df(session_id, turn_number)
+    print('drilldown symptom:', df)
+    # pull unique systems
+    systems = df['system'].unique().tolist()
+    systems_str = ", ".join(systems)
+    # TODO: add code to narrow down KG systems
+    try:
+        system_instruction = {
+            "role": "system",
+            "content": (
+                "You are a clinical intake bot. "
+                f"""Take the following list of biological systems: {systems_str} and 
+                    a patient that has stated: {prompt}, and rank the systems in the
+                    order that they may likely the most affected based on patient statement.
+                """
+                "STRICT RULES: "
+                "The response must be formatted as followed: "
+                "1. Show the ranking number, followed by a colon and then the system"
+                "2. Only include this formatted text in the response"
+                "3. Do not include any notes or explanations"
+                # "6. Be direct and precise."
+            )
+        }
+        response = ollama.chat(model=MODEL, messages=[system_instruction])
+        response = response['message']['content']
+    except Exception as e:
+        response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+    
+    # TODO: parse and log this in the database
+    lines = response.strip().split('\n')
+    data = [] # store rankings here
+    for line in lines:
+        match = re.match(r"(\d+): (.*)", line)
+        if match:
+            # formatting symptom - relation - system
+            rank = int(match.group(1))
+            relationship = match.group(2)
+            data.append({'rank': rank, 'system': relationship})
+    system_rank = pd.DataFrame(data)
+    print('system_rank df:', system_rank)
+    # log rank, system, session_id, turn_number, something to indicate start of drilldown?
+    system_rank['SessionId'] = session_id
+    system_rank['turn_number'] = turn_number + 1 # was decremented before function call
+    system_rank['drilldown_start'] = drilldown_start
+    push_ranking_to_db(system_rank, 'SystemRank', session_id)
+    # TODO: query database if drilldown_start is false, and grab previous answers from patient
+    print(response)
+
+    
+    # indicates symptom_drilldown_start is over
+    drilldown_start = False
+    # need to add extra turn since decremented for this function
+    return 'Working on drilldown message', turn_number + 2, drilldown_start
 
 if __name__ == "__main__":
     pass

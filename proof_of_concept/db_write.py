@@ -280,5 +280,62 @@ def update_post_summary(session_id, post_summary):
     conn.commit()
     conn.close()
 
+def push_ranking_to_db(df, table_name, session, overwrite=False, continue_session=True):
+    """
+    Pushes a pandas DataFrame to a SQLite database, filtering by SessionId
+    and adding only if the data doesn't already exist or overwrite arg set
+    to True.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the knowledge graph data.
+        session (str or int): The SessionId to associate with the data.
+        overwrite (bool, optional): If True, overwrites the existing KnowledgeGraphs table. 
+                                     Defaults to False.
+    
+    Returns:
+        None
+    """
+    # add session to dataframe
+    # df['SessionId'] = session
+
+    conn, cursor = get_connection()
+
+    try:
+        # Check if table_name table exists
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
+        table_exists = cursor.fetchone() is not None
+
+        if not table_exists:
+            # Create the table if it doesn't exist
+            df.to_sql(table_name, conn, if_exists='replace', index=False)
+            print(f"Table '{table_name}' created successfully.")
+        else:
+            # Filter the DataFrame by SessionId and check for duplicates
+            existing_data = pd.read_sql_query(f"SELECT * FROM {table_name} WHERE SessionId = '{df['SessionId'].iloc[0]}';", conn)
+            if existing_data.empty or continue_session == True:
+                # Add the DataFrame to the database if no duplicates are found
+                df.to_sql(table_name, conn, if_exists='append', index=False)
+                print(f"DataFrame added to table {table_name}.")
+            # check for overwrite flag
+            elif overwrite:
+                print('overwriting kg')
+                # wipe out data then push
+                sql_query = f"""DELETE 
+                            FROM {table_name}
+                            WHERE SessionId = '{session}';
+                            """
+                cursor.execute(sql_query)
+                conn.commit()
+                df.to_sql(table_name, conn, if_exists='append', index=False)
+
+            else:
+                print(f"Data with SessionId '{df['SessionId'].iloc[0]}' already exists in table {table_name}.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+        conn.close()
+
 if __name__ == '__main__':
     pass
