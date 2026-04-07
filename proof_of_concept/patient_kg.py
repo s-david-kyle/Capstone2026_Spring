@@ -183,6 +183,7 @@ if prompt:
             # response = get_llm_response(st.session_state.messages)
             status.update(label="Response ready!", state="complete", expanded=False)
     else:
+        # drilldown on symptom
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # pull most recent symptom into this function calls

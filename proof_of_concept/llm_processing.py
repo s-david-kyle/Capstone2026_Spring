@@ -536,62 +536,96 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
     # pull unique systems
     systems = df['system'].unique().tolist()
     systems_str = ", ".join(systems)
-    # TODO: add code to narrow down KG systems
-    try:
-        system_instruction = {
-            "role": "system",
-            "content": (
-                "You are a clinical intake bot. "
-                f"""Take the following list of biological systems: {systems_str} and 
-                    a patient that has stated: {prompt}, and rank the systems in the
-                    order that they may likely the most affected based on patient statement.
-                """
-                "STRICT RULES: "
-                "The response must be formatted as followed: "
-                "1. Show the ranking number, followed by a colon and then the system"
-                "2. Only include this formatted text in the response"
-                "3. Do not include any notes or explanations"
-                # "6. Be direct and precise."
-            )
-        }
-        response = ollama.chat(model=MODEL, messages=[system_instruction])
-        response = response['message']['content']
-    except Exception as e:
-        response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
-    
-    # parse and log rankings in the database
-    lines = response.strip().split('\n')
-    data = [] # store rankings here
-    for line in lines:
-        match = re.match(r"(\d+): (.*)", line)
-        if match:
-            # formatting symptom - relation - system
-            rank = int(match.group(1))
-            relationship = match.group(2)
-            data.append({'rank': rank, 'system': relationship})
-    system_rank = pd.DataFrame(data)
-    print('system_rank df:', system_rank)
-    # log rank, system, session_id, turn_number, something to indicate start of drilldown?
-    system_rank['SessionId'] = session_id
-    system_rank['turn_number'] = turn_number + 1 # was decremented before function call
-    system_rank['drilldown_start'] = drilldown_start
-    push_ranking_to_db(system_rank, 'SystemRank', session_id)
-    # TODO: push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
-    symptom_system_kg = get_system_symptom_df(session_id, turn_number)
-    symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
-    push_kg_to_db(symptom_system_kg, 
-                  session_id, 
-                  'SymptomSystemKG', 
-                  overwrite=False,
-                  continue_session=True)
-    # TODO: query database if drilldown_start is false, and grab previous answers from patient
-    print(response)
+    # branch here if drilldown_start is false (will want all conversations from start)
+    if drilldown_start:
+        # code to rank KG systems
+        try:
+            system_instruction = {
+                "role": "system",
+                "content": (
+                    "You are a clinical intake bot. "
+                    f"""Take the following list of biological systems: {systems_str} and 
+                        a patient that has stated: {prompt}, and rank the systems in the
+                        order that they may likely the most affected based on patient statement.
+                    """
+                    "STRICT RULES: "
+                    "The response must be formatted as followed: "
+                    "1. Show the ranking number, followed by a colon and then the system"
+                    "2. Only include this formatted text in the response"
+                    "3. Do not include any notes or explanations"
+                )
+            }
+            response = ollama.chat(model=MODEL, messages=[system_instruction])
+            response = response['message']['content']
+        except Exception as e:
+            response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+        
+        # parse and log rankings in the database
+        lines = response.strip().split('\n')
+        data = [] # store rankings here
+        for line in lines:
+            match = re.match(r"(\d+): (.*)", line)
+            if match:
+                # formatting symptom - relation - system
+                rank = int(match.group(1))
+                relationship = match.group(2)
+                data.append({'rank': rank, 'system': relationship})
+        system_rank = pd.DataFrame(data)
+        print('system_rank df:', system_rank)
+        
+        # log rank, system, session_id, turn_number, something to indicate start of drilldown
+        system_rank['SessionId'] = session_id
+        system_rank['turn_number'] = turn_number + 1 # was decremented before function call
+        system_rank['drilldown_start'] = drilldown_start
+        push_ranking_to_db(system_rank, 'SystemRank', session_id)
+        
+        # push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
+        symptom_system_kg = get_system_symptom_df(session_id, turn_number)
+        symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
+        push_kg_to_db(symptom_system_kg, 
+                    session_id, 
+                    'SymptomSystemKG', 
+                    overwrite=False,
+                    continue_session=True)
+        # ask next question, factoring in prompt and list of systems
+        try:
+            system_instruction = {
+                "role": "system",
+                "content": (
+                    "You are a clinical intake bot. "
+                    f"""Take the following list of biological systems: {systems_str} and 
+                        form a question that narrows down which system to focus on for a 
+                        patient with a symptom of {symptom} who has said: {prompt}
+                    """
+                    "STRICT RULES: "
+                    "1. Ask only ONE question at a time. "
+                    "2. Keep responses under 15 words. "
+                    "3. Make sure language is easily understandable and non-threatening. "
+                    "4. Refer to biological systems in layman's terms that anyone could understand. "
+                    "5. Assume the patient cannot describe the systems themselves, and refer to something they may feel or see. "
+                    "6. No pleasantries or small talk. "
+                    # "6. Be direct and precise."
+                )
+            }
+            response = ollama.chat(model=MODEL, messages=[system_instruction])
+            response = response['message']['content']
+        except Exception as e:
+            response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+    else:
+        # TODO: query database if drilldown_start is false, and grab previous answers from patient
+        # start from turn where drilldown start is true (first true since current turn)
+        # TODO: have it rank systems again and log into database
+        # TODO: pull rank 1 systems for all previous rankings
+        # TODO: check if there are 3 matches for rank 1 system, if so decide on that system, turn off system drill down 
+        # TODO: generate next question to drill down on symptom
+        response = 'Drilldown continued response forthcoming'
+    # print(response)
 
     
     # indicates symptom_drilldown_start is over
     drilldown_start = False
     # need to add extra turn since decremented for this function
-    return 'Working on drilldown message', turn_number + 2, drilldown_start
+    return response, turn_number + 2, drilldown_start
 
 if __name__ == "__main__":
     pass
