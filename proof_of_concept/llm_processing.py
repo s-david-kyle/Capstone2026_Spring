@@ -559,7 +559,7 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
     except Exception as e:
         response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
     
-    # TODO: parse and log this in the database
+    # parse and log rankings in the database
     lines = response.strip().split('\n')
     data = [] # store rankings here
     for line in lines:
@@ -576,6 +576,14 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
     system_rank['turn_number'] = turn_number + 1 # was decremented before function call
     system_rank['drilldown_start'] = drilldown_start
     push_ranking_to_db(system_rank, 'SystemRank', session_id)
+    # TODO: push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
+    symptom_system_kg = get_system_symptom_df(session_id, turn_number)
+    symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
+    push_kg_to_db(symptom_system_kg, 
+                  session_id, 
+                  'SymptomSystemKG', 
+                  overwrite=False,
+                  continue_session=True)
     # TODO: query database if drilldown_start is false, and grab previous answers from patient
     print(response)
 

@@ -15,7 +15,8 @@ from db_read import (get_session_ids, get_conversations,
                      get_conversation_kg,
                      filter_conversation_kg,
                      retreive_system_symptom_kg,
-                     get_turns)
+                     get_turns,
+                     get_rankings)
 from db_write import (push_kg_to_db, update_post_summary)
 from knowledge_graph import (convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
@@ -172,6 +173,10 @@ symptom_system_graph.show(overview=False)
 
 # st.sidebar.write("Selected Edges: ", ", ".join(str(edge["id"]) for edge in selected_edges))
 # st.sidebar.write("Selected Nodes: ", ", ".join(str(node["properties"]["label"]) for node in selected_nodes))
+
+st.write('#### System Rankings Based on Patient Statements')
+rankings = get_rankings(selected_session, selected_turn)
+st.dataframe(rankings)
 
 # TODO: try implmenting this search functionality later
 # if node selected, run another UMLS query and refresh
