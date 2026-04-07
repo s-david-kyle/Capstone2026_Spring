@@ -692,4 +692,17 @@ TARGET_SPECS = {
             'If specific numbness or tingling symptoms are mentioned, also copy them into append_fields under "hpi.associated_symptoms" and "pertinent_positives".'
         ),
     },
+    "chest_pain": {
+        "intent": "ask_chest_pain",
+        "state_path": "policy_answers.chest_pain",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had chest pain with the dizziness?",
+        "question_instruction": (
+            "Ask whether the patient has had chest pain with the dizziness."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.chest_pain".'
+        ),
+    },
 }

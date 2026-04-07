@@ -150,10 +150,36 @@ def extract_yes_no_unknown(text):
     if answer in no_terms:
         return False
 
-    if "yes" in answer:
+    negative_starts = [
+        "no ",
+        "denies ",
+        "deny ",
+        "without ",
+        "not ",
+    ]
+
+    affirmative_starts = [
+        "yes ",
+        "yeah ",
+        "yep ",
+        "i have ",
+        "i am ",
+        "i'm ",
+        "have had ",
+    ]
+
+    for prefix in negative_starts:
+        if answer.startswith(prefix):
+            return False
+
+    for prefix in affirmative_starts:
+        if answer.startswith(prefix):
+            return True
+
+    if " yes " in f" {answer} ":
         return True
 
-    if "no" in answer:
+    if " no " in f" {answer} ":
         return False
 
     return None

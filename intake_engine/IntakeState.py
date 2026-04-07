@@ -371,32 +371,41 @@ class IntakeState:
     def _postprocess_llm_update_for_intent(self, intent, patient_answer, applied_update):
         yes_no_value = extract_yes_no_unknown(patient_answer)
 
-        semantic_yes_no_targets = {
-            "ask_neurologic_symptoms": "policy_answers.neurologic_symptoms",
-            "ask_visual_changes": "policy_answers.visual_changes",
-            "ask_confusion_or_ams": "policy_answers.confusion_or_ams",
-            "ask_fever_or_neck_stiffness": "policy_answers.fever_or_neck_stiffness",
-            "ask_head_trauma": "policy_answers.head_trauma",
-            "ask_pregnancy_or_postpartum_context": "policy_answers.pregnancy_or_postpartum_context",
-            "ask_shortness_of_breath": "policy_answers.shortness_of_breath",
-            "ask_syncope_or_presyncope": "policy_answers.syncope_or_presyncope",
-            "ask_rapid_worsening": "policy_answers.rapid_worsening",
-        }
+        target = self._intent_to_target(intent)
 
-        if intent in semantic_yes_no_targets and yes_no_value is not None:
-            applied_update.setdefault("set_fields", {})
-            applied_update["set_fields"][semantic_yes_no_targets[intent]] = yes_no_value
+        if target is not None:
+            from intake_engine.policies.target_specs import TARGET_SPECS
 
-            if intent == "ask_neurologic_symptoms" and yes_no_value is False:
+            spec = TARGET_SPECS.get(target, {})
+            state_path = spec.get("state_path")
+            fallback_parse_mode = spec.get("fallback_parse_mode")
+            default_update_mode = spec.get("default_update_mode", "set")
+
+            if (
+                yes_no_value is not None
+                and fallback_parse_mode == "yes_no"
+                and state_path is not None
+            ):
+                applied_update.setdefault("set_fields", {})
+                applied_update.setdefault("append_fields", {})
+
+                if default_update_mode == "append":
+                    applied_update["append_fields"][state_path] = [yes_no_value]
+                else:
+                    applied_update["set_fields"][state_path] = yes_no_value
+
+        if intent == "ask_neurologic_symptoms":
+            if yes_no_value is False:
+                applied_update.setdefault("set_fields", {})
+                applied_update["set_fields"]["policy_answers.neurologic_symptoms"] = False
                 applied_update["set_fields"]["policy_answers.neurologic_symptom_terms"] = []
 
                 applied_update.setdefault("append_fields", {})
                 if "pertinent_positives" in applied_update["append_fields"]:
                     applied_update["append_fields"]["pertinent_positives"] = []
 
-            return applied_update
+                return applied_update
 
-        if intent == "ask_neurologic_symptoms":
             if answer_is_explicit_neurologic_negation(patient_answer):
                 applied_update.setdefault("set_fields", {})
                 applied_update["set_fields"]["policy_answers.neurologic_symptoms"] = False

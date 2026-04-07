@@ -87,6 +87,7 @@ INTAKE_TEMPLATE = {
         "bowel_or_bladder_changes": None,
         "recent_heavy_lifting": None,
         "numbness_or_tingling": None,
+        "chest_pain": None,
     },
     "conversation_meta": {
         "visit_id": None,
