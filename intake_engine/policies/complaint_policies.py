@@ -117,9 +117,288 @@ CHEST_PAIN_POLICY = {
 }
 
 
+ABDOMINAL_PAIN_POLICY = {
+    "policy_name": "abdominal_pain",
+    "display_name": "Abdominal Pain",
+    "aliases": [
+        "abdominal pain",
+        "stomach pain",
+        "belly pain",
+        "stomach ache",
+    ],
+    "critical_followups": [
+        "vomiting",
+        "fever",
+        "bloody_stool_or_melena",
+        "pregnancy_or_postpartum_context",
+        "syncope_or_presyncope",
+    ],
+    "must_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "timing",
+        "course",
+        "location",
+        "character",
+        "aggravating_factors",
+        "relieving_factors",
+        "associated_symptoms",
+    ],
+    "high_priority_followups": [
+        "medications",
+        "allergies",
+        "nausea",
+        "diarrhea",
+        "constipation",
+        "urinary_symptoms",
+        "last_oral_intake",
+    ],
+    "red_flags": [
+        "persistent_vomiting",
+        "blood_in_stool",
+        "pregnancy_related_abdominal_pain",
+        "severe_abdominal_pain_with_syncope",
+        "fever_with_abdominal_pain",
+    ],
+    "wrap_up_rule": {
+        "type": "characterization_threshold",
+        "require_all_critical": True,
+        "required_characterization_targets": [
+            "onset",
+            "duration",
+            "severity",
+            "location",
+            "associated_symptoms",
+        ],
+        "min_required_characterization_count": 4,
+    },
+}
+
+
+SHORTNESS_OF_BREATH_POLICY = {
+    "policy_name": "shortness_of_breath",
+    "display_name": "Shortness of Breath",
+    "aliases": [
+        "shortness of breath",
+        "sob",
+        "trouble breathing",
+        "breathing difficulty",
+    ],
+    "critical_followups": [
+        "chest_pain",
+        "rapid_worsening",
+        "syncope_or_presyncope",
+        "fever",
+        "wheezing",
+    ],
+    "must_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "timing",
+        "course",
+        "aggravating_factors",
+        "relieving_factors",
+        "associated_symptoms",
+    ],
+    "high_priority_followups": [
+        "medications",
+        "allergies",
+        "cough",
+        "orthopnea",
+        "leg_swelling",
+        "exertional_component",
+    ],
+    "red_flags": [
+        "active_breathing_difficulty",
+        "shortness_of_breath_with_chest_pain",
+        "shortness_of_breath_with_syncope",
+        "rapidly_worsening_breathing",
+    ],
+    "wrap_up_rule": {
+        "type": "characterization_threshold",
+        "require_all_critical": True,
+        "required_characterization_targets": [
+            "onset",
+            "duration",
+            "severity",
+            "associated_symptoms",
+        ],
+        "min_required_characterization_count": 4,
+    },
+}
+
+
+DIZZINESS_POLICY = {
+    "policy_name": "dizziness",
+    "display_name": "Dizziness",
+    "aliases": [
+        "dizziness",
+        "lightheadedness",
+        "feeling faint",
+        "vertigo",
+    ],
+    "critical_followups": [
+        "syncope_or_presyncope",
+        "neurologic_symptoms",
+        "chest_pain",
+        "shortness_of_breath",
+        "head_trauma",
+    ],
+    "must_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "timing",
+        "course",
+        "aggravating_factors",
+        "relieving_factors",
+        "associated_symptoms",
+    ],
+    "high_priority_followups": [
+        "medications",
+        "allergies",
+        "visual_changes",
+        "palpitations",
+        "positional_component",
+        "nausea",
+    ],
+    "red_flags": [
+        "dizziness_with_syncope",
+        "dizziness_with_neurologic_deficit",
+        "dizziness_with_chest_pain",
+        "post_traumatic_dizziness",
+    ],
+    "wrap_up_rule": {
+        "type": "characterization_threshold",
+        "require_all_critical": True,
+        "required_characterization_targets": [
+            "onset",
+            "duration",
+            "severity",
+            "associated_symptoms",
+        ],
+        "min_required_characterization_count": 4,
+    },
+}
+
+
+SORE_THROAT_POLICY = {
+    "policy_name": "sore_throat",
+    "display_name": "Sore Throat",
+    "aliases": [
+        "sore throat",
+        "throat pain",
+        "scratchy throat",
+    ],
+    "critical_followups": [
+        "shortness_of_breath",
+        "trouble_swallowing",
+        "drooling",
+        "fever",
+    ],
+    "must_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "timing",
+        "course",
+        "character",
+        "aggravating_factors",
+        "relieving_factors",
+        "associated_symptoms",
+    ],
+    "high_priority_followups": [
+        "medications",
+        "allergies",
+        "cough",
+        "voice_change",
+        "sick_contacts",
+    ],
+    "red_flags": [
+        "airway_compromise_symptoms",
+        "severe_trouble_swallowing",
+        "drooling_with_sore_throat",
+        "fever_with_worsening_throat_pain",
+    ],
+    "wrap_up_rule": {
+        "type": "characterization_threshold",
+        "require_all_critical": True,
+        "required_characterization_targets": [
+            "onset",
+            "duration",
+            "severity",
+            "associated_symptoms",
+        ],
+        "min_required_characterization_count": 4,
+    },
+}
+
+
+BACK_PAIN_POLICY = {
+    "policy_name": "back_pain",
+    "display_name": "Back Pain",
+    "aliases": [
+        "back pain",
+        "low back pain",
+        "upper back pain",
+    ],
+    "critical_followups": [
+        "neurologic_symptoms",
+        "bowel_or_bladder_changes",
+        "fever",
+        "head_trauma",
+        "rapid_worsening",
+    ],
+    "must_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "timing",
+        "course",
+        "location",
+        "character",
+        "aggravating_factors",
+        "relieving_factors",
+        "associated_symptoms",
+    ],
+    "high_priority_followups": [
+        "medications",
+        "allergies",
+        "radiation",
+        "recent_heavy_lifting",
+        "numbness_or_tingling",
+    ],
+    "red_flags": [
+        "back_pain_with_neurologic_deficit",
+        "back_pain_with_bowel_or_bladder_changes",
+        "fever_with_back_pain",
+        "post_traumatic_back_pain",
+    ],
+    "wrap_up_rule": {
+        "type": "characterization_threshold",
+        "require_all_critical": True,
+        "required_characterization_targets": [
+            "onset",
+            "duration",
+            "severity",
+            "location",
+            "associated_symptoms",
+        ],
+        "min_required_characterization_count": 4,
+    },
+}
+
+
 COMPLAINT_POLICIES = {
     "headache": HEADACHE_POLICY,
     "chest_pain": CHEST_PAIN_POLICY,
+    "abdominal_pain": ABDOMINAL_PAIN_POLICY,
+    "shortness_of_breath": SHORTNESS_OF_BREATH_POLICY,
+    "dizziness": DIZZINESS_POLICY,
+    "sore_throat": SORE_THROAT_POLICY,
+    "back_pain": BACK_PAIN_POLICY,
 }
 
 

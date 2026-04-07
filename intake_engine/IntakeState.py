@@ -1,165 +1,26 @@
 from copy import deepcopy
 
-from intake_engine.policies.policy_selector import get_policy_for_complaint
-
-
-OVERRIDE_RULES = [
-    {
-        "name": "user_requested_stop",
-        "intent": "end_intake_early",
-        "target": None,
-        "source": "global_override",
-        "requires_user_requested_stop": True,
-    },
-    {
-        "name": "natural_intake_finished",
-        "intent": "end_intake_naturally",
-        "target": None,
-        "source": "global_override",
-        "requires_natural_completion": True,
-    },
-    {
-        "name": "immediate_attention_from_acuity",
-        "intent": "recommend_immediate_attention",
-        "target": None,
-        "source": "global_override",
-        "requires_any_acuity_signals": [
-            "active_breathing_difficulty",
-            "syncope_or_presyncope",
-        ],
-    },
-    {
-        "name": "high_risk_chest_pain_flag",
-        "intent": "escalate_high_risk_chest_pain",
-        "target": None,
-        "source": "global_override",
-        "requires_any_flags": [
-            "chest_pain_with_shortness_of_breath",
-        ],
-    },
-    {
-        "name": "severe_symptom_safety_check",
-        "intent": "ask_immediate_safety_check",
-        "target": None,
-        "source": "global_override",
-        "requires_any_flags": [
-            "severe_symptom_intensity",
-        ],
-        "requires_chief_complaint": True,
-    },
-    {
-        "name": "entry_question",
-        "intent": "ask_main_reason_for_visit",
-        "target": None,
-        "source": "global_override",
-        "requires_missing_chief_complaint": True,
-    },
-]
+from intake_engine.state.routing import determine_next_step
+from intake_engine.state.rule_based_parser import (
+    answer_is_explicit_neurologic_negation,
+    build_update_from_answer,
+    extract_escalation_signals,
+    extract_neurologic_symptom_terms,
+    extract_yes_no_unknown,
+    intent_to_target,
+)
+from intake_engine.state.templates import FACET_ORDER, INTAKE_TEMPLATE, make_empty_intake
 
 
 class IntakeState:
-    facet_order = [
-        "chief_complaint_primary",
-        "other_concerns",
-        "hpi",
-        "pertinent_positives",
-        "pertinent_negatives",
-        "pmh_psh",
-        "medications",
-        "allergies",
-        "social_factors",
-        "missing_clarifications",
-        "flags",
-    ]
-
-    intake_template = {
-        "chief_complaint_primary": None,
-        "other_concerns": [],
-        "hpi": {
-            "summary": None,
-            "onset": None,
-            "location": None,
-            "duration": None,
-            "timing": None,
-            "course": None,
-            "character": None,
-            "severity": None,
-            "aggravating_factors": [],
-            "relieving_factors": [],
-            "associated_symptoms": [],
-            "context": None,
-        },
-        "pertinent_positives": [],
-        "pertinent_negatives": [],
-        "pmh_psh": {
-            "past_medical_history": [],
-            "past_surgical_history": [],
-        },
-        "medications": [],
-        "allergies": [],
-        "social_factors": [],
-        "missing_clarifications": [],
-        "flags": [],
-        "policy_answers": {
-            "sudden_severe_onset": None,
-            "neurologic_symptoms": None,
-            "neurologic_symptom_terms": [],
-            "visual_changes": None,
-            "confusion_or_ams": None,
-            "fever_or_neck_stiffness": None,
-            "head_trauma": None,
-            "pregnancy_or_postpartum_context": None,
-            "photophobia": None,
-            "phonophobia": None,
-            "nausea_or_vomiting": None,
-            "aura_features": [],
-            "exertional_trigger": None,
-            "positional_component": None,
-            "new_or_progressive_pattern": None,
-            "medication_overuse_context": None,
-            "shortness_of_breath": None,
-            "syncope_or_presyncope": None,
-            "rapid_worsening": None,
-            "radiation": [],
-            "nausea": None,
-            "diaphoresis": None,
-            "exertional_component": None,
-        },
-        "conversation_meta": {
-            "visit_id": None,
-            "turn_count": 0,
-            "language": "en",
-            "acuity_signal": [],
-            "intake_complete": False,
-            "last_question_intent": None,
-            "last_question_target": None,
-            "last_question_text": None,
-            "last_answer_status": None,
-            "user_requested_stop": False,
-            "early_exit_reason": None,
-            "natural_completion_ready": False,
-            "question_status": {},
-            "transcript": [],
-        },
-        "derived_outputs": {
-            "patient_friendly_summary": None,
-            "clinical_handoff_summary": None,
-        },
-        "future_context": {
-            "ehr_data": None,
-            "prior_encounters": None,
-            "problem_list": None,
-            "recent_labs": None,
-            "recent_imaging": None,
-            "external_documents": None,
-        },
-    }
+    facet_order = FACET_ORDER
+    intake_template = INTAKE_TEMPLATE
 
     def __init__(self, data = None):
-        self.data = deepcopy(data) if data is not None else deepcopy(self.intake_template)
+        self.data = deepcopy(data) if data is not None else make_empty_intake()
 
     def reset(self):
-        self.data = deepcopy(self.intake_template)
+        self.data = make_empty_intake()
         return self
 
     def to_dict(self):
@@ -305,88 +166,8 @@ class IntakeState:
         self._append_unique(self.data["flags"], detected_flags)
         return self
 
-    def _override_rule_matches(self, rule):
-        chief_complaint = self.data["chief_complaint_primary"]
-        flags = set(self.data["flags"])
-        acuity_signals = set(self.data["conversation_meta"]["acuity_signal"])
-
-        required_flags = set(rule.get("requires_any_flags", []))
-        required_acuity_signals = set(rule.get("requires_any_acuity_signals", []))
-
-        if rule.get("requires_user_requested_stop"):
-            if not self.data["conversation_meta"].get("user_requested_stop", False):
-                return False
-
-        if rule.get("requires_natural_completion"):
-            if not self.data["conversation_meta"].get("natural_completion_ready", False):
-                return False
-
-        if required_flags and not (flags & required_flags):
-            return False
-
-        if required_acuity_signals and not (acuity_signals & required_acuity_signals):
-            return False
-
-        if rule.get("requires_chief_complaint") and not chief_complaint:
-            return False
-
-        if rule.get("requires_missing_chief_complaint") and chief_complaint:
-            return False
-
-        return True
-
-    def _choose_global_override_step(self):
-        for rule in OVERRIDE_RULES:
-            if self._override_rule_matches(rule):
-                return {
-                    "intent": rule["intent"],
-                    "target": rule.get("target"),
-                    "source": rule.get("source", "global_override"),
-                    "rule_name": rule["name"],
-                }
-
-        return None
-
-    def _choose_policy_step(self):
-        chief_complaint = self.data["chief_complaint_primary"]
-
-        if not chief_complaint:
-            return None
-
-        policy = get_policy_for_complaint(chief_complaint)
-        target = policy.choose_next_target(self.to_dict())
-        intent = policy.target_to_intent(target)
-
-        return {
-            "intent": intent,
-            "target": target,
-            "policy_name": getattr(policy, "policy_name", None),
-        }
-
     def determine_next_step(self):
-        override_step = self._choose_global_override_step()
-
-        if override_step is not None:
-            return {
-                "intent": override_step["intent"],
-                "target": override_step["target"],
-                "source": override_step["source"],
-            }
-
-        policy_step = self._choose_policy_step()
-
-        if policy_step is not None and policy_step["intent"] is not None:
-            return {
-                "intent": policy_step["intent"],
-                "target": policy_step["target"],
-                "source": "policy",
-            }
-
-        return {
-            "intent": "summarize_and_check_for_anything_else",
-            "target": None,
-            "source": "wrap_up",
-        }
+        return determine_next_step(self.data, self.to_dict)
 
     def update_completion_status(self):
         next_step = self.determine_next_step()
@@ -404,10 +185,6 @@ class IntakeState:
         return self.determine_next_step()["intent"]
 
     def render_question_for_intent(self, intent):
-        """
-        Deterministic fallback rendering for urgent, entry, and generic prompts.
-        Normal intake questions should usually come from the LLM question generator.
-        """
         if intent == "recommend_immediate_attention":
             return (
                 "Your answers suggest this may need immediate medical attention. "
@@ -485,242 +262,6 @@ class IntakeState:
             "target": target,
             "question": question,
         }
-
-    def _normalize_chief_complaint(self, text):
-        complaint = text.strip().lower()
-
-        prefixes = [
-            "i have ",
-            "i'm having ",
-            "i am having ",
-            "i've been having ",
-            "ive been having ",
-            "my ",
-            "it is ",
-            "it's ",
-        ]
-
-        for prefix in prefixes:
-            if complaint.startswith(prefix):
-                complaint = complaint[len(prefix):].strip()
-                break
-
-        for article in ["a ", "an "]:
-            if complaint.startswith(article):
-                complaint = complaint[len(article):].strip()
-
-        complaint = complaint.rstrip(" .,!?:;")
-
-        return complaint
-
-    def _split_free_text_list(self, text):
-        normalized = text.strip().lower()
-        normalized = normalized.replace(", and ", ", ")
-        normalized = normalized.replace(" and ", ", ")
-
-        parts = [part.strip() for part in normalized.split(",")]
-        cleaned_parts = []
-
-        for part in parts:
-            if part.startswith("and "):
-                part = part[4:].strip()
-
-            if part:
-                cleaned_parts.append(part)
-
-        return cleaned_parts
-
-    def _extract_severity(self, text):
-        answer = text.strip().lower()
-
-        for value in range(11):
-            if f"{value}/10" in answer:
-                return f"{value}/10"
-            if f"{value} out of 10" in answer:
-                return f"{value}/10"
-
-        tokens = answer.replace(",", " ").split()
-        for token in tokens:
-            if token.isdigit():
-                numeric_value = int(token)
-                if 0 <= numeric_value <= 10:
-                    return f"{numeric_value}/10"
-
-        return text.strip()
-
-    def _extract_duration(self, text):
-        answer = text.strip().lower()
-
-        replacements = {
-            "an hour": "1 hour",
-            "a hour": "1 hour",
-            "a day": "1 day",
-            "a week": "1 week",
-            "a month": "1 month",
-        }
-
-        for old, new in replacements.items():
-            answer = answer.replace(old, new)
-
-        if answer.startswith("for "):
-            answer = answer[4:].strip()
-
-        return answer
-
-    def _extract_escalation_signals(self, text):
-        answer = text.strip().lower()
-        signals = []
-
-        breathing_terms = [
-            "short of breath",
-            "trouble breathing",
-            "hard to breathe",
-            "can't breathe",
-            "cannot breathe",
-            "breathing is hard",
-        ]
-
-        fainting_terms = [
-            "pass out",
-            "passed out",
-            "faint",
-            "fainted",
-            "lightheaded",
-            "dizzy",
-            "felt like i might pass out",
-        ]
-
-        worsening_terms = [
-            "getting worse",
-            "worse",
-            "much worse",
-            "rapidly worse",
-        ]
-
-        for term in breathing_terms:
-            if term in answer:
-                signals.append("active_breathing_difficulty")
-                break
-
-        for term in fainting_terms:
-            if term in answer:
-                signals.append("syncope_or_presyncope")
-                break
-
-        for term in worsening_terms:
-            if term in answer:
-                signals.append("rapid_worsening")
-                break
-
-        return signals
-
-    def _extract_yes_no_unknown(self, text):
-        answer = text.strip().lower()
-
-        yes_terms = {
-            "yes", "y", "yeah", "yep", "true", "it did", "i did", "definitely"
-        }
-        no_terms = {
-            "no", "n", "nope", "false", "not really", "it did not", "i did not"
-        }
-
-        if answer in yes_terms:
-            return True
-
-        if answer in no_terms:
-            return False
-
-        if "yes" in answer:
-            return True
-
-        if "no" in answer:
-            return False
-
-        return None
-
-    def _extract_neurologic_symptom_terms(self, text):
-        answer = text.strip().lower()
-
-        term_map = {
-            "weakness": ["weak", "weakness"],
-            "numbness": ["numb", "numbness", "tingling"],
-            "trouble_speaking": ["trouble speaking", "slurred speech", "couldn't talk", "difficulty speaking"],
-            "vision_problems": ["vision problems", "blurry vision", "double vision", "vision change", "visual change"],
-            "confusion": ["confused", "confusion"],
-        }
-
-        negation_starts = [
-            "no ",
-            "not ",
-            "denies ",
-            "deny ",
-            "without ",
-        ]
-
-        findings = []
-
-        for label, phrases in term_map.items():
-            positive_found = False
-            negated_found = False
-
-            for phrase in phrases:
-                if phrase in answer:
-                    for neg in negation_starts:
-                        if neg + phrase in answer:
-                            negated_found = True
-
-                    for neg in negation_starts:
-                        for other_phrases in term_map.values():
-                            for other_phrase in other_phrases:
-                                coordinated_pattern = f"{neg}{other_phrase} or {phrase}"
-                                if coordinated_pattern in answer:
-                                    negated_found = True
-
-                    if not negated_found:
-                        positive_found = True
-
-            if positive_found and not negated_found:
-                findings.append(label)
-
-        return findings
-
-    def _answer_is_explicit_neurologic_negation(self, text):
-        answer = text.strip().lower()
-
-        negative_markers = [
-            "no weakness",
-            "no numbness",
-            "no trouble speaking",
-            "no confusion",
-            "no vision changes",
-            "no blurry vision",
-            "no double vision",
-            "denies weakness",
-            "denies numbness",
-            "denies trouble speaking",
-            "denies confusion",
-            "denies vision changes",
-            "without weakness",
-            "without numbness",
-            "without trouble speaking",
-            "without confusion",
-            "without vision changes",
-        ]
-
-        if answer.startswith("no "):
-            return True
-
-        if answer.startswith("denies "):
-            return True
-
-        if answer.startswith("without "):
-            return True
-
-        for marker in negative_markers:
-            if marker in answer:
-                return True
-
-        return False
 
     def _classify_special_answer_status(self, text):
         answer = text.strip().lower()
@@ -828,7 +369,7 @@ class IntakeState:
         return update
 
     def _postprocess_llm_update_for_intent(self, intent, patient_answer, applied_update):
-        yes_no_value = self._extract_yes_no_unknown(patient_answer)
+        yes_no_value = extract_yes_no_unknown(patient_answer)
 
         semantic_yes_no_targets = {
             "ask_neurologic_symptoms": "policy_answers.neurologic_symptoms",
@@ -856,7 +397,7 @@ class IntakeState:
             return applied_update
 
         if intent == "ask_neurologic_symptoms":
-            if self._answer_is_explicit_neurologic_negation(patient_answer):
+            if answer_is_explicit_neurologic_negation(patient_answer):
                 applied_update.setdefault("set_fields", {})
                 applied_update["set_fields"]["policy_answers.neurologic_symptoms"] = False
                 applied_update["set_fields"]["policy_answers.neurologic_symptom_terms"] = []
@@ -868,13 +409,7 @@ class IntakeState:
         return applied_update
 
     def _intent_to_target(self, intent):
-        from intake_engine.policies.target_specs import TARGET_SPECS
-
-        for target, spec in TARGET_SPECS.items():
-            if spec.get("intent") == intent:
-                return target
-
-        return None
+        return intent_to_target(intent)
 
     def _answer_status_to_question_status(self, answer_status):
         mapping = {
@@ -898,114 +433,8 @@ class IntakeState:
 
         self.data["conversation_meta"]["question_status"][target] = question_status
 
-    def _build_generic_update_from_target_spec(self, target, answer):
-        from intake_engine.policies.target_specs import TARGET_SPECS
-
-        spec = TARGET_SPECS.get(target)
-        if spec is None:
-            return None
-
-        state_path = spec.get("state_path")
-        parse_mode = spec.get("fallback_parse_mode", "text")
-        default_update_mode = spec.get("default_update_mode", "set")
-        extra_set_fields = spec.get("extra_set_fields", [])
-        extra_append_fields = spec.get("extra_append_fields", [])
-
-        update = {
-            "set_fields": {},
-            "append_fields": {},
-            "flags_to_add": [],
-            "missing_clarifications_to_add": [],
-        }
-
-        update["set_fields"]["conversation_meta.last_answer_status"] = "answered"
-        update["set_fields"]["conversation_meta.early_exit_reason"] = None
-
-        if parse_mode == "yes_no":
-            value = self._extract_yes_no_unknown(answer)
-
-            if default_update_mode == "append":
-                update["append_fields"][state_path] = [value]
-            else:
-                update["set_fields"][state_path] = value
-
-        elif parse_mode == "list_append":
-            values = self._split_free_text_list(answer) or [answer]
-
-            if default_update_mode == "append":
-                update["append_fields"][state_path] = values
-            else:
-                update["set_fields"][state_path] = values
-
-            for extra_field in extra_append_fields:
-                update["append_fields"][extra_field] = list(values)
-
-        elif parse_mode == "text":
-            value = answer
-
-            if default_update_mode == "append":
-                update["append_fields"][state_path] = [value]
-            else:
-                update["set_fields"][state_path] = value
-
-        elif parse_mode == "special_duration":
-            update["set_fields"][state_path] = self._extract_duration(answer)
-
-        elif parse_mode == "special_severity":
-            update["set_fields"][state_path] = self._extract_severity(answer)
-
-        elif parse_mode == "special_neurologic_symptoms":
-            findings = self._extract_neurologic_symptom_terms(answer)
-            yes_no_value = self._extract_yes_no_unknown(answer)
-
-            update["set_fields"][state_path] = True if findings else yes_no_value
-
-            if "policy_answers.neurologic_symptom_terms" in extra_set_fields:
-                update["set_fields"]["policy_answers.neurologic_symptom_terms"] = findings
-
-            if findings:
-                for extra_field in extra_append_fields:
-                    update["append_fields"][extra_field] = list(findings)
-
-        else:
-            return None
-
-        return update
-
     def build_update_from_answer(self, intent, patient_answer):
-        answer = patient_answer.strip()
-
-        update = {
-            "set_fields": {
-                "conversation_meta.last_answer_status": "answered",
-                "conversation_meta.early_exit_reason": None,
-            },
-            "append_fields": {},
-            "flags_to_add": [],
-            "missing_clarifications_to_add": [],
-        }
-
-        if intent == "ask_main_reason_for_visit":
-            update["set_fields"]["chief_complaint_primary"] = self._normalize_chief_complaint(answer)
-            return update
-
-        if intent in {"escalate_high_risk_chest_pain", "ask_immediate_safety_check"}:
-            signals = self._extract_escalation_signals(answer)
-
-            if signals:
-                update["append_fields"]["conversation_meta.acuity_signal"] = signals
-                update["flags_to_add"] = signals
-
-            update["append_fields"]["pertinent_positives"] = [answer]
-            return update
-
-        target = self._intent_to_target(intent)
-        generic_update = self._build_generic_update_from_target_spec(target, answer)
-
-        if generic_update is not None:
-            return generic_update
-
-        return update
+        return build_update_from_answer(intent, patient_answer)
 
     def _finalize_patient_turn(
         self,

@@ -441,4 +441,255 @@ TARGET_SPECS = {
             'Extract a boolean into set_fields under "policy_answers.exertional_component".'
         ),
     },
+    "vomiting": {
+        "intent": "ask_vomiting",
+        "state_path": "policy_answers.vomiting",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you been vomiting?",
+        "question_instruction": (
+            "Ask whether the patient has been vomiting."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.vomiting".'
+        ),
+    },
+    "fever": {
+        "intent": "ask_fever",
+        "state_path": "policy_answers.fever",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had a fever?",
+        "question_instruction": (
+            "Ask whether the patient has had a fever."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.fever".'
+        ),
+    },
+    "bloody_stool_or_melena": {
+        "intent": "ask_bloody_stool_or_melena",
+        "state_path": "policy_answers.bloody_stool_or_melena",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had blood in your stool or black, tarry stools?",
+        "question_instruction": (
+            "Ask whether the patient has had bloody stool or black, tarry stool."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.bloody_stool_or_melena".'
+        ),
+    },
+    "diarrhea": {
+        "intent": "ask_diarrhea",
+        "state_path": "policy_answers.diarrhea",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had diarrhea?",
+        "question_instruction": (
+            "Ask whether the patient has had diarrhea."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.diarrhea".'
+        ),
+    },
+    "constipation": {
+        "intent": "ask_constipation",
+        "state_path": "policy_answers.constipation",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you been constipated?",
+        "question_instruction": (
+            "Ask whether the patient has been constipated."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.constipation".'
+        ),
+    },
+    "urinary_symptoms": {
+        "intent": "ask_urinary_symptoms",
+        "state_path": "policy_answers.urinary_symptoms",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had urinary symptoms like burning, frequency, urgency, or blood in the urine?",
+        "extra_append_fields": ["hpi.associated_symptoms", "pertinent_positives"],
+        "question_instruction": (
+            "Ask whether the patient has urinary symptoms such as burning, frequency, urgency, or blood in the urine."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.urinary_symptoms". '
+            'If specific urinary symptoms are mentioned, also copy them into append_fields under "hpi.associated_symptoms" and "pertinent_positives".'
+        ),
+    },
+    "last_oral_intake": {
+        "intent": "ask_last_oral_intake",
+        "state_path": "policy_answers.last_oral_intake",
+        "fallback_parse_mode": "text",
+        "question_mode": "deterministic",
+        "question_text": "When did you last eat or drink anything?",
+        "question_instruction": (
+            "Ask when the patient last ate or drank anything."
+        ),
+        "extraction_instruction": (
+            'Extract the last oral intake into set_fields under "policy_answers.last_oral_intake".'
+        ),
+    },
+    "wheezing": {
+        "intent": "ask_wheezing",
+        "state_path": "policy_answers.wheezing",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you been wheezing?",
+        "question_instruction": (
+            "Ask whether the patient has had wheezing."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.wheezing".'
+        ),
+    },
+    "cough": {
+        "intent": "ask_cough",
+        "state_path": "policy_answers.cough",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had a cough?",
+        "question_instruction": (
+            "Ask whether the patient has had a cough."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.cough".'
+        ),
+    },
+    "orthopnea": {
+        "intent": "ask_orthopnea",
+        "state_path": "policy_answers.orthopnea",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Is it harder to breathe when you lie flat?",
+        "question_instruction": (
+            "Ask whether breathing gets worse when lying flat."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.orthopnea".'
+        ),
+    },
+    "leg_swelling": {
+        "intent": "ask_leg_swelling",
+        "state_path": "policy_answers.leg_swelling",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had swelling in your legs?",
+        "question_instruction": (
+            "Ask whether the patient has had leg swelling."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.leg_swelling".'
+        ),
+    },
+    "palpitations": {
+        "intent": "ask_palpitations",
+        "state_path": "policy_answers.palpitations",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you felt your heart racing, pounding, or skipping beats?",
+        "question_instruction": (
+            "Ask whether the patient has had palpitations or felt their heart racing, pounding, or skipping beats."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.palpitations".'
+        ),
+    },
+    "trouble_swallowing": {
+        "intent": "ask_trouble_swallowing",
+        "state_path": "policy_answers.trouble_swallowing",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had trouble swallowing?",
+        "question_instruction": (
+            "Ask whether the patient has had trouble swallowing."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.trouble_swallowing".'
+        ),
+    },
+    "drooling": {
+        "intent": "ask_drooling",
+        "state_path": "policy_answers.drooling",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had drooling or trouble handling your saliva?",
+        "question_instruction": (
+            "Ask whether the patient has had drooling or trouble handling saliva."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.drooling".'
+        ),
+    },
+    "voice_change": {
+        "intent": "ask_voice_change",
+        "state_path": "policy_answers.voice_change",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Has your voice changed or become hoarse?",
+        "question_instruction": (
+            "Ask whether the patient has had a voice change or hoarseness."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.voice_change".'
+        ),
+    },
+    "sick_contacts": {
+        "intent": "ask_sick_contacts",
+        "state_path": "policy_answers.sick_contacts",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you been around anyone who has been sick recently?",
+        "question_instruction": (
+            "Ask whether the patient has had sick contacts recently."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.sick_contacts".'
+        ),
+    },
+    "bowel_or_bladder_changes": {
+        "intent": "ask_bowel_or_bladder_changes",
+        "state_path": "policy_answers.bowel_or_bladder_changes",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had any new bowel or bladder changes, such as trouble holding urine or stool or trouble going?",
+        "question_instruction": (
+            "Ask whether the patient has had new bowel or bladder changes such as retention or incontinence."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.bowel_or_bladder_changes".'
+        ),
+    },
+    "recent_heavy_lifting": {
+        "intent": "ask_recent_heavy_lifting",
+        "state_path": "policy_answers.recent_heavy_lifting",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Did the pain start after heavy lifting, twisting, or strain?",
+        "question_instruction": (
+            "Ask whether the pain started after heavy lifting, twisting, or physical strain."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.recent_heavy_lifting".'
+        ),
+    },
+    "numbness_or_tingling": {
+        "intent": "ask_numbness_or_tingling",
+        "state_path": "policy_answers.numbness_or_tingling",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had numbness or tingling?",
+        "extra_append_fields": ["hpi.associated_symptoms", "pertinent_positives"],
+        "question_instruction": (
+            "Ask whether the patient has had numbness or tingling."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.numbness_or_tingling". '
+            'If specific numbness or tingling symptoms are mentioned, also copy them into append_fields under "hpi.associated_symptoms" and "pertinent_positives".'
+        ),
+    },
 }
