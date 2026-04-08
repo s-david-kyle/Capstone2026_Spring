@@ -2,6 +2,7 @@ import sqlite3
 import re
 from config import MODEL
 import pandas as pd
+from datetime import datetime as dt
 
 # team imports
 from knowledge_graph import convert_df_to_kg 
@@ -280,7 +281,82 @@ def get_rankings(session_id, turn_number):
         '''
     df = pd.read_sql(sql, conn)
     return df
-    
+
+def get_previous_drilldown_messages(session_id):
+    conn, cursor = get_connection()
+    sql = f'''
+        SELECT MAX(timestamp) 
+        FROM SystemRank 
+        WHERE SessionId = {session_id} 
+            AND drilldown_start = 1;
+        '''
+    cursor.execute(sql)
+    # pull previous system drilldown dialogue
+    drilldown_datetime = [dt.strptime(row[0],"%Y-%m-%d %H:%M:%S.%f")
+                           for row in cursor.fetchall()][0]
+    """
+    I have a throbbing feeling in my head
+    Yes, there is pressure just above my eyes
+    It feels like a dull pain, but it is always there
+    """
+    # requery all conversations from Turn greater than or equal to datetime
+    sql = f"""
+        SELECT *
+        FROM Turn
+        WHERE SessionId = {session_id}
+            AND TimeOfMessage >= '{drilldown_datetime}'
+        """
+    df = pd.read_sql(sql, conn)
+    print(df)
+    # TODO: filter to message column and split results into text
+    message_string = ""
+    for index, row in df.iterrows():
+        message_string += f"{row['Speaker']}: {row['Message']}\n"
+    return message_string, drilldown_datetime
+
+def check_prev_rank_1(session_id, drilldown_datetime):
+    conn, cursor = get_connection()
+    # rank, system, timestamp
+    sql = f'''
+    SELECT system
+    FROM SystemRank 
+    WHERE SessionId = {session_id} 
+        AND timestamp >= '{drilldown_datetime}'
+        AND rank = 1
+    ORDER BY timestamp;
+    '''
+    cursor.execute(sql)
+    rank_1_list = [row[0] for row in cursor.fetchall()]
+    print('Rank 1 history:', rank_1_list)
+    freq_system = check_repeating_strings(rank_1_list)
+    return freq_system
+
+
+
+def check_repeating_strings(data_list):
+    """Checks if a list contains 3 repeating string values.
+
+    Args:
+        data_list: A list of strings.
+
+    Returns:
+        A tuple: (string with 3 counts, False) if a string appears 3 times,
+                 (None, True) if there are 3 repeating strings,
+                 (None, False) otherwise.
+    """
+    counts = {}
+    for item in data_list:
+        if item in counts:
+            counts[item] += 1
+        else:
+            counts[item] = 1
+
+    for item, count in counts.items():
+        if count == 3:
+            return item
+
+    return None
+
 
 if __name__ == '__main__':
     pass

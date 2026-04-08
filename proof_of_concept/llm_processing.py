@@ -7,10 +7,14 @@ from pprint import pprint
 import re
 import pandas as pd
 import ollama
+from datetime import datetime as dt
 from config import MODEL
 
 # team libraries
-from db_read import get_conversations, get_system_symptom_df
+from db_read import (get_conversations, 
+                     get_system_symptom_df, 
+                     get_previous_drilldown_messages,
+                     check_prev_rank_1)
 from knowledge_graph import convert_df_to_kg
 from db_write import push_kg_to_db, push_ranking_to_db
 
@@ -536,58 +540,59 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
     # pull unique systems
     systems = df['system'].unique().tolist()
     systems_str = ", ".join(systems)
+
+    # code to rank KG systems
+    system_instruction = {
+        "role": "system",
+        "content": (
+            "You are a clinical intake bot. "
+            f"""Take the following list of biological systems: {systems_str} and 
+                a patient that has stated: {prompt}, and rank the systems in the
+                order that they may likely the most affected based on patient statement.
+            """
+            "STRICT RULES: "
+            "The response must be formatted as followed: "
+            "1. Show the ranking number, followed by a colon and then the system"
+            "2. Only include this formatted text in the response"
+            "3. Do not include any notes or explanations"
+        )
+    }
+    response = ollama.chat(model=MODEL, messages=[system_instruction])
+    response = response['message']['content']
+    # except Exception as e:
+    #     response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+        
+    # parse and log rankings in the database
+    lines = response.strip().split('\n')
+    data = [] # store rankings here
+    for line in lines:
+        match = re.match(r"(\d+): (.*)", line)
+        if match:
+            # formatting symptom - relation - system
+            rank = int(match.group(1))
+            relationship = match.group(2)
+            data.append({'rank': rank, 'system': relationship})
+    system_rank = pd.DataFrame(data)
+    print('system_rank df:', system_rank)
+    
+    # log rank, system, session_id, turn_number, something to indicate start of drilldown
+    system_rank['SessionId'] = session_id
+    system_rank['turn_number'] = turn_number + 1 # was decremented before function call
+    system_rank['drilldown_start'] = drilldown_start
+    system_rank['timestamp'] = dt.now()
+    push_ranking_to_db(system_rank, 'SystemRank', session_id)
+        
+    # push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
+    symptom_system_kg = get_system_symptom_df(session_id, turn_number)
+    symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
+    push_kg_to_db(symptom_system_kg, 
+                session_id, 
+                'SymptomSystemKG', 
+                overwrite=False,
+                continue_session=True)
     # branch here if drilldown_start is false (will want all conversations from start)
     if drilldown_start:
-        # code to rank KG systems
-        try:
-            system_instruction = {
-                "role": "system",
-                "content": (
-                    "You are a clinical intake bot. "
-                    f"""Take the following list of biological systems: {systems_str} and 
-                        a patient that has stated: {prompt}, and rank the systems in the
-                        order that they may likely the most affected based on patient statement.
-                    """
-                    "STRICT RULES: "
-                    "The response must be formatted as followed: "
-                    "1. Show the ranking number, followed by a colon and then the system"
-                    "2. Only include this formatted text in the response"
-                    "3. Do not include any notes or explanations"
-                )
-            }
-            response = ollama.chat(model=MODEL, messages=[system_instruction])
-            response = response['message']['content']
-        except Exception as e:
-            response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
-        
-        # parse and log rankings in the database
-        lines = response.strip().split('\n')
-        data = [] # store rankings here
-        for line in lines:
-            match = re.match(r"(\d+): (.*)", line)
-            if match:
-                # formatting symptom - relation - system
-                rank = int(match.group(1))
-                relationship = match.group(2)
-                data.append({'rank': rank, 'system': relationship})
-        system_rank = pd.DataFrame(data)
-        print('system_rank df:', system_rank)
-        
-        # log rank, system, session_id, turn_number, something to indicate start of drilldown
-        system_rank['SessionId'] = session_id
-        system_rank['turn_number'] = turn_number + 1 # was decremented before function call
-        system_rank['drilldown_start'] = drilldown_start
-        push_ranking_to_db(system_rank, 'SystemRank', session_id)
-        
-        # push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
-        symptom_system_kg = get_system_symptom_df(session_id, turn_number)
-        symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
-        push_kg_to_db(symptom_system_kg, 
-                    session_id, 
-                    'SymptomSystemKG', 
-                    overwrite=False,
-                    continue_session=True)
-        # ask next question, factoring in prompt and list of systems
+    # ask next question, factoring in prompt and list of systems
         try:
             system_instruction = {
                 "role": "system",
@@ -603,7 +608,8 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
                     "3. Make sure language is easily understandable and non-threatening. "
                     "4. Refer to biological systems in layman's terms that anyone could understand. "
                     "5. Assume the patient cannot describe the systems themselves, and refer to something they may feel or see. "
-                    "6. No pleasantries or small talk. "
+                    "6. Do not mention the biological system you are focusing on. "
+                    "7. No pleasantries or small talk. "
                     # "6. Be direct and precise."
                 )
             }
@@ -612,13 +618,47 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
         except Exception as e:
             response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
     else:
-        # TODO: query database if drilldown_start is false, and grab previous answers from patient
+        # query database where drilldown_start is false, and grab previous messages
+        drilldown_conversation, drilldown_datetime = get_previous_drilldown_messages(session_id)
+        print(drilldown_conversation)
         # start from turn where drilldown start is true (first true since current turn)
-        # TODO: have it rank systems again and log into database
         # TODO: pull rank 1 systems for all previous rankings
+        freq_system = check_prev_rank_1(session_id, drilldown_datetime)
         # TODO: check if there are 3 matches for rank 1 system, if so decide on that system, turn off system drill down 
-        # TODO: generate next question to drill down on symptom
-        response = 'Drilldown continued response forthcoming'
+        if freq_system:
+            print(f'Will focus on: {freq_system}')
+            # TODO: modify some state var to move out of this phase
+        else:
+            print('Still locating system for focus')
+        # TODO: put an if statement here to skip this after focus found
+        # generate next question to drill down on system
+        try:
+            system_instruction = {
+                "role": "system",
+                "content": (
+                    "You are a clinical intake bot. "
+                    f"""Take the following list of biological systems: {systems_str} and 
+                        form a question that narrows down which system to focus on for a 
+                        patient with a symptom of {symptom}. Use these messages for 
+                        context: {drilldown_conversation}.
+                    """
+                    "STRICT RULES: "
+                    "1. Ask only ONE question at a time. "
+                    "2. Keep responses under 15 words. "
+                    "3. Make sure language is easily understandable and non-threatening. "
+                    "4. Refer to biological systems in layman's terms that anyone could understand. "
+                    "5. Assume the patient cannot describe the systems themselves, and refer to something they may feel or see. "
+                    "6. Do not mention the biological system you are focusing on. "
+                    "7. No pleasantries or small talk. "
+                    # "6. Be direct and precise."
+                )
+            }
+            response = ollama.chat(model=MODEL, messages=[system_instruction])
+            response = response['message']['content']
+        except Exception as e:
+            response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+
+        # response = 'Drilldown continued response forthcoming'
     # print(response)
 
     
