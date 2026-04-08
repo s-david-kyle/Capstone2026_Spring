@@ -1,0 +1,371 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "pain",
+  "display_name": "Pain",
+  "ui_name": "Pain",
+  "ui_label": "Pain",
+  "can_be_primary": true,
+  "can_be_secondary": false,
+  "primary_system": "routing_pain",
+  "related_systems": {
+    "high_yield": [
+      "cardiovascular",
+      "gastrointestinal",
+      "musculoskeletal",
+      "neurological"
+    ],
+    "selective_cross_system": [
+      "vascular",
+      "genitourinary",
+      "respiratory"
+    ],
+    "contextual": [
+      "site_specific_handoff"
+    ]
+  },
+  "pivot_triggers": {
+    "chest": "chest_pain",
+    "abdomen": "abdominal_pain",
+    "back": "back_pain",
+    "spine": "back_pain",
+    "joint": "joint_pain",
+    "limb": "joint_pain",
+    "head": "headache"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "pain_site",
+      "pain_specific_location",
+      "pain_distribution"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 25,
+      "target_question_budget": 28,
+      "max_questions": 32,
+      "early_danger_reserve": 2,
+      "ros_reserve": 0,
+      "context_history_reserve": 0,
+      "rationale": "Router complaint stays short but needs capacity for red\u2011flag follow\u2011up details before handoff."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 0,
+      "secondary_question_budget_override_if_red_flag": 4,
+      "priority_question_ids_if_secondary": [
+        "pain_site",
+        "pain_specific_location"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 0,
+      "max_ros_questions": 0,
+      "pathological_system_first": true,
+      "pathological_system": "routing_pain"
+    },
+    "context_mode": {
+      "target_context_questions": 0,
+      "max_context_questions": 0
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "critical_followup"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "pain_site",
+        "pain_specific_location",
+        "pain_distribution",
+        "dominant_pain_site_if_multiple"
+      ],
+      "early_danger_screen": [
+        "severity_extreme",
+        "sudden_maximal_onset",
+        "pain_with_collapse_or_syncope"
+      ],
+      "critical_followup": [
+        "immunocompromised_status",
+        "flank_pain_character"
+      ]
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly about the pain and what brought you in today.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "pain_site": {
+      "field": "pain_site",
+      "phase": "core_characterize",
+      "text": "Where is the pain mainly \u2014 chest, upper abdomen, lower abdomen, back/spine, flank, a joint or limb, the head/face, the groin/pelvis, or is it in several places?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Pain site",
+      "canonical_question_key": "pain_site",
+      "canonical_concept": "pain_site"
+    },
+    "pain_specific_location": {
+      "field": "pain_specific_location",
+      "phase": "core_characterize",
+      "text": "Can you describe the exact spot as precisely as you can, for example right lower abdomen, left chest near the breastbone, low back, or right knee?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Pain specific location",
+      "canonical_question_key": "pain_specific_location",
+      "canonical_concept": "pain_specific_location"
+    },
+    "pain_distribution": {
+      "field": "pain_distribution",
+      "phase": "core_characterize",
+      "text": "Is the pain in one place, or in several areas?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Pain distribution",
+      "canonical_question_key": "pain_distribution",
+      "canonical_concept": "pain_distribution"
+    },
+    "dominant_pain_site_if_multiple": {
+      "field": "dominant_pain_site_if_multiple",
+      "phase": "core_characterize",
+      "text": "If there is pain in more than one area, which area is the main problem right now?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Dominant pain site if multiple",
+      "canonical_question_key": "dominant_pain_site_if_multiple",
+      "ask_if": "PAIN_DISTRIBUTION_MULTISITE",
+      "canonical_concept": "dominant_pain_site_if_multiple"
+    },
+    "severity_extreme": {
+      "field": "severity_extreme",
+      "phase": "early_danger_screen",
+      "text": "Before we go further, is this pain a 9 or 10 out of 10, the worst pain you have ever felt?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "SEVERITY_BELOW_8"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "severity_extreme_details",
+      "if_positive_ask": [
+        "severity_extreme_details"
+      ],
+      "ui_label": "Severity extreme",
+      "canonical_question_key": "severity_extreme",
+      "canonical_concept": "severity_extreme"
+    },
+    "severity_extreme_details": {
+      "field": "severity_extreme_details",
+      "phase": "early_danger_screen",
+      "text": "Can you describe the pain and how it affects you?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Severity extreme details",
+      "canonical_question_key": "severity_extreme_details",
+      "canonical_concept": "severity_extreme"
+    },
+    "sudden_maximal_onset": {
+      "field": "sudden_maximal_onset",
+      "phase": "early_danger_screen",
+      "text": "Did the pain come on suddenly and become severe within seconds or minutes?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "sudden_maximal_onset_details",
+      "if_positive_ask": [
+        "sudden_maximal_onset_details"
+      ],
+      "ui_label": "Sudden maximal onset",
+      "canonical_question_key": "sudden_maximal_onset",
+      "canonical_concept": "sudden_maximal_onset"
+    },
+    "sudden_maximal_onset_details": {
+      "field": "sudden_maximal_onset_details",
+      "phase": "early_danger_screen",
+      "text": "How quickly did it reach its peak?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Sudden maximal onset details",
+      "canonical_question_key": "sudden_maximal_onset_details",
+      "canonical_concept": "sudden_maximal_onset"
+    },
+    "pain_with_collapse_or_syncope": {
+      "field": "pain_with_collapse_or_syncope",
+      "phase": "early_danger_screen",
+      "text": "Did you faint, collapse, or nearly pass out with the pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "pain_with_collapse_or_syncope_details",
+      "if_positive_ask": [
+        "pain_with_collapse_or_syncope_details"
+      ],
+      "ui_label": "Pain with collapse or syncope",
+      "canonical_question_key": "pain_with_collapse_or_syncope",
+      "canonical_concept": "pain_with_collapse_or_syncope"
+    },
+    "pain_with_collapse_or_syncope_details": {
+      "field": "pain_with_collapse_or_syncope_details",
+      "phase": "early_danger_screen",
+      "text": "How long were you out? Did you injure yourself?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Pain with collapse or syncope details",
+      "canonical_question_key": "pain_with_collapse_or_syncope_details",
+      "canonical_concept": "pain_with_collapse_or_syncope"
+    },
+    "immunocompromised_status": {
+      "field": "immunocompromised_status",
+      "phase": "critical_followup",
+      "text": "Do you have a weakened immune system, active cancer, or medicines that suppress immunity?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "PAIN_UNEXPLAINED_OR_HIGH_ACUITY",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "immunocompromised_status_details",
+      "if_positive_ask": [
+        "immunocompromised_status_details"
+      ],
+      "ui_label": "Immunocompromised with pain",
+      "canonical_question_key": "immunocompromised_status",
+      "canonical_concept": "immunocompromised_status"
+    },
+    "immunocompromised_status_details": {
+      "field": "immunocompromised_status_details",
+      "phase": "critical_followup",
+      "text": "What condition or treatment?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Immunocompromised status details",
+      "canonical_question_key": "immunocompromised_status_details",
+      "canonical_concept": "immunocompromised_status"
+    },
+    "flank_pain_character": {
+      "field": "flank_pain_character",
+      "phase": "critical_followup",
+      "text": "If the pain is in the flank, is it a dull constant ache, or does it come in severe waves and travel toward the groin?",
+      "response_type": "SHORT_TEXT",
+      "ask_if": "PAIN_SITE_IS_FLANK",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PAIN_SITE_NOT_FLANK"
+      ],
+      "ui_label": "Flank pain character",
+      "canonical_question_key": "flank_pain_character",
+      "canonical_concept": "flank_pain_character"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "universal_pain_red_flag_pattern": {
+      "fields": [
+        "severity_extreme",
+        "sudden_maximal_onset"
+      ],
+      "min_matches": 1,
+      "description": "Either extreme severity or sudden maximal onset in any pain presentation."
+    },
+    "haemodynamic_compromise_pain_pattern": {
+      "fields": [
+        "pain_with_collapse_or_syncope"
+      ],
+      "min_matches": 1,
+      "description": "Pain associated with collapse, syncope, or near-syncope."
+    },
+    "high_risk_host_pain_pattern": {
+      "fields": [
+        "immunocompromised_status"
+      ],
+      "min_matches": 1,
+      "description": "Pain in an immunocompromised or active-cancer host."
+    }
+  },
+  "targeted_ros_plan": {
+    "primary_system": "routing_pain",
+    "high_yield_systems": [
+      "cardiovascular",
+      "gastrointestinal",
+      "musculoskeletal",
+      "neurological"
+    ],
+    "cross_system_systems": [
+      "vascular",
+      "genitourinary",
+      "respiratory",
+      "site_specific_handoff"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "medium"
+}

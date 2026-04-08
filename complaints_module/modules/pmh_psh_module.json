@@ -1,0 +1,51 @@
+{
+  "module_name": "pmh_psh_module",
+  "version": "1.0.0",
+  "description": "Reusable PMH/PSH module applied once per session after complaint clerking, ROS, and any activated conditional modules. It should not repeat information already captured earlier.",
+  "ui_render_rule": "Use ui_label or text in the UI. Never show raw backend field ids.",
+  "questions": [
+    {
+      "field": "PastMedicalHistory",
+      "ui_label": "Past medical history",
+      "phase": "context_and_history",
+      "text": "Before we finish, what past medical conditions do you have that may be relevant to this problem and that we have not already covered?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "compound_question": true,
+      "extract_entities_if_positive": true
+    },
+    {
+      "field": "PastSurgicalHistory",
+      "ui_label": "Past surgical history",
+      "phase": "context_and_history",
+      "text": "Have you had any operations or procedures that may be relevant to this problem and that we have not already covered?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "compound_question": true,
+      "extract_entities_if_positive": true
+    }
+  ],
+  "field_order": [
+    "PastMedicalHistory",
+    "PastSurgicalHistory"
+  ],
+  "session_rule": "Run once per session after ROS and any activated conditional modules. Skip any item already captured during complaint clerking, the opening narrative, or ROS.",
+  "hard_session_cap_questions": 30,
+  "session_non_repeat_required": true,
+  "load_after": [
+    "immunization_history_module_if_activated",
+    "gynecologic_history_module_if_activated"
+  ],
+  "sequence_ref": "shared.module_order",
+  "module_sequence_contract": {
+    "load_once_per_session": true,
+    "load_after": [
+      "immunization_history_module_if_activated",
+      "gynecologic_history_module_if_activated"
+    ],
+    "respect_session_non_repeat": true,
+    "respect_hard_session_cap_questions": 30,
+    "hard_session_cap_questions": 30
+  },
+  "note": "The redundant 'OtherMedicalSurgicalHistory' was removed because its purpose is already covered by the final_closeout_question in shared.v2.json and the two main questions."
+}

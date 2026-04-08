@@ -1,0 +1,1073 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "oedema",
+  "display_name": "Oedema",
+  "ui_name": "Oedema",
+  "ui_label": "Oedema",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "cardiovascular",
+  "related_systems": {
+    "high_yield": [
+      "cardiovascular",
+      "renal",
+      "hepatic",
+      "constitutional"
+    ],
+    "selective": [
+      "respiratory",
+      "endocrine",
+      "vascular"
+    ],
+    "contextual": [
+      "pregnancy_context",
+      "medication_substance"
+    ]
+  },
+  "pivot_triggers": {
+    "shortness_of_breath": "cardiopulmonary_pattern",
+    "chest_pain": "cardiac_pattern",
+    "reduced_urine": "renal_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "onset",
+      "duration",
+      "site",
+      "distribution"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 30,
+      "target_question_budget": 35,
+      "max_questions": 40,
+      "early_danger_reserve": 3,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Oedema has a wide differential (cardiac, renal, hepatic, DVT, anaphylaxis, medication). Increased budget to ensure danger follow-ups and modules are completed."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 3,
+      "secondary_question_budget_override_if_red_flag": 6,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "site",
+        "distribution"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "cardiovascular"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "site",
+        "distribution",
+        "severity"
+      ],
+      "early_danger_screen": [
+        "acute_onset_unilateral",
+        "calf_pain_or_redness",
+        "shortness_of_breath",
+        "orthopnea_or_pnd",
+        "facial_or_tongue_swelling",
+        "chest_pain"
+      ],
+      "extended_characterize": [
+        "course",
+        "pitting_character",
+        "diurnal_variation",
+        "skin_changes_over_swelling",
+        "functional_impact"
+      ],
+      "critical_followup": [
+        "reduced_urine_output",
+        "weight_gain_rapid",
+        "fever_with_swelling",
+        "abdominal_distension"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "known_heart_failure",
+        "known_kidney_disease",
+        "known_liver_disease",
+        "medication_induced_oedema",
+        "prior_dvt_or_clot",
+        "recent_immobility_or_travel",
+        "recent_surgery_or_trauma",
+        "hypothyroid_screen",
+        "pregnancy_context",
+        "jaundice",
+        "foamy_urine"
+      ],
+      "context_and_history": []
+    }
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did you first notice the swelling? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Onset",
+      "canonical_question_key": "onset",
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How long has the swelling been present? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Duration",
+      "canonical_question_key": "duration",
+      "canonical_concept": "duration"
+    },
+    "site": {
+      "field": "site",
+      "phase": "core_characterize",
+      "text": "Where is the swelling — feet, ankles, legs, hands, face, abdomen, or all over?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Site",
+      "canonical_question_key": "site",
+      "canonical_concept": "site"
+    },
+    "distribution": {
+      "field": "distribution",
+      "phase": "core_characterize",
+      "text": "Is the swelling on one side only, or both sides equally?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Distribution",
+      "canonical_question_key": "distribution",
+      "canonical_concept": "distribution"
+    },
+    "severity": {
+      "field": "severity",
+      "phase": "core_characterize",
+      "text": "How bad is the swelling — mild, moderate, or severe? Can you still fit into your shoes or rings?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Severity",
+      "canonical_question_key": "severity",
+      "canonical_concept": "severity"
+    },
+    "acute_onset_unilateral": {
+      "field": "acute_onset_unilateral",
+      "phase": "early_danger_screen",
+      "text": "Did one leg suddenly become swollen, red, warm, or painful? This is important to check for a blood clot.",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "acute_onset_unilateral_details",
+      "if_positive_ask": [
+        "acute_onset_unilateral_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Acute unilateral swelling (DVT screen)",
+      "canonical_question_key": "acute_onset_unilateral",
+      "canonical_concept": "acute_onset_unilateral"
+    },
+    "acute_onset_unilateral_details": {
+      "field": "acute_onset_unilateral_details",
+      "phase": "early_danger_screen",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "acute_onset_unilateral",
+      "ui_label": "Acute unilateral swelling (DVT screen) details",
+      "canonical_question_key": "acute_onset_unilateral_details",
+      "canonical_concept": "acute_onset_unilateral"
+    },
+    "calf_pain_or_redness": {
+      "field": "calf_pain_or_redness",
+      "phase": "early_danger_screen",
+      "text": "Is there pain, tenderness, or redness in the calf of the swollen leg?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "calf_pain_or_redness_details",
+      "if_positive_ask": [
+        "calf_pain_or_redness_details"
+      ],
+      "ui_label": "Calf pain or redness (DVT)",
+      "canonical_question_key": "calf_pain_or_redness",
+      "canonical_concept": "calf_pain_or_redness"
+    },
+    "calf_pain_or_redness_details": {
+      "field": "calf_pain_or_redness_details",
+      "phase": "early_danger_screen",
+      "text": "Is it tender to touch? Any warmth?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "calf_pain_or_redness",
+      "ui_label": "Calf pain or redness (DVT) details",
+      "canonical_question_key": "calf_pain_or_redness_details",
+      "canonical_concept": "calf_pain_or_redness"
+    },
+    "shortness_of_breath": {
+      "field": "shortness_of_breath",
+      "phase": "early_danger_screen",
+      "text": "Any shortness of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "shortness_of_breath_details",
+      "if_positive_ask": [
+        "shortness_of_breath_details"
+      ],
+      "ui_label": "Shortness of breath",
+      "canonical_question_key": "shortness_of_breath",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "shortness_of_breath_details": {
+      "field": "shortness_of_breath_details",
+      "phase": "early_danger_screen",
+      "text": "At rest or on exertion? How severe?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "shortness_of_breath",
+      "ui_label": "Shortness of breath details",
+      "canonical_question_key": "shortness_of_breath_details",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "orthopnea_or_pnd": {
+      "field": "orthopnea_or_pnd",
+      "phase": "early_danger_screen",
+      "text": "Do you need to prop yourself up with pillows to breathe at night, or do you wake up gasping for air?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "orthopnea_or_pnd_details",
+      "if_positive_ask": [
+        "orthopnea_or_pnd_details"
+      ],
+      "compound_question": false,
+      "ui_label": "Orthopnea / PND",
+      "canonical_question_key": "orthopnea_or_pnd",
+      "canonical_concept": "orthopnea_or_pnd"
+    },
+    "orthopnea_or_pnd_details": {
+      "field": "orthopnea_or_pnd_details",
+      "phase": "early_danger_screen",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "orthopnea_or_pnd",
+      "ui_label": "Orthopnea / PND details",
+      "canonical_question_key": "orthopnea_or_pnd_details",
+      "canonical_concept": "orthopnea_or_pnd"
+    },
+    "facial_or_tongue_swelling": {
+      "field": "facial_or_tongue_swelling",
+      "phase": "early_danger_screen",
+      "text": "Have you had facial, lip, or tongue swelling?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "facial_or_tongue_swelling_details",
+      "if_positive_ask": [
+        "facial_or_tongue_swelling_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Facial/tongue swelling (anaphylaxis screen)",
+      "canonical_question_key": "facial_or_tongue_swelling",
+      "canonical_concept": "facial_or_tongue_swelling"
+    },
+    "facial_or_tongue_swelling_details": {
+      "field": "facial_or_tongue_swelling_details",
+      "phase": "early_danger_screen",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "facial_or_tongue_swelling",
+      "ui_label": "Facial/tongue swelling (anaphylaxis screen) details",
+      "canonical_question_key": "facial_or_tongue_swelling_details",
+      "canonical_concept": "facial_or_tongue_swelling"
+    },
+    "chest_pain": {
+      "field": "chest_pain",
+      "phase": "early_danger_screen",
+      "text": "Any chest pain or tightness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "chest_pain_details",
+      "if_positive_ask": [
+        "chest_pain_details"
+      ],
+      "ui_label": "Chest pain",
+      "canonical_question_key": "chest_pain",
+      "canonical_concept": "chest_pain"
+    },
+    "chest_pain_details": {
+      "field": "chest_pain_details",
+      "phase": "early_danger_screen",
+      "text": "Where exactly? What does it feel like?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "chest_pain",
+      "ui_label": "Chest pain details",
+      "canonical_question_key": "chest_pain_details",
+      "canonical_concept": "chest_pain"
+    },
+    "course": {
+      "field": "course",
+      "phase": "extended_characterize",
+      "text": "Overall since it started, which best fits the swelling now: getting worse, getting better, or staying about the same?",
+      "response_type": "TEMPORAL_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Course",
+      "canonical_question_key": "course",
+      "canonical_concept": "course"
+    },
+    "pitting_character": {
+      "field": "pitting_character",
+      "phase": "extended_characterize",
+      "text": "If you press on the swollen area with a finger, does it leave an indent or pit that stays for a few seconds?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "pitting_character_details",
+      "if_positive_ask": [
+        "pitting_character_details"
+      ],
+      "ui_label": "Pitting character",
+      "canonical_question_key": "pitting_character",
+      "canonical_concept": "pitting_character"
+    },
+    "pitting_character_details": {
+      "field": "pitting_character_details",
+      "phase": "extended_characterize",
+      "text": "How deep is the pit?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "pitting_character",
+      "ui_label": "Pitting character details",
+      "canonical_question_key": "pitting_character_details",
+      "canonical_concept": "pitting_character"
+    },
+    "diurnal_variation": {
+      "field": "diurnal_variation",
+      "phase": "extended_characterize",
+      "text": "Is the swelling worse at the end of the day, first thing in the morning, or constant throughout?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Diurnal variation",
+      "canonical_question_key": "diurnal_variation",
+      "canonical_concept": "diurnal_variation"
+    },
+    "skin_changes_over_swelling": {
+      "field": "skin_changes_over_swelling",
+      "phase": "extended_characterize",
+      "text": "Any skin changes over the swollen area — redness, hardening, browning, weeping, or ulceration?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "skin_changes_over_swelling_details",
+      "if_positive_ask": [
+        "skin_changes_over_swelling_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Skin changes over swelling",
+      "canonical_question_key": "skin_changes_over_swelling",
+      "canonical_concept": "skin_changes_over_swelling"
+    },
+    "skin_changes_over_swelling_details": {
+      "field": "skin_changes_over_swelling_details",
+      "phase": "extended_characterize",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "skin_changes_over_swelling",
+      "ui_label": "Skin changes over swelling details",
+      "canonical_question_key": "skin_changes_over_swelling_details",
+      "canonical_concept": "skin_changes_over_swelling"
+    },
+    "functional_impact": {
+      "field": "functional_impact",
+      "phase": "extended_characterize",
+      "text": "What does the swelling stop you from doing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Functional impact",
+      "canonical_question_key": "functional_impact",
+      "canonical_concept": "functional_impact"
+    },
+    "reduced_urine_output": {
+      "field": "reduced_urine_output",
+      "phase": "critical_followup",
+      "text": "Are you passing much less urine than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "reduced_urine_output_details",
+      "if_positive_ask": [
+        "reduced_urine_output_details"
+      ],
+      "ui_label": "Reduced urine output",
+      "canonical_question_key": "reduced_urine_output",
+      "canonical_concept": "reduced_urine_output"
+    },
+    "reduced_urine_output_details": {
+      "field": "reduced_urine_output_details",
+      "phase": "critical_followup",
+      "text": "How much less? Any pain?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "reduced_urine_output",
+      "ui_label": "Reduced urine output details",
+      "canonical_question_key": "reduced_urine_output_details",
+      "canonical_concept": "reduced_urine_output"
+    },
+    "weight_gain_rapid": {
+      "field": "weight_gain_rapid",
+      "phase": "critical_followup",
+      "text": "Have you gained weight rapidly over the past few days or weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "weight_gain_rapid_details",
+      "if_positive_ask": [
+        "weight_gain_rapid_details"
+      ],
+      "ui_label": "Rapid weight gain",
+      "canonical_question_key": "weight_gain_rapid",
+      "canonical_concept": "weight_gain_rapid"
+    },
+    "weight_gain_rapid_details": {
+      "field": "weight_gain_rapid_details",
+      "phase": "critical_followup",
+      "text": "How much weight? Over what period?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "weight_gain_rapid",
+      "ui_label": "Rapid weight gain details",
+      "canonical_question_key": "weight_gain_rapid_details",
+      "canonical_concept": "weight_gain_rapid"
+    },
+    "fever_with_swelling": {
+      "field": "fever_with_swelling",
+      "phase": "critical_followup",
+      "text": "Any fever, redness, or warmth over the swollen area?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "fever_with_swelling_details",
+      "if_positive_ask": [
+        "fever_with_swelling_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Fever with swelling (infection/cellulitis)",
+      "canonical_question_key": "fever_with_swelling",
+      "canonical_concept": "fever_with_swelling"
+    },
+    "fever_with_swelling_details": {
+      "field": "fever_with_swelling_details",
+      "phase": "critical_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "fever_with_swelling",
+      "ui_label": "Fever with swelling (infection/cellulitis) details",
+      "canonical_question_key": "fever_with_swelling_details",
+      "canonical_concept": "fever_with_swelling"
+    },
+    "abdominal_distension": {
+      "field": "abdominal_distension",
+      "phase": "critical_followup",
+      "text": "Is the abdomen swollen or more bloated than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "abdominal_distension_details",
+      "if_positive_ask": [
+        "abdominal_distension_details"
+      ],
+      "ui_label": "Abdominal distension (ascites screen)",
+      "canonical_question_key": "abdominal_distension",
+      "canonical_concept": "abdominal_distension"
+    },
+    "abdominal_distension_details": {
+      "field": "abdominal_distension_details",
+      "phase": "critical_followup",
+      "text": "How long has it been swollen?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "abdominal_distension",
+      "ui_label": "Abdominal distension (ascites screen) details",
+      "canonical_question_key": "abdominal_distension_details",
+      "canonical_concept": "abdominal_distension"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the swelling?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "known_heart_failure": {
+      "field": "known_heart_failure",
+      "phase": "high_priority_followup",
+      "text": "Have you ever been told you have heart failure, a weak heart, or fluid on the lungs?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "known_heart_failure_details",
+      "if_positive_ask": [
+        "known_heart_failure_details"
+      ],
+      "ui_label": "Known heart failure",
+      "canonical_question_key": "known_heart_failure",
+      "canonical_concept": "known_heart_failure"
+    },
+    "known_heart_failure_details": {
+      "field": "known_heart_failure_details",
+      "phase": "high_priority_followup",
+      "text": "What is the diagnosis? What medications?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "known_heart_failure",
+      "ui_label": "Known heart failure details",
+      "canonical_question_key": "known_heart_failure_details",
+      "canonical_concept": "known_heart_failure"
+    },
+    "known_kidney_disease": {
+      "field": "known_kidney_disease",
+      "phase": "high_priority_followup",
+      "text": "Do you have any known kidney problems?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "known_kidney_disease_details",
+      "if_positive_ask": [
+        "known_kidney_disease_details"
+      ],
+      "ui_label": "Known kidney disease",
+      "canonical_question_key": "known_kidney_disease",
+      "canonical_concept": "known_kidney_disease"
+    },
+    "known_kidney_disease_details": {
+      "field": "known_kidney_disease_details",
+      "phase": "high_priority_followup",
+      "text": "What is the condition?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "known_kidney_disease",
+      "ui_label": "Known kidney disease details",
+      "canonical_question_key": "known_kidney_disease_details",
+      "canonical_concept": "known_kidney_disease"
+    },
+    "known_liver_disease": {
+      "field": "known_liver_disease",
+      "phase": "high_priority_followup",
+      "text": "Do you have any liver problems, or have you been told about liver cirrhosis?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "known_liver_disease_details",
+      "if_positive_ask": [
+        "known_liver_disease_details"
+      ],
+      "ui_label": "Known liver disease",
+      "canonical_question_key": "known_liver_disease",
+      "canonical_concept": "known_liver_disease"
+    },
+    "known_liver_disease_details": {
+      "field": "known_liver_disease_details",
+      "phase": "high_priority_followup",
+      "text": "What is the condition?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "known_liver_disease",
+      "ui_label": "Known liver disease details",
+      "canonical_question_key": "known_liver_disease_details",
+      "canonical_concept": "known_liver_disease"
+    },
+    "medication_induced_oedema": {
+      "field": "medication_induced_oedema",
+      "phase": "high_priority_followup",
+      "text": "Are you taking any medicines that could cause swelling, such as amlodipine, steroids, NSAIDs, gabapentin, or pioglitazone?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "medication_induced_oedema_details",
+      "if_positive_ask": [
+        "medication_induced_oedema_details"
+      ],
+      "ui_label": "Medication-induced oedema",
+      "canonical_question_key": "medication_induced_oedema",
+      "canonical_concept": "medication_induced_oedema"
+    },
+    "medication_induced_oedema_details": {
+      "field": "medication_induced_oedema_details",
+      "phase": "high_priority_followup",
+      "text": "Which medication and when did you start?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "medication_induced_oedema",
+      "ui_label": "Medication-induced oedema details",
+      "canonical_question_key": "medication_induced_oedema_details",
+      "canonical_concept": "medication_induced_oedema"
+    },
+    "prior_dvt_or_clot": {
+      "field": "prior_dvt_or_clot",
+      "phase": "high_priority_followup",
+      "text": "Any history of blood clots, DVT, or pulmonary embolism?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "prior_dvt_or_clot_details",
+      "if_positive_ask": [
+        "prior_dvt_or_clot_details"
+      ],
+      "ui_label": "Prior DVT or clot",
+      "canonical_question_key": "prior_dvt_or_clot",
+      "canonical_concept": "prior_dvt_or_clot"
+    },
+    "prior_dvt_or_clot_details": {
+      "field": "prior_dvt_or_clot_details",
+      "phase": "high_priority_followup",
+      "text": "When? Were you treated?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "prior_dvt_or_clot",
+      "ui_label": "Prior DVT or clot details",
+      "canonical_question_key": "prior_dvt_or_clot_details",
+      "canonical_concept": "prior_dvt_or_clot"
+    },
+    "recent_immobility_or_travel": {
+      "field": "recent_immobility_or_travel",
+      "phase": "high_priority_followup",
+      "text": "Any recent surgery, bed rest, long-distance travel, or other period of immobility?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_immobility_or_travel_details",
+      "if_positive_ask": [
+        "recent_immobility_or_travel_details"
+      ],
+      "ui_label": "Recent immobility or travel",
+      "canonical_question_key": "recent_immobility_or_travel",
+      "canonical_concept": "recent_immobility_or_travel"
+    },
+    "recent_immobility_or_travel_details": {
+      "field": "recent_immobility_or_travel_details",
+      "phase": "high_priority_followup",
+      "text": "What type? How long ago?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_immobility_or_travel",
+      "ui_label": "Recent immobility or travel details",
+      "canonical_question_key": "recent_immobility_or_travel_details",
+      "canonical_concept": "recent_immobility_or_travel"
+    },
+    "recent_surgery_or_trauma": {
+      "field": "recent_surgery_or_trauma",
+      "phase": "high_priority_followup",
+      "text": "Any recent operation or injury to the swollen area?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_surgery_or_trauma_details",
+      "if_positive_ask": [
+        "recent_surgery_or_trauma_details"
+      ],
+      "ui_label": "Recent surgery or trauma",
+      "canonical_question_key": "recent_surgery_or_trauma",
+      "canonical_concept": "recent_surgery_or_trauma"
+    },
+    "recent_surgery_or_trauma_details": {
+      "field": "recent_surgery_or_trauma_details",
+      "phase": "high_priority_followup",
+      "text": "What procedure or injury?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_surgery_or_trauma",
+      "ui_label": "Recent surgery or trauma details",
+      "canonical_question_key": "recent_surgery_or_trauma_details",
+      "canonical_concept": "recent_surgery_or_trauma"
+    },
+    "hypothyroid_screen": {
+      "field": "hypothyroid_screen",
+      "phase": "high_priority_followup",
+      "text": "Have you felt unusually cold, tired, or noticed dry skin, weight gain, or sluggishness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "DURATION_GTE_4_WEEKS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "hypothyroid_screen_details",
+      "if_positive_ask": [
+        "hypothyroid_screen_details"
+      ],
+      "ui_label": "Hypothyroid screen",
+      "canonical_question_key": "hypothyroid_screen",
+      "canonical_concept": "hypothyroid_screen"
+    },
+    "hypothyroid_screen_details": {
+      "field": "hypothyroid_screen_details",
+      "phase": "high_priority_followup",
+      "text": "When did these symptoms start?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "hypothyroid_screen",
+      "ui_label": "Hypothyroid screen details",
+      "canonical_question_key": "hypothyroid_screen_details",
+      "canonical_concept": "hypothyroid_screen"
+    },
+    "pregnancy_context": {
+      "field": "pregnancy_context",
+      "phase": "high_priority_followup",
+      "text": "Could you be pregnant now, or are you recently postpartum?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "pregnancy_context_details",
+      "if_positive_ask": [
+        "pregnancy_context_details"
+      ],
+      "sensitive_topic": true,
+      "ui_label": "Pregnancy context",
+      "canonical_question_key": "pregnancy_context",
+      "canonical_concept": "pregnancy_context"
+    },
+    "pregnancy_context_details": {
+      "field": "pregnancy_context_details",
+      "phase": "high_priority_followup",
+      "text": "How far along? Or how many weeks postpartum?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "sensitive_topic": true,
+      "parent_field": "pregnancy_context",
+      "ui_label": "Pregnancy context details",
+      "canonical_question_key": "pregnancy_context_details",
+      "canonical_concept": "pregnancy_context"
+    },
+    "jaundice": {
+      "field": "jaundice",
+      "phase": "high_priority_followup",
+      "text": "Have you noticed yellowing of the eyes or skin, or dark urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "jaundice_details",
+      "if_positive_ask": [
+        "jaundice_details"
+      ],
+      "compound_question": false,
+      "ui_label": "Jaundice (hepatic screen)",
+      "canonical_question_key": "jaundice",
+      "canonical_concept": "jaundice"
+    },
+    "jaundice_details": {
+      "field": "jaundice_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "jaundice",
+      "ui_label": "Jaundice (hepatic screen) details",
+      "canonical_question_key": "jaundice_details",
+      "canonical_concept": "jaundice"
+    },
+    "foamy_urine": {
+      "field": "foamy_urine",
+      "phase": "high_priority_followup",
+      "text": "Is your urine foamy or frothy? This can sometimes suggest a kidney problem.",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "foamy_urine_details",
+      "if_positive_ask": [
+        "foamy_urine_details"
+      ],
+      "ui_label": "Foamy urine (nephrotic screen)",
+      "canonical_question_key": "foamy_urine",
+      "canonical_concept": "foamy_urine"
+    },
+    "foamy_urine_details": {
+      "field": "foamy_urine_details",
+      "phase": "high_priority_followup",
+      "text": "How long has this been happening?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "foamy_urine",
+      "ui_label": "Foamy urine (nephrotic screen) details",
+      "canonical_question_key": "foamy_urine_details",
+      "canonical_concept": "foamy_urine"
+    },
+    "functional_impact_details": {
+      "field": "functional_impact_details",
+      "phase": "extended_characterize",
+      "text": "What specific activities are affected?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "functional_impact"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "dvt_pattern": {
+      "fields": [
+        "acute_onset_unilateral",
+        "calf_pain_or_redness"
+      ],
+      "min_matches": 1,
+      "description": "Acute unilateral limb swelling with or without calf tenderness — suggestive of DVT."
+    },
+    "cardiac_failure_pattern": {
+      "fields": [
+        "shortness_of_breath",
+        "orthopnea_or_pnd",
+        "chest_pain"
+      ],
+      "min_matches": 2,
+      "description": "Bilateral oedema with dyspnoea, orthopnea, or chest pain — suggestive of cardiac failure."
+    },
+    "anaphylaxis_angioedema_pattern": {
+      "fields": [
+        "facial_or_tongue_swelling"
+      ],
+      "min_matches": 1,
+      "description": "Facial, lip, or tongue swelling — possible anaphylaxis or angioedema."
+    },
+    "renal_failure_pattern": {
+      "fields": [
+        "reduced_urine_output",
+        "weight_gain_rapid",
+        "foamy_urine"
+      ],
+      "min_matches": 1,
+      "description": "Rapidly worsening oedema with oliguria, rapid weight gain, or proteinuria (foamy urine)."
+    },
+    "infection_cellulitis_pattern": {
+      "fields": [
+        "fever_with_swelling"
+      ],
+      "min_matches": 1,
+      "description": "Fever with localised swelling — possible cellulitis or infected wound."
+    }
+  },
+  "targeted_ros_plan": {
+    "primary_system": "cardiovascular",
+    "high_yield_systems": [
+      "cardiovascular",
+      "renal",
+      "hepatic",
+      "respiratory"
+    ],
+    "cross_system_systems": [
+      "endocrine",
+      "vascular",
+      "constitutional",
+      "genitourinary"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "high"
+}

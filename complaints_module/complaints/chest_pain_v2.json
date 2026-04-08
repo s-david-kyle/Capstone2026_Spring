@@ -1,0 +1,1140 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "chest_pain",
+  "display_name": "Chest Pain",
+  "ui_name": "Chest Pain",
+  "ui_label": "Chest Pain",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "parent_symptom": "pain",
+  "routing_metadata": {
+    "accepts_handoff_from": [
+      "pain"
+    ],
+    "handoff_behavior": "If routed from the parent symptom, skip generic router questions and continue with complaint-specific core characterization."
+  },
+  "primary_system": "cardiovascular",
+  "related_systems": {
+    "high_yield": [
+      "respiratory",
+      "gastrointestinal",
+      "musculoskeletal"
+    ],
+    "selective_cross_system": [
+      "vascular",
+      "neurological"
+    ],
+    "contextual": [
+      "thromboembolic_risk",
+      "substance_medication"
+    ]
+  },
+  "pivot_triggers": {
+    "shortness_of_breath": "pulmonary_embolus_pattern",
+    "syncope": "arrhythmic_pattern",
+    "back_pain": "aortic_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "onset",
+      "duration",
+      "severity",
+      "location"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 30,
+      "target_question_budget": 35,
+      "max_questions": 40,
+      "early_danger_reserve": 5,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Cardiopulmonary complaint requires thorough ACS, PE, arrhythmia, and aortic screening. Increased budget to ensure critical followup and high priority questions are asked before modules."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "severity",
+        "location"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "cardiovascular"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "location",
+        "character"
+      ],
+      "early_danger_screen": [
+        "rest_pain",
+        "exertional_trigger",
+        "shortness_of_breath",
+        "diaphoresis",
+        "cocaine_or_stimulant_use",
+        "arm_or_jaw_radiation"
+      ],
+      "extended_characterize": [
+        "timing",
+        "course",
+        "aggravating_factors",
+        "relieving_factors",
+        "functional_impact"
+      ],
+      "critical_followup": [
+        "nausea_or_vomiting",
+        "syncope_or_near_syncope",
+        "palpitations",
+        "hemoptysis",
+        "tearing_to_back_quality"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "pleuritic_component",
+        "positional_component",
+        "cough",
+        "fever",
+        "leg_swelling",
+        "heartburn_or_reflux",
+        "chest_wall_tenderness",
+        "prior_cardiac_history",
+        "clot_risk_history",
+        "family_history_early_heart_disease",
+        "recent_immobility_or_travel"
+      ],
+      "context_and_history": []
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did it start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Onset",
+      "canonical_question_key": "onset",
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How should I understand the duration? Please answer in one of these formats: 'constant for 30 minutes' or 'comes and goes; each episode lasts about 5 minutes'.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Duration",
+      "canonical_question_key": "duration",
+      "canonical_concept": "duration"
+    },
+    "severity": {
+      "field": "severity",
+      "phase": "core_characterize",
+      "text": "How severe is it from 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Severity",
+      "canonical_question_key": "severity",
+      "canonical_concept": "severity"
+    },
+    "timing": {
+      "field": "timing",
+      "phase": "extended_characterize",
+      "text": "Is it constant, intermittent, or in waves?",
+      "response_type": "TEMPORAL_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Timing",
+      "canonical_question_key": "timing",
+      "canonical_concept": "timing"
+    },
+    "course": {
+      "field": "course",
+      "phase": "extended_characterize",
+      "text": "Overall since it started, which best fits it now: getting worse, getting better, or staying about the same?",
+      "response_type": "TEMPORAL_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Course",
+      "canonical_question_key": "course",
+      "canonical_concept": "course"
+    },
+    "location": {
+      "field": "location",
+      "phase": "core_characterize",
+      "text": "Where exactly do you feel it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Location",
+      "canonical_question_key": "location",
+      "canonical_concept": "location"
+    },
+    "character": {
+      "field": "character",
+      "phase": "core_characterize",
+      "text": "How would you describe it\u2014pressure, heaviness, tightness, sharp, burning, or tearing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Character",
+      "canonical_question_key": "character",
+      "canonical_concept": "character"
+    },
+    "radiation": {
+      "field": "radiation",
+      "phase": "extended_characterize",
+      "text": "Does it travel anywhere else?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "radiation_details",
+      "if_positive_ask": [
+        "radiation_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Radiation",
+      "canonical_question_key": "radiation",
+      "note": "Kept for backward compatibility but removed from schedule; arm_or_jaw_radiation is the primary radiation question.",
+      "canonical_concept": "radiation"
+    },
+    "aggravating_factors": {
+      "field": "aggravating_factors",
+      "phase": "extended_characterize",
+      "text": "Does anything make it worse?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "aggravating_factors_details",
+      "if_positive_ask": [
+        "aggravating_factors_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Aggravating factors",
+      "canonical_question_key": "aggravating_factors",
+      "canonical_concept": "aggravating_factors"
+    },
+    "aggravating_factors_details": {
+      "field": "aggravating_factors_details",
+      "phase": "extended_characterize",
+      "text": "What specifically makes it worse \u2014 for example walking, breathing deeply, coughing, lying flat, eating, or movement?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Aggravating factors details",
+      "canonical_question_key": "aggravating_factors_details",
+      "parent_field": "aggravating_factors",
+      "canonical_concept": "aggravating_factors_details"
+    },
+    "relieving_factors": {
+      "field": "relieving_factors",
+      "phase": "extended_characterize",
+      "text": "Does anything make it better?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "relieving_factors_details",
+      "if_positive_ask": [
+        "relieving_factors_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Relieving factors",
+      "canonical_question_key": "relieving_factors",
+      "canonical_concept": "relieving_factors"
+    },
+    "relieving_factors_details": {
+      "field": "relieving_factors_details",
+      "phase": "extended_characterize",
+      "text": "What specifically makes it better \u2014 for example rest, sitting forward, or antacids?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Relieving factors details",
+      "canonical_question_key": "relieving_factors_details",
+      "parent_field": "relieving_factors",
+      "canonical_concept": "relieving_factors_details"
+    },
+    "functional_impact": {
+      "field": "functional_impact",
+      "phase": "extended_characterize",
+      "text": "What does it stop you from doing right now?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Functional impact",
+      "canonical_question_key": "functional_impact",
+      "canonical_concept": "functional_impact"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "high_priority_followup",
+      "text": "Have any other symptoms come with it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": [
+        "associated_symptoms_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms came with it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
+      "parent_field": "associated_symptoms",
+      "canonical_concept": "associated_symptoms_details"
+    },
+    "rest_pain": {
+      "field": "rest_pain",
+      "phase": "early_danger_screen",
+      "text": "Is it present even while you are resting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "rest_pain_details",
+      "ui_label": "Rest pain",
+      "canonical_question_key": "rest_pain",
+      "if_positive_ask": [
+        "rest_pain_details"
+      ],
+      "canonical_concept": "rest_pain"
+    },
+    "exertional_trigger": {
+      "field": "exertional_trigger",
+      "phase": "early_danger_screen",
+      "text": "Does exertion bring it on?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Exertional trigger",
+      "canonical_question_key": "exertional_trigger",
+      "canonical_concept": "exertional_trigger"
+    },
+    "shortness_of_breath": {
+      "field": "shortness_of_breath",
+      "phase": "early_danger_screen",
+      "text": "Any shortness of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "shortness_of_breath_details",
+      "if_positive_ask": [
+        "shortness_of_breath_details"
+      ],
+      "ui_label": "Shortness of breath",
+      "canonical_question_key": "shortness_of_breath",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "diaphoresis": {
+      "field": "diaphoresis",
+      "phase": "early_danger_screen",
+      "text": "Any sweating or clamminess?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "diaphoresis_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Diaphoresis",
+      "canonical_question_key": "diaphoresis",
+      "if_positive_ask": [
+        "diaphoresis_details"
+      ],
+      "canonical_concept": "diaphoresis"
+    },
+    "cocaine_or_stimulant_use": {
+      "field": "cocaine_or_stimulant_use",
+      "phase": "early_danger_screen",
+      "text": "Any cocaine, stimulant, or energy-drug use recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "cocaine_or_stimulant_use_details",
+      "ui_label": "Cocaine or stimulant use",
+      "canonical_question_key": "cocaine_or_stimulant_use",
+      "if_positive_ask": [
+        "cocaine_or_stimulant_use_details"
+      ],
+      "canonical_concept": "cocaine_or_stimulant_use"
+    },
+    "arm_or_jaw_radiation": {
+      "field": "arm_or_jaw_radiation",
+      "phase": "early_danger_screen",
+      "text": "Does the pain go to your arm, jaw, or neck?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "arm_or_jaw_radiation_details",
+      "ui_label": "Arm or jaw radiation",
+      "canonical_question_key": "arm_or_jaw_radiation",
+      "if_positive_ask": [
+        "arm_or_jaw_radiation_details"
+      ],
+      "canonical_concept": "arm_or_jaw_radiation"
+    },
+    "nausea_or_vomiting": {
+      "field": "nausea_or_vomiting",
+      "phase": "critical_followup",
+      "text": "Any nausea or vomiting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "nausea_or_vomiting_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Nausea or vomiting",
+      "canonical_question_key": "nausea_or_vomiting",
+      "if_positive_ask": [
+        "nausea_or_vomiting_details"
+      ],
+      "canonical_concept": "nausea_or_vomiting"
+    },
+    "syncope_or_near_syncope": {
+      "field": "syncope_or_near_syncope",
+      "phase": "critical_followup",
+      "text": "Any fainting or feeling like you might pass out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "syncope_or_near_syncope_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Syncope or near syncope",
+      "canonical_question_key": "syncope_or_near_syncope",
+      "if_positive_ask": [
+        "syncope_or_near_syncope_details"
+      ],
+      "canonical_concept": "syncope_or_near_syncope"
+    },
+    "palpitations": {
+      "field": "palpitations",
+      "phase": "critical_followup",
+      "text": "Any racing or irregular heartbeat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "palpitations_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Palpitations",
+      "canonical_question_key": "palpitations",
+      "if_positive_ask": [
+        "palpitations_details"
+      ],
+      "canonical_concept": "palpitations"
+    },
+    "hemoptysis": {
+      "field": "hemoptysis",
+      "phase": "critical_followup",
+      "text": "Any coughing up blood?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "hemoptysis_details",
+      "ui_label": "Hemoptysis",
+      "canonical_question_key": "hemoptysis",
+      "if_positive_ask": [
+        "hemoptysis_details"
+      ],
+      "canonical_concept": "hemoptysis"
+    },
+    "tearing_to_back_quality": {
+      "field": "tearing_to_back_quality",
+      "phase": "critical_followup",
+      "text": "Does it feel tearing or like it goes straight through to the back?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Tearing to back quality",
+      "canonical_question_key": "tearing_to_back_quality",
+      "canonical_concept": "tearing_to_back_quality"
+    },
+    "pleuritic_component": {
+      "field": "pleuritic_component",
+      "phase": "high_priority_followup",
+      "text": "Is it worse when you breathe deeply or cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "pleuritic_component_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Pleuritic component",
+      "canonical_question_key": "pleuritic_component",
+      "if_positive_ask": [
+        "pleuritic_component_details"
+      ],
+      "canonical_concept": "pleuritic_component"
+    },
+    "positional_component": {
+      "field": "positional_component",
+      "phase": "high_priority_followup",
+      "text": "Is it worse lying flat or better sitting forward?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "positional_component_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Positional component",
+      "canonical_question_key": "positional_component",
+      "if_positive_ask": [
+        "positional_component_details"
+      ],
+      "canonical_concept": "positional_component"
+    },
+    "cough": {
+      "field": "cough",
+      "phase": "high_priority_followup",
+      "text": "Any cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "cough_details",
+      "ui_label": "Cough",
+      "canonical_question_key": "cough",
+      "if_positive_ask": [
+        "cough_details"
+      ],
+      "canonical_concept": "cough"
+    },
+    "fever": {
+      "field": "fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever or chills?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "fever_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Fever",
+      "canonical_question_key": "fever",
+      "if_positive_ask": [
+        "fever_details"
+      ],
+      "canonical_concept": "fever"
+    },
+    "leg_swelling": {
+      "field": "leg_swelling",
+      "phase": "high_priority_followup",
+      "text": "Any leg swelling or pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "leg_swelling_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Leg swelling",
+      "canonical_question_key": "leg_swelling",
+      "if_positive_ask": [
+        "leg_swelling_details"
+      ],
+      "canonical_concept": "leg_swelling"
+    },
+    "heartburn_or_reflux": {
+      "field": "heartburn_or_reflux",
+      "phase": "high_priority_followup",
+      "text": "Any heartburn, sour taste, or pain after meals?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "heartburn_or_reflux_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Heartburn or reflux",
+      "canonical_question_key": "heartburn_or_reflux",
+      "if_positive_ask": [
+        "heartburn_or_reflux_details"
+      ],
+      "canonical_concept": "heartburn_or_reflux"
+    },
+    "chest_wall_tenderness": {
+      "field": "chest_wall_tenderness",
+      "phase": "high_priority_followup",
+      "text": "Is it tender if you press on the chest wall?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "chest_wall_tenderness_details",
+      "ui_label": "Chest wall tenderness",
+      "canonical_question_key": "chest_wall_tenderness",
+      "if_positive_ask": [
+        "chest_wall_tenderness_details"
+      ],
+      "canonical_concept": "chest_wall_tenderness"
+    },
+    "prior_cardiac_history": {
+      "field": "prior_cardiac_history",
+      "phase": "high_priority_followup",
+      "text": "Any previous angina, heart attack, clot, or pericarditis?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "prior_cardiac_history_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Prior cardiac history",
+      "canonical_question_key": "prior_cardiac_history",
+      "if_positive_ask": [
+        "prior_cardiac_history_details"
+      ],
+      "canonical_concept": "prior_cardiac_history"
+    },
+    "clot_risk_history": {
+      "field": "clot_risk_history",
+      "phase": "high_priority_followup",
+      "text": "Any clotting history or clot risk, such as prior DVT/PE, estrogen use, cancer, or a clotting disorder?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "clot_risk_history_details",
+      "ui_label": "Clot risk history",
+      "canonical_question_key": "clot_risk_history",
+      "if_positive_ask": [
+        "clot_risk_history_details"
+      ],
+      "canonical_concept": "clot_risk_history"
+    },
+    "family_history_early_heart_disease": {
+      "field": "family_history_early_heart_disease",
+      "phase": "high_priority_followup",
+      "text": "Any family history of early heart disease or sudden heart problems?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "family_history_early_heart_disease_details",
+      "ui_label": "Family history early heart disease",
+      "canonical_question_key": "family_history_early_heart_disease",
+      "if_positive_ask": [
+        "family_history_early_heart_disease_details"
+      ],
+      "canonical_concept": "family_history_early_heart_disease"
+    },
+    "recent_immobility_or_travel": {
+      "field": "recent_immobility_or_travel",
+      "phase": "high_priority_followup",
+      "text": "Any recent surgery, bed rest, long-distance travel, or other period of immobility?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_immobility_or_travel_details",
+      "ui_label": "Recent immobility or travel",
+      "canonical_question_key": "recent_immobility_or_travel",
+      "if_positive_ask": [
+        "recent_immobility_or_travel_details"
+      ],
+      "canonical_concept": "recent_immobility_or_travel"
+    },
+    "shortness_of_breath_details": {
+      "field": "shortness_of_breath_details",
+      "phase": "early_danger_screen",
+      "text": "Is the shortness of breath at rest, on exertion, or lying flat? How severe?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Shortness of breath details",
+      "canonical_question_key": "shortness_of_breath_details",
+      "parent_field": "shortness_of_breath",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "chest_pain_details": {
+      "field": "chest_pain_details",
+      "phase": "early_danger_screen",
+      "text": "Can you describe the chest pain \u2014 where exactly, what does it feel like, and does it go anywhere?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Chest pain details",
+      "canonical_question_key": "chest_pain_details",
+      "canonical_concept": "chest_pain"
+    },
+    "radiation_details": {
+      "field": "radiation_details",
+      "phase": "extended_characterize",
+      "text": "Where does it spread \u2014 for example to the back, shoulder, arm, jaw, or somewhere else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Radiation details",
+      "canonical_question_key": "radiation_details",
+      "parent_field": "radiation",
+      "canonical_concept": "radiation_details"
+    },
+    "rest_pain_details": {
+      "field": "rest_pain_details",
+      "phase": "early_danger_screen",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "rest_pain",
+      "ui_label": "Rest pain details",
+      "canonical_question_key": "rest_pain_details",
+      "canonical_concept": "rest_pain"
+    },
+    "diaphoresis_details": {
+      "field": "diaphoresis_details",
+      "phase": "early_danger_screen",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "diaphoresis",
+      "ui_label": "Diaphoresis details",
+      "canonical_question_key": "diaphoresis_details",
+      "canonical_concept": "diaphoresis"
+    },
+    "cocaine_or_stimulant_use_details": {
+      "field": "cocaine_or_stimulant_use_details",
+      "phase": "early_danger_screen",
+      "text": "What substance was used, and how recently?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "cocaine_or_stimulant_use",
+      "ui_label": "Cocaine or stimulant use details",
+      "canonical_question_key": "cocaine_or_stimulant_use_details",
+      "canonical_concept": "cocaine_or_stimulant_use"
+    },
+    "arm_or_jaw_radiation_details": {
+      "field": "arm_or_jaw_radiation_details",
+      "phase": "early_danger_screen",
+      "text": "Where exactly does the pain go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "arm_or_jaw_radiation",
+      "ui_label": "Arm or jaw radiation details",
+      "canonical_question_key": "arm_or_jaw_radiation_details",
+      "canonical_concept": "arm_or_jaw_radiation"
+    },
+    "nausea_or_vomiting_details": {
+      "field": "nausea_or_vomiting_details",
+      "phase": "critical_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "nausea_or_vomiting",
+      "ui_label": "Nausea or vomiting details",
+      "canonical_question_key": "nausea_or_vomiting_details",
+      "canonical_concept": "nausea_or_vomiting"
+    },
+    "syncope_or_near_syncope_details": {
+      "field": "syncope_or_near_syncope_details",
+      "phase": "critical_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "syncope_or_near_syncope",
+      "ui_label": "Syncope or near syncope details",
+      "canonical_question_key": "syncope_or_near_syncope_details",
+      "canonical_concept": "syncope_or_near_syncope"
+    },
+    "palpitations_details": {
+      "field": "palpitations_details",
+      "phase": "critical_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "palpitations",
+      "ui_label": "Palpitations details",
+      "canonical_question_key": "palpitations_details",
+      "canonical_concept": "palpitations"
+    },
+    "hemoptysis_details": {
+      "field": "hemoptysis_details",
+      "phase": "critical_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "hemoptysis",
+      "ui_label": "Hemoptysis details",
+      "canonical_question_key": "hemoptysis_details",
+      "canonical_concept": "hemoptysis"
+    },
+    "pleuritic_component_details": {
+      "field": "pleuritic_component_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "pleuritic_component",
+      "ui_label": "Pleuritic component details",
+      "canonical_question_key": "pleuritic_component_details",
+      "canonical_concept": "pleuritic_component"
+    },
+    "positional_component_details": {
+      "field": "positional_component_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "positional_component",
+      "ui_label": "Positional component details",
+      "canonical_question_key": "positional_component_details",
+      "canonical_concept": "positional_component"
+    },
+    "cough_details": {
+      "field": "cough_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "cough",
+      "ui_label": "Cough details",
+      "canonical_question_key": "cough_details",
+      "canonical_concept": "cough"
+    },
+    "fever_details": {
+      "field": "fever_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe the fever or chills briefly, including temperature if known.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "fever",
+      "ui_label": "Fever details",
+      "canonical_question_key": "fever_details",
+      "canonical_concept": "fever"
+    },
+    "leg_swelling_details": {
+      "field": "leg_swelling_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "leg_swelling",
+      "ui_label": "Leg swelling details",
+      "canonical_question_key": "leg_swelling_details",
+      "canonical_concept": "leg_swelling"
+    },
+    "heartburn_or_reflux_details": {
+      "field": "heartburn_or_reflux_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "heartburn_or_reflux",
+      "ui_label": "Heartburn or reflux details",
+      "canonical_question_key": "heartburn_or_reflux_details",
+      "canonical_concept": "heartburn_or_reflux"
+    },
+    "chest_wall_tenderness_details": {
+      "field": "chest_wall_tenderness_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "chest_wall_tenderness",
+      "ui_label": "Chest wall tenderness details",
+      "canonical_question_key": "chest_wall_tenderness_details",
+      "canonical_concept": "chest_wall_tenderness"
+    },
+    "prior_cardiac_history_details": {
+      "field": "prior_cardiac_history_details",
+      "phase": "high_priority_followup",
+      "text": "Please tell me more about that history.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "prior_cardiac_history",
+      "ui_label": "Prior cardiac history details",
+      "canonical_question_key": "prior_cardiac_history_details",
+      "canonical_concept": "prior_cardiac_history"
+    },
+    "clot_risk_history_details": {
+      "field": "clot_risk_history_details",
+      "phase": "high_priority_followup",
+      "text": "Please tell me more about that history.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "clot_risk_history",
+      "ui_label": "Clot risk history details",
+      "canonical_question_key": "clot_risk_history_details",
+      "canonical_concept": "clot_risk_history"
+    },
+    "family_history_early_heart_disease_details": {
+      "field": "family_history_early_heart_disease_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "family_history_early_heart_disease",
+      "ui_label": "Family history early heart disease details",
+      "canonical_question_key": "family_history_early_heart_disease_details",
+      "canonical_concept": "family_history_early_heart_disease"
+    },
+    "recent_immobility_or_travel_details": {
+      "field": "recent_immobility_or_travel_details",
+      "phase": "high_priority_followup",
+      "text": "What kind of immobility, travel, surgery, or bed rest was it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_immobility_or_travel",
+      "ui_label": "Recent immobility or travel details",
+      "canonical_question_key": "recent_immobility_or_travel_details",
+      "canonical_concept": "recent_immobility_or_travel"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "acute_coronary_pattern": [
+      "rest_pain",
+      "exertional_trigger",
+      "shortness_of_breath",
+      "diaphoresis",
+      "nausea_or_vomiting",
+      "arm_or_jaw_radiation"
+    ],
+    "pulmonary_embolus_pattern": [
+      "pleuritic_component",
+      "shortness_of_breath",
+      "hemoptysis",
+      "leg_swelling",
+      "recent_immobility_or_travel"
+    ],
+    "aortic_pattern": [
+      "tearing_to_back_quality"
+    ],
+    "arrhythmic_pattern": [
+      "palpitations",
+      "syncope_or_near_syncope"
+    ],
+    "pericardial_pattern": [
+      "positional_component",
+      "pleuritic_component"
+    ]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "cardiovascular",
+    "high_yield_systems": [
+      "respiratory",
+      "gastrointestinal",
+      "musculoskeletal"
+    ],
+    "cross_system_systems": [
+      "vascular",
+      "neurological",
+      "thromboembolic_risk",
+      "substance_medication"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "high"
+}

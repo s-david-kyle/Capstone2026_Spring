@@ -1,0 +1,1064 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "headache",
+  "display_name": "Headache",
+  "ui_name": "Headache",
+  "ui_label": "Headache",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "neurological",
+  "related_systems": {
+    "high_yield": [
+      "ophthalmologic",
+      "constitutional_infectious",
+      "musculoskeletal_meningeal"
+    ],
+    "selective_cross_system": [
+      "cardiovascular_vascular",
+      "pregnancy_postpartum"
+    ]
+  },
+  "routing_metadata": {
+    "accepts_handoff_from": [
+      "pain"
+    ],
+    "handoff_behavior": "If routed from pain, do not re-ask generic pain-site questions; continue with headache-specific onset, duration, severity, and early danger screening."
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "onset",
+      "duration",
+      "severity"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then switch to the selected question schedule profile."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 30,
+      "target_question_budget": 35,
+      "max_questions": 40,
+      "early_danger_reserve": 5,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Headache requires thorough red-flag screening. Increased budget to ensure danger follow-ups and modules are completed."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "severity",
+        "sudden_onset",
+        "weakness"
+      ],
+      "selection_rule": "If headache is secondary, ask only the listed priority questions unless a red-flag branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "neurological"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If thunderclap, meningitic, acute neurologic, ocular emergency, or pregnancy-related danger patterns activate, borrow first from extended_characterize and high_priority_followup before using context history reserve.",
+      "If the narrative strongly suggests a typical recurrent primary headache without red flags, cap extended characterization and preserve ROS/context budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity"
+      ],
+      "early_danger_screen": [
+        "sudden_onset",
+        "maximal_at_onset",
+        "worst_headache_of_life",
+        "weakness",
+        "speech_change",
+        "worse_with_valsalva_or_waking",
+        "transient_visual_obscurations"
+      ],
+      "extended_characterize": [
+        "timing",
+        "course",
+        "location",
+        "character",
+        "aggravating_factors",
+        "relieving_factors"
+      ],
+      "critical_followup": [
+        "visual_loss",
+        "diplopia",
+        "confusion_or_ams",
+        "fever",
+        "neck_stiffness",
+        "recent_head_trauma",
+        "pregnancy_or_postpartum_context",
+        "anticoagulant_use"
+      ],
+      "high_priority_followup": [
+        "photophobia",
+        "nausea_or_vomiting",
+        "aura_status",
+        "jaw_pain_with_chewing",
+        "scalp_tenderness",
+        "red_eye_or_eye_pain",
+        "new_or_progressive_pattern"
+      ],
+      "context_and_history": []
+    },
+    "thunderclap_frontload_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity"
+      ],
+      "early_danger_screen": [
+        "sudden_onset",
+        "maximal_at_onset",
+        "worst_headache_of_life",
+        "weakness",
+        "speech_change",
+        "visual_loss",
+        "confusion_or_ams",
+        "recent_head_trauma",
+        "anticoagulant_use"
+      ],
+      "extended_characterize": [
+        "location",
+        "character"
+      ],
+      "critical_followup": [
+        "neck_stiffness",
+        "fever",
+        "pregnancy_or_postpartum_context"
+      ],
+      "high_priority_followup": [
+        "photophobia",
+        "nausea_or_vomiting"
+      ],
+      "context_and_history": []
+    },
+    "typical_recurrent_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity"
+      ],
+      "early_danger_screen": [
+        "sudden_onset",
+        "weakness",
+        "visual_loss"
+      ],
+      "extended_characterize": [
+        "timing",
+        "course",
+        "location",
+        "character",
+        "aggravating_factors",
+        "relieving_factors",
+        "photophobia",
+        "nausea_or_vomiting",
+        "aura_status"
+      ],
+      "critical_followup": [
+        "new_or_progressive_pattern",
+        "red_eye_or_eye_pain",
+        "pregnancy_or_postpartum_context"
+      ],
+      "high_priority_followup": [
+        "jaw_pain_with_chewing",
+        "scalp_tenderness",
+        "aura_status"
+      ],
+      "context_and_history": []
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "thunderclap_or_bleed_risk",
+        "trigger": "Narrative mentions sudden severe onset, worst headache, collapse, anticoagulant use, or trauma",
+        "action": "use thunderclap_frontload_profile"
+      },
+      {
+        "rule_id": "typical_recurrent_primary_headache",
+        "trigger": "Known similar recurrent headaches and no active danger trigger in the opening sequence",
+        "action": "use typical_recurrent_profile"
+      },
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate profile trigger is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did the headache start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How long has this headache been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration"
+    },
+    "severity": {
+      "field": "severity",
+      "phase": "core_characterize",
+      "text": "How severe is it on a scale of 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity"
+    },
+    "sudden_onset": {
+      "field": "sudden_onset",
+      "phase": "early_danger_screen",
+      "text": "Did it come on suddenly rather than building up gradually?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "sudden_onset_details",
+      "if_positive_ask": [
+        "sudden_onset_details"
+      ],
+      "canonical_concept": "sudden_onset"
+    },
+    "sudden_onset_details": {
+      "field": "sudden_onset_details",
+      "phase": "early_danger_screen",
+      "text": "How quickly did it come on? Was it over seconds or minutes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "sudden_onset",
+      "ui_label": "Sudden Onset details",
+      "canonical_question_key": "sudden_onset_details",
+      "canonical_concept": "sudden_onset"
+    },
+    "maximal_at_onset": {
+      "field": "maximal_at_onset",
+      "phase": "early_danger_screen",
+      "text": "Was it at or near its worst intensity within the first minute?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "maximal_at_onset_details",
+      "if_positive_ask": [
+        "maximal_at_onset_details"
+      ],
+      "canonical_concept": "maximal_at_onset"
+    },
+    "maximal_at_onset_details": {
+      "field": "maximal_at_onset_details",
+      "phase": "early_danger_screen",
+      "text": "Can you describe the peak intensity?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "maximal_at_onset",
+      "ui_label": "Maximal At Onset details",
+      "canonical_question_key": "maximal_at_onset_details",
+      "canonical_concept": "maximal_at_onset"
+    },
+    "worst_headache_of_life": {
+      "field": "worst_headache_of_life",
+      "phase": "early_danger_screen",
+      "text": "Is this the worst headache you have ever had?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "worst_headache_of_life_details",
+      "if_positive_ask": [
+        "worst_headache_of_life_details"
+      ],
+      "canonical_concept": "worst_headache_of_life"
+    },
+    "worst_headache_of_life_details": {
+      "field": "worst_headache_of_life_details",
+      "phase": "early_danger_screen",
+      "text": "How does it compare to previous headaches?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "worst_headache_of_life",
+      "ui_label": "Worst Headache Of Life details",
+      "canonical_question_key": "worst_headache_of_life_details",
+      "canonical_concept": "worst_headache_of_life"
+    },
+    "weakness": {
+      "field": "weakness",
+      "phase": "early_danger_screen",
+      "text": "Any weakness in the face, arm, or leg?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "weakness_details",
+      "if_positive_ask": [
+        "weakness_details"
+      ],
+      "canonical_concept": "weakness"
+    },
+    "weakness_details": {
+      "field": "weakness_details",
+      "phase": "early_danger_screen",
+      "text": "Which side? Is it constant or comes and goes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "weakness",
+      "ui_label": "Weakness details",
+      "canonical_question_key": "weakness_details",
+      "canonical_concept": "weakness"
+    },
+    "speech_change": {
+      "field": "speech_change",
+      "phase": "early_danger_screen",
+      "text": "Any trouble speaking or finding words?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "speech_change_details",
+      "if_positive_ask": [
+        "speech_change_details"
+      ],
+      "canonical_concept": "speech_change"
+    },
+    "speech_change_details": {
+      "field": "speech_change_details",
+      "phase": "early_danger_screen",
+      "text": "Slurring, word-finding difficulty, or both?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "speech_change",
+      "ui_label": "Speech Change details",
+      "canonical_question_key": "speech_change_details",
+      "canonical_concept": "speech_change"
+    },
+    "timing": {
+      "field": "timing",
+      "phase": "extended_characterize",
+      "text": "Is it constant, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "timing"
+    },
+    "course": {
+      "field": "course",
+      "phase": "extended_characterize",
+      "text": "Overall since it started, which best fits it now: getting worse, getting better, or staying about the same?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "course"
+    },
+    "location": {
+      "field": "location",
+      "phase": "extended_characterize",
+      "text": "Where is the headache mainly located?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "location"
+    },
+    "character": {
+      "field": "character",
+      "phase": "extended_characterize",
+      "text": "How would you describe it — pressure, throbbing, sharp, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "character"
+    },
+    "aggravating_factors": {
+      "field": "aggravating_factors",
+      "phase": "extended_characterize",
+      "text": "Does anything make it worse, such as coughing, bending, light, or exertion?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors"
+    },
+    "relieving_factors": {
+      "field": "relieving_factors",
+      "phase": "extended_characterize",
+      "text": "Does anything help, such as rest, dark room, or pain medicine?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors"
+    },
+    "visual_loss": {
+      "field": "visual_loss",
+      "phase": "critical_followup",
+      "text": "Any loss of vision or a dark curtain over the vision?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "visual_loss_details",
+      "if_positive_ask": [
+        "visual_loss_details"
+      ],
+      "canonical_concept": "visual_loss"
+    },
+    "visual_loss_details": {
+      "field": "visual_loss_details",
+      "phase": "critical_followup",
+      "text": "One eye or both? Sudden or gradual?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "visual_loss",
+      "ui_label": "Visual Loss details",
+      "canonical_question_key": "visual_loss_details",
+      "canonical_concept": "visual_loss"
+    },
+    "diplopia": {
+      "field": "diplopia",
+      "phase": "critical_followup",
+      "text": "Any double vision?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "diplopia_details",
+      "if_positive_ask": [
+        "diplopia_details"
+      ],
+      "canonical_concept": "diplopia"
+    },
+    "diplopia_details": {
+      "field": "diplopia_details",
+      "phase": "critical_followup",
+      "text": "Horizontal, vertical, or tilted?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "diplopia",
+      "ui_label": "Diplopia details",
+      "canonical_question_key": "diplopia_details",
+      "canonical_concept": "diplopia"
+    },
+    "confusion_or_ams": {
+      "field": "confusion_or_ams",
+      "phase": "critical_followup",
+      "text": "Any confusion, trouble thinking clearly, or unusual sleepiness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "confusion_or_ams_details",
+      "if_positive_ask": [
+        "confusion_or_ams_details"
+      ],
+      "canonical_concept": "confusion_or_ams"
+    },
+    "confusion_or_ams_details": {
+      "field": "confusion_or_ams_details",
+      "phase": "critical_followup",
+      "text": "Is it constant or intermittent?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "confusion_or_ams",
+      "ui_label": "Confusion Or Ams details",
+      "canonical_question_key": "confusion_or_ams_details",
+      "canonical_concept": "confusion_or_ams"
+    },
+    "fever": {
+      "field": "fever",
+      "phase": "critical_followup",
+      "text": "Any fever or feeling feverish?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "fever_details",
+      "if_positive_ask": [
+        "fever_details"
+      ],
+      "canonical_concept": "fever"
+    },
+    "fever_details": {
+      "field": "fever_details",
+      "phase": "critical_followup",
+      "text": "What was the highest temperature?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "fever",
+      "ui_label": "Fever details",
+      "canonical_question_key": "fever_details",
+      "canonical_concept": "fever"
+    },
+    "neck_stiffness": {
+      "field": "neck_stiffness",
+      "phase": "critical_followup",
+      "text": "Any neck stiffness or pain when trying to bend the neck forward?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "neck_stiffness_details",
+      "if_positive_ask": [
+        "neck_stiffness_details"
+      ],
+      "canonical_concept": "neck_stiffness"
+    },
+    "neck_stiffness_details": {
+      "field": "neck_stiffness_details",
+      "phase": "critical_followup",
+      "text": "Can you touch your chin to your chest?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "neck_stiffness",
+      "ui_label": "Neck Stiffness details",
+      "canonical_question_key": "neck_stiffness_details",
+      "canonical_concept": "neck_stiffness"
+    },
+    "recent_head_trauma": {
+      "field": "recent_head_trauma",
+      "phase": "critical_followup",
+      "text": "Any recent head injury or fall?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_head_trauma_details",
+      "if_positive_ask": [
+        "recent_head_trauma_details"
+      ],
+      "canonical_concept": "recent_head_trauma"
+    },
+    "recent_head_trauma_details": {
+      "field": "recent_head_trauma_details",
+      "phase": "critical_followup",
+      "text": "When did it happen? Did you lose consciousness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_head_trauma",
+      "ui_label": "Recent Head Trauma details",
+      "canonical_question_key": "recent_head_trauma_details",
+      "canonical_concept": "recent_head_trauma"
+    },
+    "pregnancy_or_postpartum_context": {
+      "field": "pregnancy_or_postpartum_context",
+      "phase": "critical_followup",
+      "text": "Could you be pregnant now, or are you recently postpartum?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "pregnancy_or_postpartum_context_details",
+      "if_positive_ask": [
+        "pregnancy_or_postpartum_context_details"
+      ],
+      "canonical_concept": "pregnancy_or_postpartum_context"
+    },
+    "pregnancy_or_postpartum_context_details": {
+      "field": "pregnancy_or_postpartum_context_details",
+      "phase": "critical_followup",
+      "text": "How far along? Or how many weeks postpartum?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "pregnancy_or_postpartum_context",
+      "ui_label": "Pregnancy Or Postpartum Context details",
+      "canonical_question_key": "pregnancy_or_postpartum_context_details",
+      "canonical_concept": "pregnancy_or_postpartum_context"
+    },
+    "anticoagulant_use": {
+      "field": "anticoagulant_use",
+      "phase": "critical_followup",
+      "text": "Do you take any blood thinners such as warfarin, apixaban, rivaroxaban, or similar medication?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "anticoagulant_use_details",
+      "if_positive_ask": [
+        "anticoagulant_use_details"
+      ],
+      "canonical_concept": "anticoagulant_use"
+    },
+    "anticoagulant_use_details": {
+      "field": "anticoagulant_use_details",
+      "phase": "critical_followup",
+      "text": "Which medication and dose?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "anticoagulant_use",
+      "ui_label": "Anticoagulant Use details",
+      "canonical_question_key": "anticoagulant_use_details",
+      "canonical_concept": "anticoagulant_use"
+    },
+    "photophobia": {
+      "field": "photophobia",
+      "phase": "high_priority_followup",
+      "text": "Does light make it worse?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "photophobia_details",
+      "if_positive_ask": [
+        "photophobia_details"
+      ],
+      "canonical_concept": "photophobia"
+    },
+    "photophobia_details": {
+      "field": "photophobia_details",
+      "phase": "high_priority_followup",
+      "text": "Do you need to stay in a dark room?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "photophobia",
+      "ui_label": "Photophobia details",
+      "canonical_question_key": "photophobia_details",
+      "canonical_concept": "photophobia"
+    },
+    "nausea_or_vomiting": {
+      "field": "nausea_or_vomiting",
+      "phase": "high_priority_followup",
+      "text": "Any nausea or vomiting with it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "nausea_or_vomiting_details",
+      "if_positive_ask": [
+        "nausea_or_vomiting_details"
+      ],
+      "canonical_concept": "nausea_or_vomiting"
+    },
+    "nausea_or_vomiting_details": {
+      "field": "nausea_or_vomiting_details",
+      "phase": "high_priority_followup",
+      "text": "How many times have you vomited?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "nausea_or_vomiting",
+      "ui_label": "Nausea Or Vomiting details",
+      "canonical_question_key": "nausea_or_vomiting_details",
+      "canonical_concept": "nausea_or_vomiting"
+    },
+    "aura_status": {
+      "field": "aura_status",
+      "phase": "high_priority_followup",
+      "text": "Before the headache starts, do you ever notice a warning such as flashing lights, zig-zag lines, numbness, or another aura?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": false,
+      "if_positive_ask": [
+        "aura_features"
+      ],
+      "canonical_concept": "aura_status",
+      "resolves_concepts": [
+        "aura_warning_presence"
+      ],
+      "detail_field": "aura_features"
+    },
+    "aura_status_details": {
+      "field": "aura_status_details",
+      "phase": "high_priority_followup",
+      "text": "What type of warning do you get?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "aura_status",
+      "ui_label": "Aura Status details",
+      "canonical_question_key": "aura_status_details",
+      "canonical_concept": "aura_status",
+      "deprecated": true,
+      "ask_if": "NEVER"
+    },
+    "aura_features": {
+      "field": "aura_features",
+      "phase": "high_priority_followup",
+      "text": "If you do have a warning, what is it like — for example, visual changes (flashing lights, blind spots, zig-zag lines), sensory changes (numbness, tingling), speech difficulty, or something else?",
+      "response_type": "SHORT_TEXT",
+      "ask_if": "AURA_STATUS_POSITIVE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Aura features",
+      "canonical_question_key": "aura_features",
+      "canonical_concept": "aura_features",
+      "parent_field": "aura_status"
+    },
+    "jaw_pain_with_chewing": {
+      "field": "jaw_pain_with_chewing",
+      "phase": "high_priority_followup",
+      "text": "Any pain in the jaw when chewing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "AGE_GTE_50",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "jaw_pain_with_chewing_details",
+      "if_positive_ask": [
+        "jaw_pain_with_chewing_details"
+      ],
+      "canonical_concept": "jaw_pain_with_chewing"
+    },
+    "jaw_pain_with_chewing_details": {
+      "field": "jaw_pain_with_chewing_details",
+      "phase": "high_priority_followup",
+      "text": "Is it worse after a few bites?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "jaw_pain_with_chewing",
+      "ui_label": "Jaw Pain With Chewing details",
+      "canonical_question_key": "jaw_pain_with_chewing_details",
+      "canonical_concept": "jaw_pain_with_chewing"
+    },
+    "scalp_tenderness": {
+      "field": "scalp_tenderness",
+      "phase": "high_priority_followup",
+      "text": "Is the scalp tender to touch or when brushing the hair?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "AGE_GTE_50",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "scalp_tenderness_details",
+      "if_positive_ask": [
+        "scalp_tenderness_details"
+      ],
+      "canonical_concept": "scalp_tenderness"
+    },
+    "scalp_tenderness_details": {
+      "field": "scalp_tenderness_details",
+      "phase": "high_priority_followup",
+      "text": "Where on the scalp is it tender?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "scalp_tenderness",
+      "ui_label": "Scalp Tenderness details",
+      "canonical_question_key": "scalp_tenderness_details",
+      "canonical_concept": "scalp_tenderness"
+    },
+    "red_eye_or_eye_pain": {
+      "field": "red_eye_or_eye_pain",
+      "phase": "high_priority_followup",
+      "text": "Any red eye or significant eye pain with this headache?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "red_eye_or_eye_pain_details",
+      "if_positive_ask": [
+        "red_eye_or_eye_pain_details"
+      ],
+      "canonical_concept": "red_eye_or_eye_pain"
+    },
+    "red_eye_or_eye_pain_details": {
+      "field": "red_eye_or_eye_pain_details",
+      "phase": "high_priority_followup",
+      "text": "Is the eye red, painful, or both?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "red_eye_or_eye_pain",
+      "ui_label": "Red Eye Or Eye Pain details",
+      "canonical_question_key": "red_eye_or_eye_pain_details",
+      "canonical_concept": "red_eye_or_eye_pain"
+    },
+    "new_or_progressive_pattern": {
+      "field": "new_or_progressive_pattern",
+      "phase": "high_priority_followup",
+      "text": "Is this a new kind of headache for you, or one that has been progressively changing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "new_or_progressive_pattern_details",
+      "if_positive_ask": [
+        "new_or_progressive_pattern_details"
+      ],
+      "canonical_concept": "new_or_progressive_pattern"
+    },
+    "new_or_progressive_pattern_details": {
+      "field": "new_or_progressive_pattern_details",
+      "phase": "high_priority_followup",
+      "text": "How has it changed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "new_or_progressive_pattern",
+      "ui_label": "New Or Progressive Pattern details",
+      "canonical_question_key": "new_or_progressive_pattern_details",
+      "canonical_concept": "new_or_progressive_pattern"
+    },
+    "worse_with_valsalva_or_waking": {
+      "field": "worse_with_valsalva_or_waking",
+      "phase": "early_danger_screen",
+      "text": "Is the headache worse when you cough, strain, or bend down, or is it worst when you first wake up in the morning?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "worse_with_valsalva_or_waking_details",
+      "if_positive_ask": [
+        "worse_with_valsalva_or_waking_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Worse with Valsalva or on waking (raised ICP screen)",
+      "canonical_question_key": "worse_with_valsalva_or_waking",
+      "canonical_concept": "worse_with_valsalva_or_waking"
+    },
+    "worse_with_valsalva_or_waking_details": {
+      "field": "worse_with_valsalva_or_waking_details",
+      "phase": "early_danger_screen",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "worse_with_valsalva_or_waking",
+      "ui_label": "Worse with Valsalva or on waking (raised ICP screen) details",
+      "canonical_question_key": "worse_with_valsalva_or_waking_details",
+      "canonical_concept": "worse_with_valsalva_or_waking"
+    },
+    "transient_visual_obscurations": {
+      "field": "transient_visual_obscurations",
+      "phase": "early_danger_screen",
+      "text": "Do you get brief episodes of vision going grey or dark, lasting a few seconds, especially when bending or straining?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "transient_visual_obscurations_details",
+      "if_positive_ask": [
+        "transient_visual_obscurations_details"
+      ],
+      "ui_label": "Transient visual obscurations (raised ICP)",
+      "canonical_question_key": "transient_visual_obscurations",
+      "canonical_concept": "transient_visual_obscurations"
+    },
+    "transient_visual_obscurations_details": {
+      "field": "transient_visual_obscurations_details",
+      "phase": "early_danger_screen",
+      "text": "How often do they happen? How long do they last?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "transient_visual_obscurations",
+      "ui_label": "Transient visual obscurations (raised ICP) details",
+      "canonical_question_key": "transient_visual_obscurations_details",
+      "canonical_concept": "transient_visual_obscurations"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "thunderclap_pattern": [
+      "sudden_onset",
+      "maximal_at_onset",
+      "worst_headache_of_life"
+    ],
+    "acute_neurologic_pattern": [
+      "weakness",
+      "speech_change",
+      "visual_loss",
+      "diplopia"
+    ],
+    "meningitic_pattern": [
+      "fever",
+      "neck_stiffness",
+      "confusion_or_ams"
+    ],
+    "ocular_emergency_pattern": [
+      "visual_loss",
+      "diplopia",
+      "red_eye_or_eye_pain"
+    ],
+    "pregnancy_related_pattern": [
+      "pregnancy_or_postpartum_context"
+    ],
+    "bleeding_risk_pattern": [
+      "anticoagulant_use",
+      "recent_head_trauma"
+    ],
+    "raised_icp_pattern": {
+      "fields": [
+        "worse_with_valsalva_or_waking",
+        "transient_visual_obscurations",
+        "worst_headache_of_life"
+      ],
+      "min_matches": 1,
+      "description": "Headache worse with Valsalva, on waking, or with transient visual obscurations — suggests raised intracranial pressure."
+    }
+  },
+  "targeted_ros_plan": {
+    "primary_system": "neurological",
+    "high_yield_concepts": [
+      "weakness",
+      "speech_change",
+      "visual_loss",
+      "diplopia"
+    ],
+    "cross_system_concepts": [
+      "fever",
+      "neck_stiffness",
+      "photophobia",
+      "nausea_or_vomiting"
+    ]
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ],
+      "rule": "Render unanswered but still clinically important items at session end."
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ],
+      "rule": "Render active patterns and escalation tier into the Flags section."
+    }
+  },
+  "acuity_tier": "high"
+}

@@ -1,0 +1,639 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "constipation",
+  "display_name": "Constipation",
+  "ui_name": "Constipation",
+  "ui_label": "Constipation",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "gastrointestinal",
+  "related_systems": {
+    "high_yield": [
+      "constitutional_infectious",
+      "gastrointestinal",
+      "genitourinary"
+    ],
+    "selective": [
+      "gynecologic",
+      "medication_substance"
+    ],
+    "contextual": [
+      "pregnancy_context"
+    ]
+  },
+  "pivot_triggers": {
+    "abdominal_pain": "acute_abdomen_pattern",
+    "vomiting": "obstruction_pattern",
+    "weight_loss": "high_risk_host_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "onset",
+      "duration",
+      "frequency",
+      "consistency"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 25,
+      "target_question_budget": 28,
+      "max_questions": 32,
+      "early_danger_reserve": 3,
+      "ros_reserve": 2,
+      "context_history_reserve": 2,
+      "rationale": "Constipation requires obstruction and bleeding screening. Increased budget slightly to ensure red flags are covered."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 3,
+      "secondary_question_budget_override_if_red_flag": 5,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "frequency"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 2,
+      "max_ros_questions": 3,
+      "pathological_system_first": true,
+      "pathological_system": "gastrointestinal"
+    },
+    "context_mode": {
+      "target_context_questions": 2,
+      "max_context_questions": 3
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "frequency",
+        "consistency",
+        "abdominal_pain"
+      ],
+      "early_danger_screen": [
+        "abdominal_distension",
+        "unable_to_pass_stool_or_flatus",
+        "persistent_vomiting",
+        "blood_in_stool"
+      ],
+      "extended_characterize": [
+        "course",
+        "functional_impact"
+      ],
+      "critical_followup": [
+        "fever"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "weight_loss",
+        "prior_abdominal_surgery",
+        "medication_induced_constipation",
+        "hypothyroid_screen",
+        "neurological_bowel_screen",
+        "rectal_bleeding_constipation"
+      ],
+      "context_and_history": []
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did the constipation start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Onset",
+      "canonical_question_key": "onset",
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How long has it been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Duration",
+      "canonical_question_key": "duration",
+      "canonical_concept": "duration"
+    },
+    "frequency": {
+      "field": "frequency",
+      "phase": "core_characterize",
+      "text": "How often are you opening your bowels now?",
+      "response_type": "COUNT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Frequency",
+      "canonical_question_key": "frequency",
+      "canonical_concept": "frequency"
+    },
+    "consistency": {
+      "field": "consistency",
+      "phase": "core_characterize",
+      "text": "Are the stools hard or difficult to pass?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "consistency_details",
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Consistency",
+      "canonical_question_key": "consistency",
+      "if_positive_ask": [
+        "consistency_details"
+      ],
+      "canonical_concept": "consistency"
+    },
+    "course": {
+      "field": "course",
+      "phase": "extended_characterize",
+      "text": "Overall since it started, which best fits it now: getting worse, getting better, or staying about the same?",
+      "response_type": "TEMPORAL_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Course",
+      "canonical_question_key": "course",
+      "canonical_concept": "course"
+    },
+    "abdominal_pain": {
+      "field": "abdominal_pain",
+      "phase": "core_characterize",
+      "text": "Do you have abdominal pain or cramping with it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "abdominal_pain_details",
+      "if_positive_ask": [
+        "abdominal_pain_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Abdominal Pain",
+      "canonical_question_key": "abdominal_pain",
+      "canonical_concept": "abdominal_pain"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms came with it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "functional_impact": {
+      "field": "functional_impact",
+      "phase": "extended_characterize",
+      "text": "What does it stop you from doing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Functional impact",
+      "canonical_question_key": "functional_impact",
+      "canonical_concept": "functional_impact"
+    },
+    "abdominal_distension": {
+      "field": "abdominal_distension",
+      "phase": "early_danger_screen",
+      "text": "Is the abdomen swollen or distended?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Abdominal distension",
+      "canonical_question_key": "abdominal_distension",
+      "canonical_concept": "abdominal_distension"
+    },
+    "unable_to_pass_stool_or_flatus": {
+      "field": "unable_to_pass_stool_or_flatus",
+      "phase": "early_danger_screen",
+      "text": "Have you stopped passing stool or gas?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "unable_to_pass_stool_or_flatus_details",
+      "if_positive_ask": [
+        "unable_to_pass_stool_or_flatus_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Unable to pass stool or flatus",
+      "canonical_question_key": "unable_to_pass_stool_or_flatus",
+      "canonical_concept": "unable_to_pass_stool_or_flatus"
+    },
+    "unable_to_pass_stool_or_flatus_details": {
+      "field": "unable_to_pass_stool_or_flatus_details",
+      "phase": "early_danger_screen",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Unable to pass stool or flatus details",
+      "canonical_question_key": "unable_to_pass_stool_or_flatus_details",
+      "parent_field": "unable_to_pass_stool_or_flatus",
+      "canonical_concept": "unable_to_pass_stool_or_flatus"
+    },
+    "persistent_vomiting": {
+      "field": "persistent_vomiting",
+      "phase": "early_danger_screen",
+      "text": "Any repeated vomiting or inability to keep fluids down?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "persistent_vomiting_details",
+      "if_positive_ask": [
+        "persistent_vomiting_details"
+      ],
+      "ui_label": "Persistent vomiting",
+      "canonical_question_key": "persistent_vomiting",
+      "canonical_concept": "persistent_vomiting"
+    },
+    "persistent_vomiting_details": {
+      "field": "persistent_vomiting_details",
+      "phase": "early_danger_screen",
+      "text": "How many times have you vomited? Can you keep any fluids down?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Persistent vomiting details",
+      "canonical_question_key": "persistent_vomiting_details",
+      "parent_field": "persistent_vomiting",
+      "canonical_concept": "persistent_vomiting"
+    },
+    "blood_in_stool": {
+      "field": "blood_in_stool",
+      "phase": "early_danger_screen",
+      "text": "Is there red blood in the stool itself, not just on the paper?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "blood_in_stool_details",
+      "if_positive_ask": [
+        "blood_in_stool_details"
+      ],
+      "ui_label": "Blood in stool",
+      "canonical_question_key": "blood_in_stool",
+      "canonical_concept": "blood_in_stool"
+    },
+    "fever": {
+      "field": "fever",
+      "phase": "critical_followup",
+      "text": "Any fever or chills?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "fever_details",
+      "if_positive_ask": [
+        "fever_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Fever",
+      "canonical_question_key": "fever",
+      "canonical_concept": "fever"
+    },
+    "fever_details": {
+      "field": "fever_details",
+      "phase": "critical_followup",
+      "text": "Please describe the fever or chills briefly, including temperature if known.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Fever details",
+      "canonical_question_key": "fever_details",
+      "parent_field": "fever",
+      "canonical_concept": "fever"
+    },
+    "weight_loss": {
+      "field": "weight_loss",
+      "phase": "high_priority_followup",
+      "text": "Have you been losing weight unintentionally?",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Weight loss",
+      "canonical_question_key": "weight_loss",
+      "canonical_concept": "weight_loss"
+    },
+    "prior_abdominal_surgery": {
+      "field": "prior_abdominal_surgery",
+      "phase": "high_priority_followup",
+      "text": "Any abdominal surgery or hernia history?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "prior_abdominal_surgery_details",
+      "if_positive_ask": [
+        "prior_abdominal_surgery_details"
+      ],
+      "compound_question": false,
+      "extract_entities_if_positive": true,
+      "ui_label": "Prior abdominal surgery",
+      "canonical_question_key": "prior_abdominal_surgery",
+      "canonical_concept": "prior_abdominal_surgery"
+    },
+    "prior_abdominal_surgery_details": {
+      "field": "prior_abdominal_surgery_details",
+      "phase": "high_priority_followup",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Prior abdominal surgery details",
+      "canonical_question_key": "prior_abdominal_surgery_details",
+      "parent_field": "prior_abdominal_surgery",
+      "canonical_concept": "prior_abdominal_surgery"
+    },
+    "medication_induced_constipation": {
+      "field": "medication_induced_constipation",
+      "phase": "high_priority_followup",
+      "text": "Are you taking any medicines that might cause constipation, such as painkillers, iron tablets, antacids, or blood pressure tablets?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "medication_induced_constipation_details",
+      "if_positive_ask": [
+        "medication_induced_constipation_details"
+      ],
+      "ui_label": "Medication-induced constipation",
+      "canonical_question_key": "medication_induced_constipation",
+      "canonical_concept": "medication_induced_constipation"
+    },
+    "medication_induced_constipation_details": {
+      "field": "medication_induced_constipation_details",
+      "phase": "high_priority_followup",
+      "text": "Which medications and doses?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Medication-induced constipation details",
+      "canonical_question_key": "medication_induced_constipation_details",
+      "parent_field": "medication_induced_constipation",
+      "canonical_concept": "medication_induced_constipation"
+    },
+    "hypothyroid_screen": {
+      "field": "hypothyroid_screen",
+      "phase": "high_priority_followup",
+      "text": "Have you felt unusually cold, tired, or noticed dry skin, weight gain, or sluggishness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "DURATION_GTE_4_WEEKS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "hypothyroid_screen_details",
+      "if_positive_ask": [
+        "hypothyroid_screen_details"
+      ],
+      "ui_label": "Hypothyroid symptoms",
+      "canonical_question_key": "hypothyroid_screen",
+      "canonical_concept": "hypothyroid_screen"
+    },
+    "hypothyroid_screen_details": {
+      "field": "hypothyroid_screen_details",
+      "phase": "high_priority_followup",
+      "text": "When did these symptoms start? Have you had thyroid tests before?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Hypothyroid screen details",
+      "canonical_question_key": "hypothyroid_screen_details",
+      "parent_field": "hypothyroid_screen",
+      "canonical_concept": "hypothyroid_screen"
+    },
+    "neurological_bowel_screen": {
+      "field": "neurological_bowel_screen",
+      "phase": "high_priority_followup",
+      "text": "Any new leg weakness, back pain, numbness around the bottom, or difficulty with bladder control?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "DURATION_GTE_4_WEEKS_AND_AGE_GTE_65",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "neurological_bowel_screen_details",
+      "if_positive_ask": [
+        "neurological_bowel_screen_details"
+      ],
+      "ui_label": "Neurological bowel screen",
+      "canonical_question_key": "neurological_bowel_screen",
+      "canonical_concept": "neurological_bowel_screen"
+    },
+    "neurological_bowel_screen_details": {
+      "field": "neurological_bowel_screen_details",
+      "phase": "high_priority_followup",
+      "text": "Which leg? Is it weakness, numbness, or both?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Neurological bowel screen details",
+      "canonical_question_key": "neurological_bowel_screen_details",
+      "parent_field": "neurological_bowel_screen",
+      "canonical_concept": "neurological_bowel_screen"
+    },
+    "rectal_bleeding_constipation": {
+      "field": "rectal_bleeding_constipation",
+      "phase": "high_priority_followup",
+      "text": "Any blood when wiping or in the toilet?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "rectal_bleeding_constipation_details",
+      "if_positive_ask": [
+        "rectal_bleeding_constipation_details"
+      ],
+      "ui_label": "Rectal bleeding",
+      "canonical_question_key": "rectal_bleeding_constipation",
+      "canonical_concept": "rectal_bleeding_constipation"
+    },
+    "rectal_bleeding_constipation_details": {
+      "field": "rectal_bleeding_constipation_details",
+      "phase": "high_priority_followup",
+      "text": "Is the blood bright red or dark? On the paper or in the bowl?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Rectal bleeding details",
+      "canonical_question_key": "rectal_bleeding_constipation_details",
+      "parent_field": "rectal_bleeding_constipation",
+      "canonical_concept": "rectal_bleeding_constipation"
+    },
+    "abdominal_pain_details": {
+      "field": "abdominal_pain_details",
+      "phase": "core_characterize",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Abdominal pain details",
+      "canonical_question_key": "abdominal_pain_details",
+      "parent_field": "abdominal_pain",
+      "canonical_concept": "abdominal_pain"
+    },
+    "blood_in_stool_details": {
+      "field": "blood_in_stool_details",
+      "phase": "early_danger_screen",
+      "text": "Can you describe the blood — is it bright red, dark, or mixed into the stool? Roughly how much?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Blood in stool details",
+      "canonical_question_key": "blood_in_stool_details",
+      "parent_field": "blood_in_stool",
+      "canonical_concept": "blood_in_stool"
+    },
+    "consistency_details": {
+      "field": "consistency_details",
+      "phase": "core_characterize",
+      "text": "Please describe that briefly.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "ui_label": "Consistency details",
+      "canonical_question_key": "consistency_details",
+      "parent_field": "consistency",
+      "canonical_concept": "consistency"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "obstruction_pattern": [
+      "abdominal_distension",
+      "unable_to_pass_stool_or_flatus",
+      "persistent_vomiting"
+    ],
+    "gi_bleeding_pattern": [
+      "blood_in_stool"
+    ],
+    "high_risk_host_pattern": [
+      "fever",
+      "weight_loss"
+    ]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "gastrointestinal",
+    "high_yield_systems": [
+      "constitutional_infectious",
+      "gastrointestinal",
+      "genitourinary"
+    ],
+    "cross_system_systems": [
+      "gynecologic",
+      "medication_substance",
+      "pregnancy_context"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "medium"
+}
