@@ -673,10 +673,35 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
                             overwrite=False,
                             continue_session=True)
             # TODO: generate a question from the list of symptoms in KG
-            
+            symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+            symptom_list = ", ".join(symptom_list)
+            try:
+                system_instruction = {
+                    "role": "system",
+                    "content": (
+                        "You are a clinical intake bot. "
+                        f"""Take the following list of symptoms: {symptom_list} and 
+                            form a question that narrows down which symptom to focus on for a 
+                            patient. Use these messages for context: {drilldown_conversation}.
+                        """
+                        "STRICT RULES: "
+                        "1. Ask only ONE question at a time. "
+                        "2. Keep responses under 15 words. "
+                        "3. Make sure language is easily understandable and non-threatening. "
+                        "4. Refer to symptoms in layman's terms that anyone could understand. "
+                        # "5. Assume the patient cannot describe the exact symptoms themselves, and refer to something they may feel or see. "
+                        # "6. Do not mention the biological system you are focusing on. "
+                        "5. No pleasantries or small talk. "
+                        # "6. Be direct and precise."
+                    )
+                }
+                response = ollama.chat(model=MODEL, messages=[system_instruction])
+                response = response['message']['content']
+            except Exception as e:
+                response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
             # TODO: start ranking in another function (will move out of this one now)
 
-            response = f'Will generate first question to narrow down symptom from {freq_system}'
+            # response = f'Will generate first question to narrow down symptom from {freq_system}'
 
         # response = 'Drilldown continued response forthcoming'
     # print(response)

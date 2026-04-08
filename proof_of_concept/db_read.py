@@ -355,6 +355,7 @@ def check_repeating_strings(data_list):
             return item
 
     return None
+    
 
 
 if __name__ == '__main__':
