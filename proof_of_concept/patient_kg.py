@@ -16,7 +16,8 @@ from llm_processing import (llm_symptom_check,
                             generate_summary,
                             system_grouping,
                             form_system_question,
-                            drilldown_system)
+                            drilldown_system,
+                            drilldown_symptom)
 
 # ==========================================
 # PART 1: SYSTEM CONFIGURATION
@@ -195,7 +196,6 @@ if prompt:
     # -------------------------------------------------------------------------------------
     # 2: Drill down to affected system
     # -------------------------------------------------------------------------------------
-    # TODO: use phase number instead
     elif st.session_state.question_phase == 2:
         # drilldown on system
         # update turn table with current patient dialogue
@@ -215,11 +215,13 @@ if prompt:
         st.session_state.question_phase = current_phase
 
     # -------------------------------------------------------------------------------------
-    # 3: Drill down to specific system
+    # 3: Drill down to specific symptom
     # -------------------------------------------------------------------------------------
     elif st.session_state.question_phase == 3:
-        response = '2nd question to narrow down system from freq_system'
-        
+        # update turn table with current patient dialogue
+        add_turn_data(session_id, datetime.now(), 'patient', prompt)
+        # generate new prompt from filtered systems
+        response = drilldown_symptom(prompt, session_id, st.session_state.turn_number)
     else:
         # likely end conversation here
         pass

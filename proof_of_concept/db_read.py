@@ -356,7 +356,27 @@ def check_repeating_strings(data_list):
 
     return None
     
+def get_symptom_rankings(session_id, turn_number):
+    """
+    Retrieves rankings from the SystemRank table based on the session ID and turn number.
 
+    Args:
+        session_id (int): The ID of the session
+        turn_number (int): The turn in the conversation
+
+    Returns:
+        df (pd.DataFrame): A DataFrame containing the rank, system and drilldown_start 
+        columns from the SystemRank table for the specified session ID and turn number.
+    """
+    conn, cursor = get_connection()
+    sql = f'''
+        SELECT rank, symptom
+        FROM SymptomRank 
+        WHERE SessionId = {session_id}
+            AND turn_number = {turn_number}
+        '''
+    df = pd.read_sql(sql, conn)
+    return df
 
 if __name__ == '__main__':
     pass

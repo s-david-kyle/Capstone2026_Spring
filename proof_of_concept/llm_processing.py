@@ -537,7 +537,7 @@ def form_system_question(session_id, turn_number, symptom):
 def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, current_phase):
     # query DB with session_id, turn_number
     df = get_system_symptom_df(session_id, turn_number)
-    print('drilldown symptom:', df)
+    print('drilldown system:', df)
     # pull unique systems
     systems = df['system'].unique().tolist()
     systems_str = ", ".join(systems)
@@ -699,18 +699,66 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
                 response = response['message']['content']
             except Exception as e:
                 response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
-            # TODO: start ranking in another function (will move out of this one now)
 
-            # response = f'Will generate first question to narrow down symptom from {freq_system}'
-
-        # response = 'Drilldown continued response forthcoming'
-    # print(response)
-
-    
     # indicates symptom_drilldown_start is over
     drilldown_start = False
     # need to add extra turn since decremented for this function
     return response, turn_number + 2, drilldown_start, current_phase
+
+def drilldown_symptom(prompt, session_id, turn_number):
+    # TODO: pull a list of the symptoms from db (SymptomSystemKG)
+    system_symptom_df = get_system_symptom_df(session_id, turn_number)
+    symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+    print('Drilldown symptom list:', symptom_list)
+    # TODO: pull history of discussion from db (Turn)
+    discussion = get_conversations(session_id)
+    result = ""
+    for index, row in discussion.iterrows():
+        speaker = row["Speaker"]
+        message = row["Message"]
+        result += f"'{speaker}: {message}'"
+    # TODO: create a new ranking of symptoms (store in new SymptomRank table)
+    system_instruction = {
+        "role": "system",
+        "content": (
+            "You are a clinical intake bot. "
+            f"""Take the following list of symptoms: {symptom_list} and 
+                the discussion that has stated: {discussion}, and rank the symptoms in the
+                order that they may likely the most affected based on the discussion.
+            """
+            "STRICT RULES: "
+            "The response must be formatted as followed: "
+            "1. Show the ranking number, followed by a colon and then the symptom"
+            "2. Only include this formatted text in the response"
+            "3. Do not include any notes or explanations"
+        )
+    }
+    response = ollama.chat(model=MODEL, messages=[system_instruction])
+    response = response['message']['content']
+    # except Exception as e:
+    #     response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+        
+    # parse and log rankings in the database
+    lines = response.strip().split('\n')
+    data = [] # store rankings here
+    for line in lines:
+        match = re.match(r"(\d+): (.*)", line)
+        if match:
+            # formatting symptom - relation - system
+            rank = int(match.group(1))
+            relationship = match.group(2)
+            data.append({'rank': rank, 'symptom': relationship})
+    symptom_rank = pd.DataFrame(data)
+    print('system_rank df:', symptom_rank)
+    
+    # log rank, system, session_id, turn_number, something to indicate start of drilldown
+    symptom_rank['SessionId'] = session_id
+    symptom_rank['turn_number'] = turn_number
+    symptom_rank['timestamp'] = dt.now()
+    push_ranking_to_db(symptom_rank, 'SymptomRank', session_id)
+    # TODO: generate next question
+    response = '2nd question to narrow down system from freq_system'
+    return response
 
 if __name__ == "__main__":
     pass
