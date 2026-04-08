@@ -1,9 +1,11 @@
 import streamlit as st
-from yfiles_graphs_for_streamlit import StreamlitGraphWidget, Node, Edge
+from yfiles_graphs_for_streamlit import StreamlitGraphWidget, Node, Edge, Layout, EdgeStyle
 import json
 import os
 from datetime import datetime
 import pandas as pd
+from external_data_pull import umls_knowledge_graph, symptom_drill_down
+from llm_processing import system_grouping
 
 # team modules
 from external_data_pull import umls_retrieval
@@ -11,9 +13,13 @@ from db_read import (get_session_ids, get_conversations,
                      get_summary,
                      check_for_conversation_kg,
                      get_conversation_kg,
-                     filter_conversation_kg)
+                     filter_conversation_kg,
+                     retreive_system_symptom_kg,
+                     get_turns,
+                     get_rankings,
+                     get_symptom_rankings)
 from db_write import (push_kg_to_db, update_post_summary)
-from knowledge_graph import (create_demo_graph, convert_df_to_kg)
+from knowledge_graph import (convert_df_to_kg)
 from llm_processing import (llm_process_knowledge_graph)
 
 # ==========================================
@@ -26,15 +32,26 @@ FILE_PATH = os.path.join(SCRIPT_DIR, "patient_records.json")
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
 
+# initial state vars
+if "checkbox_list" not in st.session_state:
+    st.session_state.checkbox_list = []
+
+if "selected_symptom" not in st.session_state:
+    st.session_state.selected_symptom = None
+
+if "include_all_semantics" not in st.session_state:
+    st.session_state.include_all_semantics = False
+
+# if "selected_turn" not in st.session_state:
+#     st.session_state.selected_turn = 1
+
 # ==========================================
 # USER INTERFACE (STREAMLIT)
 # ==========================================
 
 st.set_page_config(page_title="Doctor Summary", page_icon="🩺")
 st.title("🩺 Diagnosis Tool")
-# initial state vars
-if "checkbox_list" not in st.session_state:
-    st.session_state.checkbox_list = []
+
 
 # Sidebar for actions
 st.sidebar.header("Session filters")
@@ -45,19 +62,36 @@ selected_session = st.sidebar.selectbox(
     session_ids
 )
 
+# dropdown for conversation turns
+turn_numbers = get_turns(selected_session)
+selected_turn = st.sidebar.selectbox(
+    'Choose conversation turn',
+    turn_numbers
+)
+
 col1, col2 = st.columns(2)
 with col1:
     st.write('#### Pre Summary')
     # presummary
     summary = get_summary(selected_session)
-    st.markdown(summary['PreSummary'][0])
+    # need to have check here to avoid crash if summary not generated
+    try:
+        st.markdown(summary['PreSummary'][0])
+    except:
+        st.markdown('No Pre Summary available')
 with col2:
     st.write('#### Post Summary')
     # Editable text box
     summary = get_summary(selected_session)
-    post_summary = st.text_area("Enter notes:", 
-                                summary['PostSummary'][0],
-                                height="stretch")
+    # check for data present
+    try:
+        post_summary = st.text_area("Enter notes:", 
+                                    summary['PostSummary'][0],
+                                    height="stretch")
+    except:
+        post_summary = st.text_area("Enter notes:", 
+                                    '',
+                                    height="stretch")
     if st.button("Save Post Summary", width='stretch'):
         # update database
         update_post_summary(selected_session, post_summary)
@@ -67,6 +101,7 @@ st.write('#### Conversation Log')
 conversations = get_conversations(selected_session)
 st.dataframe(conversations)
 
+st.write('#### Conversation Graph')
 # knowledge graph rendering
 # check to see if graph exists in database
 is_conversation_kg = check_for_conversation_kg(selected_session)
@@ -79,12 +114,15 @@ if is_conversation_kg:
 else:
     df_kg = llm_process_knowledge_graph(selected_session)
 # push this to database for retreival/filtering/persistence
-push_kg_to_db(df_kg, selected_session)
+push_kg_to_db(df_kg, selected_session, 'KnowledgeGraphs')
 graph = convert_df_to_kg(df_kg)
 
 # convert graph for visualization
 graph = StreamlitGraphWidget.from_graph(graph)
 graph.show(overview=False)
+
+
+
 
 # checkboxes for knowledge graph relationships
 options = df_kg.relation.drop_duplicates().to_list()
@@ -103,4 +141,49 @@ if st.sidebar.button("Filter relationships"):
 if st.sidebar.button("Generate Knowledge Graph"):
     new_df_kg = llm_process_knowledge_graph(selected_session)
     print('New kg:', new_df_kg.head())
-    push_kg_to_db(new_df_kg, selected_session, overwrite=True)
+    push_kg_to_db(new_df_kg, selected_session, 'KnowledgeGraphs', overwrite=True)
+
+# ==========================================
+# UMLS Querying / Knowledge Graph
+# ==========================================
+
+# place temporary input box to type a primary symptom for UMLS query
+# primary_symptom = st.sidebar.text_input("Enter Symptom for UMLS:")
+# if st.session_state.selected_symptom:
+#     primary_symptom = st.session_state.selected_symptom
+# umls_symptoms = umls_knowledge_graph(primary_symptom, 50) # 20 is good for testing
+
+# pulls KG from database
+symptom_system_graph = retreive_system_symptom_kg(selected_session, selected_turn)
+
+# show grouped systems
+st.write('#### Symptom System Group Drill Down')
+symptom_system_graph = StreamlitGraphWidget.from_graph(symptom_system_graph)
+symptom_system_graph.show(overview=False)
+
+# st.sidebar.write("Selected Edges: ", ", ".join(str(edge["id"]) for edge in selected_edges))
+# st.sidebar.write("Selected Nodes: ", ", ".join(str(node["properties"]["label"]) for node in selected_nodes))
+
+st.write('#### System Rankings Based on Patient Statements')
+rankings = get_rankings(selected_session, selected_turn)
+st.dataframe(rankings)
+
+st.write('#### Symptom Rankings Based on Patient Statements')
+symptom_rankings = get_symptom_rankings(selected_session, selected_turn)
+st.dataframe(symptom_rankings)
+
+# TODO: try implmenting this interactive search functionality later
+# if node selected, run another UMLS query and refresh
+# print(type(selected_nodes))
+# if selected_nodes:
+#     # assuming only 1 node is ever selected
+#     st.session_state.selected_symptom = selected_nodes[0]['properties']['label']
+#     print(selected_nodes[0]['properties']['label'])
+#     st.session_state.include_all_semantics = True
+
+# button to clear symptom
+if st.sidebar.button("Clear symptom graph"):
+    # filter conversation_kg by checkbox_list
+    st.session_state.selected_symptom = None
+    st.session_state.include_all_semantics = False
+
