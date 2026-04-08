@@ -32,11 +32,14 @@ if "turn_number" not in st.session_state:
 if "session_id" not in st.session_state:
     st.session_state.session_id = get_session_id()
 
-if "symptom_drilldown" not in st.session_state:
-    st.session_state.symptom_drilldown = False
+if "system_drilldown" not in st.session_state:
+    st.session_state.system_drilldown = False
 
-if "symptom_drilldown_start" not in st.session_state:
-    st.session_state.symptom_drilldown_start = False
+if "system_drilldown_start" not in st.session_state:
+    st.session_state.system_drilldown_start = False
+
+if "question_phase" not in st.session_state:
+    st.session_state.question_phase = 1
 
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
@@ -142,7 +145,12 @@ if prompt:
 
     # pull symptoms here, place data inside db Session.SecondaryComplaint at the end
     # new_symptoms = llm_symptom_check(prompt)
-    if st.session_state.symptom_drilldown == False:
+
+    # -------------------------------------------------------------------------------------
+    # 1: research intial response and build knowledge graph of related symptoms and systems
+    # -------------------------------------------------------------------------------------
+    # if st.session_state.system_drilldown == False:
+    if st.session_state.question_phase == 1:
         # gather list of symptoms and systems, create kg to search through
         new_symptom = llm_single_symptom_check(prompt)
         st.session_state.symptoms.append(new_symptom)
@@ -152,8 +160,7 @@ if prompt:
         # call UMLS API and push terms to session_state
         # UI-Safe UMLS call: Prevents crashing if API Key is missing
         try:
-            # TODO: put UMLS KG function call here
-            # new_umls_terms = umls_retrieval(new_symptom)
+            # UMLS KG function call here
             umls_symptoms = umls_knowledge_graph(new_symptom, 50)  # modify number for tests
             symtom_system_graph = system_grouping(umls_symptoms, 
                                                 new_symptom, 
@@ -173,34 +180,55 @@ if prompt:
 
         # UPGRADE: Use Status container for a smoother UI animation
         with st.status("Analyzing symptoms...", expanded=False) as status:
-            # put call to form_system_question here
+            # put call to form_system_question here to start next phase of system drilldown
             response = form_system_question(session_id, st.session_state.turn_number, new_symptom)
             # increment turn
             st.session_state.turn_number += 1
             # move to drill down sytem next turn
-            st.session_state.symptom_drilldown = True
-            st.session_state.symptom_drilldown_start = True
+            # st.session_state.system_drilldown = True
+            # TODO: change to increment phase by 1 here
+            st.session_state.question_phase += 1
+            st.session_state.system_drilldown_start = True
             # response = get_llm_response(st.session_state.messages)
             status.update(label="Response ready!", state="complete", expanded=False)
-    else:
-        # drilldown on symptom
+
+    # -------------------------------------------------------------------------------------
+    # 2: Drill down to affected system
+    # -------------------------------------------------------------------------------------
+    # TODO: use phase number instead
+    elif st.session_state.question_phase == 2:
+        # drilldown on system
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # pull most recent symptom into this function calls
-        response, turn_number, symptom_drilldown_start = drilldown_system(session_id, 
+        response, turn_number, system_drilldown_start, current_phase = drilldown_system(session_id, 
                                                 st.session_state.turn_number - 1, 
                                                 st.session_state.symptoms[-1], # grabs last extracted symptom
                                                 prompt,
-                                                st.session_state.symptom_drilldown_start)
+                                                st.session_state.system_drilldown_start,
+                                                st.session_state.question_phase)
         # want to note what turn drilldown_start happened
-        st.session_state.symptom_drilldown_start = symptom_drilldown_start
+        st.session_state.system_drilldown_start = system_drilldown_start
         # update state turn_number
         st.session_state.turn_number = turn_number
-        
+        # TODO: update session_state.question_phase
+        st.session_state.question_phase = current_phase
 
-        
+    # -------------------------------------------------------------------------------------
+    # 3: Drill down to specific system
+    # -------------------------------------------------------------------------------------
+    elif st.session_state.question_phase == 3:
+        response = '2nd question to narrow down system from freq_system'
+
+    else:
+        # likely end conversation here
+        pass
+    
+    
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
+    
+    # log system message to database
     add_turn_data(session_id, datetime.now(), 'system', response)
 
     # TODO: temporarily disabling while question logic is being modified

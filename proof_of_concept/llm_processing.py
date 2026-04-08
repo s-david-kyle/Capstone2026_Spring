@@ -14,7 +14,8 @@ from config import MODEL
 from db_read import (get_conversations, 
                      get_system_symptom_df, 
                      get_previous_drilldown_messages,
-                     check_prev_rank_1)
+                     check_prev_rank_1,
+                     retreive_system_symptom_kg)
 from knowledge_graph import convert_df_to_kg
 from db_write import push_kg_to_db, push_ranking_to_db
 
@@ -533,7 +534,7 @@ def form_system_question(session_id, turn_number, symptom):
         response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
     return response
 
-def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
+def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, current_phase):
     # query DB with session_id, turn_number
     df = get_system_symptom_df(session_id, turn_number)
     print('drilldown symptom:', df)
@@ -622,41 +623,60 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
         drilldown_conversation, drilldown_datetime = get_previous_drilldown_messages(session_id)
         print(drilldown_conversation)
         # start from turn where drilldown start is true (first true since current turn)
-        # TODO: pull rank 1 systems for all previous rankings
+        # pull rank 1 systems for all previous rankings and see if there are 3 reoccuring
         freq_system = check_prev_rank_1(session_id, drilldown_datetime)
-        # TODO: check if there are 3 matches for rank 1 system, if so decide on that system, turn off system drill down 
+        # if there are 3 matches for rank 1 system, decide on that system, turn off system drill down 
         if freq_system:
             print(f'Will focus on: {freq_system}')
-            # TODO: modify some state var to move out of this phase
+            # modify some phase var to move out of this phase
+            current_phase = 3
         else:
             print('Still locating system for focus')
-        # TODO: put an if statement here to skip this after focus found
-        # generate next question to drill down on system
-        try:
-            system_instruction = {
-                "role": "system",
-                "content": (
-                    "You are a clinical intake bot. "
-                    f"""Take the following list of biological systems: {systems_str} and 
-                        form a question that narrows down which system to focus on for a 
-                        patient with a symptom of {symptom}. Use these messages for 
-                        context: {drilldown_conversation}.
-                    """
-                    "STRICT RULES: "
-                    "1. Ask only ONE question at a time. "
-                    "2. Keep responses under 15 words. "
-                    "3. Make sure language is easily understandable and non-threatening. "
-                    "4. Refer to biological systems in layman's terms that anyone could understand. "
-                    "5. Assume the patient cannot describe the systems themselves, and refer to something they may feel or see. "
-                    "6. Do not mention the biological system you are focusing on. "
-                    "7. No pleasantries or small talk. "
-                    # "6. Be direct and precise."
-                )
-            }
-            response = ollama.chat(model=MODEL, messages=[system_instruction])
-            response = response['message']['content']
-        except Exception as e:
-            response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+            current_phase = 2
+        # skip this after focus found
+        if current_phase == 2:
+            # generate next question to drill down on system
+            try:
+                system_instruction = {
+                    "role": "system",
+                    "content": (
+                        "You are a clinical intake bot. "
+                        f"""Take the following list of biological systems: {systems_str} and 
+                            form a question that narrows down which system to focus on for a 
+                            patient with a symptom of {symptom}. Use these messages for 
+                            context: {drilldown_conversation}.
+                        """
+                        "STRICT RULES: "
+                        "1. Ask only ONE question at a time. "
+                        "2. Keep responses under 15 words. "
+                        "3. Make sure language is easily understandable and non-threatening. "
+                        "4. Refer to biological systems in layman's terms that anyone could understand. "
+                        "5. Assume the patient cannot describe the systems themselves, and refer to something they may feel or see. "
+                        "6. Do not mention the biological system you are focusing on. "
+                        "7. No pleasantries or small talk. "
+                        # "6. Be direct and precise."
+                    )
+                }
+                response = ollama.chat(model=MODEL, messages=[system_instruction])
+                response = response['message']['content']
+            except Exception as e:
+                response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+        elif current_phase == 3:
+            # filter current kg down to system
+            system_symptom_df = get_system_symptom_df(session_id, turn_number)
+            system_symptom_df = system_symptom_df[system_symptom_df['system'] == freq_system]
+            # push this kg to the SymptomSystemKG
+            system_symptom_df['turn'] = turn_number + 2  # needed to place in proper order
+            push_kg_to_db(system_symptom_df, 
+                            session_id, 
+                            'SymptomSystemKG', 
+                            overwrite=False,
+                            continue_session=True)
+            # TODO: generate a question from the list of symptoms in KG
+            
+            # TODO: start ranking in another function (will move out of this one now)
+
+            response = f'Will generate first question to narrow down symptom from {freq_system}'
 
         # response = 'Drilldown continued response forthcoming'
     # print(response)
@@ -665,7 +685,7 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start):
     # indicates symptom_drilldown_start is over
     drilldown_start = False
     # need to add extra turn since decremented for this function
-    return response, turn_number + 2, drilldown_start
+    return response, turn_number + 2, drilldown_start, current_phase
 
 if __name__ == "__main__":
     pass

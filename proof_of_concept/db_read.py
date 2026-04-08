@@ -227,6 +227,7 @@ def retreive_system_symptom_kg(session_id, turn_number=1):
     df = df[['symptom', 'system', 'relation']].copy()
     df.columns = ['head', 'tail', 'relation']
     kg = convert_df_to_kg(df)
+    print(f'Pulling system-symptom kg: Session {session_id}, Turn {turn_number}')
     return kg
 
 def get_system_symptom_df(session_id, turn_number):
@@ -330,8 +331,6 @@ def check_prev_rank_1(session_id, drilldown_datetime):
     print('Rank 1 history:', rank_1_list)
     freq_system = check_repeating_strings(rank_1_list)
     return freq_system
-
-
 
 def check_repeating_strings(data_list):
     """Checks if a list contains 3 repeating string values.

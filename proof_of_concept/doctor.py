@@ -41,6 +41,9 @@ if "selected_symptom" not in st.session_state:
 if "include_all_semantics" not in st.session_state:
     st.session_state.include_all_semantics = False
 
+# if "selected_turn" not in st.session_state:
+#     st.session_state.selected_turn = 1
+
 # ==========================================
 # USER INTERFACE (STREAMLIT)
 # ==========================================
@@ -97,6 +100,7 @@ st.write('#### Conversation Log')
 conversations = get_conversations(selected_session)
 st.dataframe(conversations)
 
+st.write('#### Conversation Graph')
 # knowledge graph rendering
 # check to see if graph exists in database
 is_conversation_kg = check_for_conversation_kg(selected_session)
@@ -115,6 +119,9 @@ graph = convert_df_to_kg(df_kg)
 # convert graph for visualization
 graph = StreamlitGraphWidget.from_graph(graph)
 graph.show(overview=False)
+
+
+
 
 # checkboxes for knowledge graph relationships
 options = df_kg.relation.drop_duplicates().to_list()
@@ -145,26 +152,8 @@ if st.sidebar.button("Generate Knowledge Graph"):
 #     primary_symptom = st.session_state.selected_symptom
 # umls_symptoms = umls_knowledge_graph(primary_symptom, 50) # 20 is good for testing
 
-# TODO: modify this to pull from database
-# symptom_system_graph = system_grouping(umls_symptoms, primary_symptom, selected_session)
+# pulls KG from database
 symptom_system_graph = retreive_system_symptom_kg(selected_session, selected_turn)
-# print(umls_symptoms)
-# print(umls_symptoms['semantic_type'].unique())
-# if st.session_state.include_all_semantics is True:
-#     symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom, True)
-# else:
-#     symptom_graph = symptom_drill_down(umls_symptoms, primary_symptom)
-#     st.session_state.include_all_semantics = False
-
-
-# TODO: remove this section once testing set
-# # convert graph for visualization
-# symptom_graph = StreamlitGraphWidget.from_graph(symptom_graph)
-# # symptom_graph.show(overview=False)
-# st.write('#### Symptom Drill Down')
-# selected_nodes, selected_edges = symptom_graph.show(sync_selection=True, 
-#                                                     graph_layout=Layout.HIERARCHIC, 
-#                                                     overview=False)
 
 # show grouped systems
 st.write('#### Symptom System Group Drill Down')
@@ -178,7 +167,7 @@ st.write('#### System Rankings Based on Patient Statements')
 rankings = get_rankings(selected_session, selected_turn)
 st.dataframe(rankings)
 
-# TODO: try implmenting this search functionality later
+# TODO: try implmenting this interactive search functionality later
 # if node selected, run another UMLS query and refresh
 # print(type(selected_nodes))
 # if selected_nodes:
