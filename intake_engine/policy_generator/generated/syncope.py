@@ -1,0 +1,67 @@
+# Policy: Syncope / Fainting
+# Add SYNCOPE_POLICY to COMPLAINT_POLICIES in complaint_policies.py
+
+SYNCOPE_POLICY = {
+    "policy_name": "syncope",
+    "display_name": "Syncope / Fainting",
+    "aliases": [
+        "syncope",
+        "fainting",
+        "fainted",
+        "passed out",
+        "blacked out",
+        "loss of consciousness",
+        "i passed out",
+        "i blacked out",
+        "i fainted",
+        "i lost consciousness",
+    ],
+    "critical_followups": [
+        "chest_pain",
+        "shortness_of_breath",
+        "palpitations",
+        "rapid_worsening",
+        "neurologic_symptoms",
+        "head_trauma",
+        "exertional_component",
+        "prodrome_witnessed_loss_of_consciousness",
+    ],
+    "must_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "timing",
+        "course",
+        "aggravating_factors",
+        "relieving_factors",
+        "associated_symptoms",
+    ],
+    "high_priority_followups": [
+        "medications",
+        "allergies",
+        "diaphoresis",
+        "nausea",
+        "positional_component",
+        "exertional_trigger",
+    ],
+    "red_flags": [
+        "syncope_with_chest_pain",
+        "syncope_with_palpitations",
+        "exertional_syncope",
+        "syncope_with_neurologic_deficit",
+        "post_traumatic_syncope",
+    ],
+    "wrap_up_rule": {
+        "type": "characterization_threshold",
+        "require_all_critical": True,
+        "required_characterization_targets": [
+            "onset",
+            "duration",
+            "severity",
+            "aggravating_factors",
+            "relieving_factors",
+            "associated_symptoms",
+        ],
+        "min_required_characterization_count": 4,
+    },
+}

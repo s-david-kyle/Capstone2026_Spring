@@ -705,4 +705,414 @@ TARGET_SPECS = {
             'Extract a boolean into set_fields under "policy_answers.chest_pain".'
         ),
     },
+
+    # -------------------------------------------------------
+    # New targets for Tier 1 policies
+    # -------------------------------------------------------
+
+    "prodrome_witnessed_loss_of_consciousness": {
+        "intent": "ask_prodrome_witnessed_loss_of_consciousness",
+        "state_path": "policy_answers.prodrome_witnessed_loss_of_consciousness",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Did you have any warning before you passed out, such as dizziness, nausea, or tunnel vision? Was anyone with you when it happened?",
+        "question_instruction": (
+            "Ask whether the patient had any warning symptoms before losing consciousness, and whether anyone witnessed the event."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.prodrome_witnessed_loss_of_consciousness".'
+        ),
+    },
+
+    "hemoptysis": {
+        "intent": "ask_hemoptysis",
+        "state_path": "policy_answers.hemoptysis",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you coughed up any blood?",
+        "question_instruction": (
+            "Ask whether the patient has coughed up blood."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.hemoptysis".'
+        ),
+    },
+
+    "rash_or_petechiae": {
+        "intent": "ask_rash_or_petechiae",
+        "state_path": "policy_answers.rash_or_petechiae",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you noticed any rash or small red or purple spots on your skin?",
+        "question_instruction": (
+            "Ask whether the patient has noticed a rash or petechiae — small red or purple pinpoint spots that do not blanch."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.rash_or_petechiae".'
+        ),
+    },
+
+    "calf_tenderness_or_warmth": {
+        "intent": "ask_calf_tenderness_or_warmth",
+        "state_path": "policy_answers.calf_tenderness_or_warmth",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Is your calf tender to touch or does it feel warm?",
+        "question_instruction": (
+            "Ask whether the patient's calf is tender to touch or feels warm, which may suggest DVT."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.calf_tenderness_or_warmth".'
+        ),
+    },
+
+    "unilateral_leg_swelling": {
+        "intent": "ask_unilateral_leg_swelling",
+        "state_path": "policy_answers.unilateral_leg_swelling",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Is the swelling in just one leg or both legs?",
+        "question_instruction": (
+            "Ask whether the leg swelling is in one leg only or both legs — unilateral swelling raises concern for DVT."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.unilateral_leg_swelling". True if unilateral (one leg only).'
+        ),
+    },
+
+    "unilateral_vs_bilateral": {
+        "intent": "ask_unilateral_vs_bilateral",
+        "state_path": "policy_answers.unilateral_vs_bilateral",
+        "fallback_parse_mode": "text",
+        "question_mode": "deterministic",
+        "question_text": "Is the problem in one leg or both legs?",
+        "question_instruction": (
+            "Ask whether the leg pain or swelling affects one leg or both legs."
+        ),
+        "extraction_instruction": (
+            'Extract the laterality description into set_fields under "policy_answers.unilateral_vs_bilateral".'
+        ),
+    },
+
+    "recent_immobility_or_travel": {
+        "intent": "ask_recent_immobility_or_travel",
+        "state_path": "policy_answers.recent_immobility_or_travel",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you been sitting for a long time recently, such as on a long flight, car ride, or bed rest?",
+        "question_instruction": (
+            "Ask whether the patient has had prolonged immobility or recent travel, which are DVT risk factors."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.recent_immobility_or_travel".'
+        ),
+    },
+
+    "recent_trauma_or_surgery": {
+        "intent": "ask_recent_trauma_or_surgery",
+        "state_path": "policy_answers.recent_trauma_or_surgery",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had any recent injury, surgery, or procedure?",
+        "question_instruction": (
+            "Ask whether the patient has had recent trauma or surgery, which are DVT and wound complication risk factors."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.recent_trauma_or_surgery".'
+        ),
+    },
+
+    "flank_pain": {
+        "intent": "ask_flank_pain",
+        "state_path": "policy_answers.flank_pain",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Do you have pain in your side or back, below your ribs?",
+        "question_instruction": (
+            "Ask whether the patient has flank pain — pain in the side or back below the ribs — which may suggest pyelonephritis or nephrolithiasis."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.flank_pain".'
+        ),
+    },
+
+    "hematuria": {
+        "intent": "ask_hematuria",
+        "state_path": "policy_answers.hematuria",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you noticed blood in your urine?",
+        "question_instruction": (
+            "Ask whether the patient has noticed blood in their urine."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.hematuria".'
+        ),
+    },
+
+    "urinary_retention": {
+        "intent": "ask_urinary_retention",
+        "state_path": "policy_answers.urinary_retention",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Are you having trouble urinating or are you unable to urinate at all?",
+        "question_instruction": (
+            "Ask whether the patient is unable to urinate or is having significant difficulty passing urine."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.urinary_retention".'
+        ),
+    },
+
+    "suprapubic_pain": {
+        "intent": "ask_suprapubic_pain",
+        "state_path": "policy_answers.suprapubic_pain",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Do you have pain or pressure in your lower abdomen, just above your pubic bone?",
+        "question_instruction": (
+            "Ask whether the patient has suprapubic pain or pressure, which may suggest cystitis or bladder pathology."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.suprapubic_pain".'
+        ),
+    },
+
+    "floaters_or_flashes": {
+        "intent": "ask_floaters_or_flashes",
+        "state_path": "policy_answers.floaters_or_flashes",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you seen floaters — spots or strings drifting in your vision — or flashes of light?",
+        "question_instruction": (
+            "Ask whether the patient has noticed floaters or flashes of light, which may suggest retinal detachment."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.floaters_or_flashes".'
+        ),
+    },
+
+    "vision_loss_pattern": {
+        "intent": "ask_vision_loss_pattern",
+        "state_path": "policy_answers.vision_loss_pattern",
+        "fallback_parse_mode": "text",
+        "question_mode": "deterministic",
+        "question_text": "Can you describe how your vision is affected — is it blurry, dim, partially blocked, or completely gone in one or both eyes?",
+        "question_instruction": (
+            "Ask the patient to describe the pattern of their vision loss or change — partial, complete, central, peripheral, one eye or both."
+        ),
+        "extraction_instruction": (
+            'Extract the vision loss pattern description into set_fields under "policy_answers.vision_loss_pattern".'
+        ),
+    },
+
+    "recent_eye_trauma": {
+        "intent": "ask_recent_eye_trauma",
+        "state_path": "policy_answers.recent_eye_trauma",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had any injury to your eye or been hit in the eye recently?",
+        "question_instruction": (
+            "Ask whether the patient has had recent trauma or injury to the eye."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.recent_eye_trauma".'
+        ),
+    },
+
+    "eye_pain_type": {
+        "intent": "ask_eye_pain_type",
+        "state_path": "policy_answers.eye_pain_type",
+        "fallback_parse_mode": "text",
+        "question_mode": "deterministic",
+        "question_text": "How would you describe the eye pain — is it a sharp pain, a dull ache, a burning sensation, or does it feel like something is in your eye?",
+        "question_instruction": (
+            "Ask the patient to describe the type or quality of their eye pain."
+        ),
+        "extraction_instruction": (
+            'Extract the eye pain type description into set_fields under "policy_answers.eye_pain_type".'
+        ),
+    },
+
+    "eye_discharge": {
+        "intent": "ask_eye_discharge",
+        "state_path": "policy_answers.eye_discharge",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you noticed any discharge or crusting from your eye?",
+        "question_instruction": (
+            "Ask whether the patient has had any eye discharge or crusting, which may suggest infection."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.eye_discharge".'
+        ),
+    },
+
+    "redness": {
+        "intent": "ask_redness",
+        "state_path": "policy_answers.redness",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Is your eye red?",
+        "question_instruction": (
+            "Ask whether the patient's eye is red or pink."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.redness".'
+        ),
+    },
+
+    "headache_with_eye_pain": {
+        "intent": "ask_headache_with_eye_pain",
+        "state_path": "policy_answers.headache_with_eye_pain",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Do you have a headache along with the eye pain?",
+        "question_instruction": (
+            "Ask whether the patient has a headache accompanying the eye pain, which may suggest acute angle-closure glaucoma."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.headache_with_eye_pain".'
+        ),
+    },
+
+    "contact_lens_use": {
+        "intent": "ask_contact_lens_use",
+        "state_path": "policy_answers.contact_lens_use",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Do you wear contact lenses?",
+        "question_instruction": (
+            "Ask whether the patient wears contact lenses, which is a risk factor for corneal ulcer and keratitis."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.contact_lens_use".'
+        ),
+    },
+
+    "hearing_loss_or_tinnitus": {
+        "intent": "ask_hearing_loss_or_tinnitus",
+        "state_path": "policy_answers.hearing_loss_or_tinnitus",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you noticed any hearing loss or ringing in your ear?",
+        "question_instruction": (
+            "Ask whether the patient has had hearing loss or tinnitus — ringing or buzzing in the ear."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.hearing_loss_or_tinnitus".'
+        ),
+    },
+
+    "ear_drainage_or_bleeding": {
+        "intent": "ask_ear_drainage_or_bleeding",
+        "state_path": "policy_answers.ear_drainage_or_bleeding",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had any fluid or blood draining from your ear?",
+        "question_instruction": (
+            "Ask whether the patient has had any discharge or bleeding from the ear."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.ear_drainage_or_bleeding".'
+        ),
+    },
+
+    "seizure_history": {
+        "intent": "ask_seizure_history",
+        "state_path": "policy_answers.seizure_history",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had seizures before?",
+        "question_instruction": (
+            "Ask whether the patient has a known history of seizures or epilepsy."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.seizure_history".'
+        ),
+    },
+
+    "antiepileptic_compliance": {
+        "intent": "ask_antiepileptic_compliance",
+        "state_path": "policy_answers.antiepileptic_compliance",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you been taking your seizure medications as prescribed?",
+        "question_instruction": (
+            "Ask whether the patient has been compliant with their antiepileptic medications. Only ask if the patient has a known seizure history."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.antiepileptic_compliance".'
+        ),
+    },
+
+    "recent_sleep_deprivation": {
+        "intent": "ask_recent_sleep_deprivation",
+        "state_path": "policy_answers.recent_sleep_deprivation",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you had much less sleep than usual recently?",
+        "question_instruction": (
+            "Ask whether the patient has been significantly sleep deprived recently, which is a common seizure trigger."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.recent_sleep_deprivation".'
+        ),
+    },
+
+    "recent_substance_use": {
+        "intent": "ask_recent_substance_use",
+        "state_path": "policy_answers.recent_substance_use",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Have you used alcohol or any recreational substances recently, or have you recently stopped using them?",
+        "question_instruction": (
+            "Ask whether the patient has recently used alcohol or substances, or is going through withdrawal — both are seizure triggers."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.recent_substance_use".'
+        ),
+    },
+
+    "tongue_or_lip_biting": {
+        "intent": "ask_tongue_or_lip_biting",
+        "state_path": "policy_answers.tongue_or_lip_biting",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Did you bite your tongue or lip during the episode?",
+        "question_instruction": (
+            "Ask whether the patient bit their tongue or lip during the event, which is a strong indicator of a tonic-clonic seizure."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.tongue_or_lip_biting".'
+        ),
+    },
+
+    "incontinence_during_event": {
+        "intent": "ask_incontinence_during_event",
+        "state_path": "policy_answers.incontinence_during_event",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "Did you lose control of your bladder or bowels during the episode?",
+        "question_instruction": (
+            "Ask whether the patient had urinary or bowel incontinence during the event, which strongly suggests seizure rather than syncope."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.incontinence_during_event".'
+        ),
+    },
+
+    "postictal_confusion": {
+        "intent": "ask_postictal_confusion",
+        "state_path": "policy_answers.postictal_confusion",
+        "fallback_parse_mode": "yes_no",
+        "question_mode": "deterministic",
+        "question_text": "After the episode, were you confused or disoriented for a period of time before feeling back to normal?",
+        "question_instruction": (
+            "Ask whether the patient had a postictal period of confusion or disorientation after the event, which is characteristic of seizure."
+        ),
+        "extraction_instruction": (
+            'Extract a boolean into set_fields under "policy_answers.postictal_confusion".'
+        ),
+    },
 }
