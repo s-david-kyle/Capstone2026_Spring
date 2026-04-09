@@ -72,10 +72,11 @@ def split_free_text_list(text):
 def extract_severity(text):
     answer = text.strip().lower()
 
-    for value in range(11):
-        if f"{value}/10" in answer:
+    import re
+    for value in range(10, -1, -1):  # check higher numbers first
+        if re.search(rf'\b{value}/10\b', answer):
             return f"{value}/10"
-        if f"{value} out of 10" in answer:
+        if re.search(rf'\b{value} out of 10\b', answer):
             return f"{value}/10"
 
     tokens = answer.replace(",", " ").split()

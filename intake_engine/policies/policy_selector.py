@@ -6,6 +6,9 @@ def _normalize_complaint_name(text):
     if text is None:
         return ""
 
+    if isinstance(text, list):
+        text = " ".join(str(x) for x in text if x)
+
     normalized = text.strip().lower()
     normalized = normalized.replace("-", " ")
     normalized = normalized.replace("_", " ")

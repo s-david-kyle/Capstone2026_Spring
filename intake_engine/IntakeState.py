@@ -147,7 +147,13 @@ class IntakeState:
         return self
 
     def detect_basic_flags(self):
-        chief_complaint = (self.data["chief_complaint_primary"] or "").lower()
+        chief_complaint_raw = self.data["chief_complaint_primary"] or ""
+
+        if isinstance(chief_complaint_raw, list):
+            chief_complaint = " ".join(str(x) for x in chief_complaint_raw).lower()
+        else:
+            chief_complaint = str(chief_complaint_raw).lower()
+            
         severity = (self.data["hpi"]["severity"] or "").lower()
         associated_symptoms = [
             symptom.lower() for symptom in self.data["hpi"]["associated_symptoms"]
@@ -173,6 +179,15 @@ class IntakeState:
 
     def refresh_flags(self):
         detected_flags = self.detect_basic_flags()
+
+        # severe_symptom_intensity is transient — remove it before recomputing
+        # so it only persists while severity is still 8-10/10, not forever
+        persistent_flags = [
+            f for f in self.data["flags"]
+            if f != "severe_symptom_intensity"
+        ]
+        self.data["flags"] = persistent_flags
+
         self._append_unique(self.data["flags"], detected_flags)
         return self
 
@@ -468,6 +483,15 @@ class IntakeState:
         self._record_question_status(current_intent)
         self.refresh_missing_clarifications()
         self.refresh_flags()
+
+        # After safety check is answered, clear the transient flag so the
+        # override rule does not loop indefinitely
+        if current_intent == "ask_immediate_safety_check":
+            self.data["flags"] = [
+                f for f in self.data["flags"]
+                if f != "severe_symptom_intensity"
+            ]
+
         self.update_completion_status()
 
         self.log_turn(
@@ -511,6 +535,20 @@ class IntakeState:
                 patient_answer = patient_answer,
                 applied_update = applied_update,
                 parser_name = "wrap_up_handler",
+                question_generator = question_generator,
+            )
+
+        if self._is_deterministic_intent(current_intent):
+            applied_update = self.build_update_from_answer(
+                current_intent,
+                patient_answer,
+            )
+
+            return self._finalize_patient_turn(
+                current_intent = current_intent,
+                patient_answer = patient_answer,
+                applied_update = applied_update,
+                parser_name = "rule_based_deterministic",
                 question_generator = question_generator,
             )
 
@@ -647,11 +685,17 @@ class IntakeState:
 
                 parser_name = "rule_based_fallback"
 
+        if self._is_deterministic_intent(current_intent):
+            applied_update = self.build_update_from_answer(
+                current_intent,
+                patient_answer,
+            )
+
         return self._finalize_patient_turn(
             current_intent = current_intent,
             patient_answer = patient_answer,
             applied_update = applied_update,
-            parser_name = parser_name,
+            parser_name = "rule_based_deterministic",
             question_generator = question_generator,
         )
 
