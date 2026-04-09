@@ -86,5 +86,15 @@ def create_tables(conn):
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_turn_session ON Turn(SessionId);")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_session_status ON Session(Status);")
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS IntakeState (
+    IntakeStateId INTEGER PRIMARY KEY AUTOINCREMENT,
+    SessionId INTEGER NOT NULL UNIQUE,
+    IntakeJson TEXT NOT NULL,
+    UpdatedAt DATETIME NOT NULL,
+    FOREIGN KEY (SessionId) REFERENCES Session(SessionId) ON DELETE CASCADE
+    )
+    """)
+    
     # Save all changes
     conn.commit()
