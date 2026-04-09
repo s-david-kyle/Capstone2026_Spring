@@ -159,7 +159,6 @@ class IntakeState:
             symptom.lower() for symptom in self.data["hpi"]["associated_symptoms"]
         ]
         policy_answers = self.data["policy_answers"]
-
         flags = []
 
         if "chest pain" in chief_complaint:
@@ -173,7 +172,8 @@ class IntakeState:
                 flags.append("chest_pain_with_diaphoresis")
 
         if severity in {"8/10", "9/10", "10/10"}:
-            flags.append("severe_symptom_intensity")
+            if not self.data["conversation_meta"].get("safety_check_done", False):
+                flags.append("severe_symptom_intensity")
 
         return flags
 
@@ -491,6 +491,7 @@ class IntakeState:
                 f for f in self.data["flags"]
                 if f != "severe_symptom_intensity"
             ]
+            self.data["conversation_meta"]["safety_check_done"] = True
 
         self.update_completion_status()
 
@@ -610,6 +611,20 @@ class IntakeState:
                 question_generator = question_generator,
             )
 
+        if self._is_deterministic_intent(current_intent):
+            applied_update = self.build_update_from_answer(
+                current_intent,
+                patient_answer,
+            )
+
+            return self._finalize_patient_turn(
+                current_intent = current_intent,
+                patient_answer = patient_answer,
+                applied_update = applied_update,
+                parser_name = "rule_based_deterministic",
+                question_generator = question_generator,
+            )
+
         special_status = self._classify_special_answer_status(patient_answer)
         target = self._intent_to_target(current_intent)
         answer_text = patient_answer.strip().lower()
@@ -685,17 +700,11 @@ class IntakeState:
 
                 parser_name = "rule_based_fallback"
 
-        if self._is_deterministic_intent(current_intent):
-            applied_update = self.build_update_from_answer(
-                current_intent,
-                patient_answer,
-            )
-
         return self._finalize_patient_turn(
             current_intent = current_intent,
             patient_answer = patient_answer,
             applied_update = applied_update,
-            parser_name = "rule_based_deterministic",
+            parser_name = parser_name,
             question_generator = question_generator,
         )
 
@@ -740,6 +749,33 @@ class IntakeState:
             "radiation",
             "aura_features",
             "urinary_symptoms",
+            # Tier 1 new yes/no targets
+            "prodrome_witnessed_loss_of_consciousness",
+            "hemoptysis",
+            "rash_or_petechiae",
+            "calf_tenderness_or_warmth",
+            "unilateral_leg_swelling",
+            "recent_immobility_or_travel",
+            "recent_trauma_or_surgery",
+            "flank_pain",
+            "hematuria",
+            "urinary_retention",
+            "suprapubic_pain",
+            "floaters_or_flashes",
+            "recent_eye_trauma",
+            "eye_discharge",
+            "redness",
+            "headache_with_eye_pain",
+            "contact_lens_use",
+            "hearing_loss_or_tinnitus",
+            "ear_drainage_or_bleeding",
+            "seizure_history",
+            "antiepileptic_compliance",
+            "recent_sleep_deprivation",
+            "recent_substance_use",
+            "tongue_or_lip_biting",
+            "incontinence_during_event",
+            "postictal_confusion",
         }
 
         if target in always_rule_based_targets:

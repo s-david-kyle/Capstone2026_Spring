@@ -1,7 +1,7 @@
 from intake_engine.IntakeState import IntakeState
 from intake_engine.clinical_normalizer import ClinicalNormalizer
 from intake_engine.config import LLM_CONFIG
-from intake_engine.llm_adapter import create_llm_adapter
+from intake_engine.llm_adapter import create_llm_adapter, create_extraction_adapter
 from intake_engine.llm_extractor import BoundedLLMExtractor
 from intake_engine.llm_question_generator import LLMQuestionGenerator
 
@@ -20,9 +20,13 @@ class IntakeAppFlow:
         if llm_config is not None:
             self.llm_config.update(llm_config)
 
+        # Question generation — local Gemma via Ollama (fast, free)
         self.adapter = create_llm_adapter(self.llm_config)
 
-        self.extractor = BoundedLLMExtractor(self.adapter.generate)
+        # Extraction — Claude Haiku via Anthropic API (reliable JSON)
+        self.extraction_adapter = create_extraction_adapter(self.llm_config)
+
+        self.extractor = BoundedLLMExtractor(self.extraction_adapter.generate)
         self.normalizer = ClinicalNormalizer()
         self.question_generator = LLMQuestionGenerator(self.adapter)
 

@@ -80,6 +80,43 @@ class OllamaAdapter(BaseLLMAdapter):
         return text
 
 
+class ClaudeHaikuAdapter(BaseLLMAdapter):
+    """
+    Uses Claude Haiku via the Anthropic API for reliable JSON extraction.
+    Designed to be used as the extractor backend while keeping a local
+    model (Gemma/Ollama) for question generation.
+    """
+
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "claude-haiku-4-5-20251001",
+        max_tokens: int = 1024,
+        temperature: float = 0.0,
+    ):
+        import anthropic
+
+        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self.client = anthropic.Anthropic(api_key = api_key)
+
+    def generate(self, prompt: str) -> str:
+        response = self.client.messages.create(
+            model = self.model,
+            max_tokens = self.max_tokens,
+            temperature = self.temperature,
+            messages = [{"role": "user", "content": prompt}],
+        )
+
+        text = response.content[0].text.strip()
+
+        if not text:
+            raise ValueError("ClaudeHaikuAdapter returned empty text")
+
+        return text
+
+
 def create_llm_adapter(config: dict) -> BaseLLMAdapter:
     backend = config["backend"]
 
@@ -100,4 +137,28 @@ def create_llm_adapter(config: dict) -> BaseLLMAdapter:
             temperature = config["temperature"],
         )
 
+    if backend == "claude_haiku":
+        from intake_engine.config import API_KEYS
+        return ClaudeHaikuAdapter(
+            api_key = API_KEYS["anthropic"],
+            model = config.get("claude_model", "claude-haiku-4-5-20251001"),
+            max_tokens = config.get("claude_max_tokens", 1024),
+            temperature = config.get("temperature", 0.0),
+        )
+
     raise ValueError(f"Unsupported LLM backend: {backend}")
+
+
+def create_extraction_adapter(config: dict) -> BaseLLMAdapter:
+    """
+    Always returns a ClaudeHaikuAdapter for extraction regardless of
+    the main backend. This gives reliable JSON output while keeping
+    the local model for question generation.
+    """
+    from intake_engine.config import API_KEYS
+    return ClaudeHaikuAdapter(
+        api_key = API_KEYS["anthropic"],
+        model = config.get("claude_model", "claude-haiku-4-5-20251001"),
+        max_tokens = 1024,
+        temperature = 0.0,
+    )

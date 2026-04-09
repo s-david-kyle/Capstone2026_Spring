@@ -202,15 +202,51 @@ class BoundedLLMExtractor:
 
         fenced_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", cleaned, re.DOTALL)
         if fenced_match:
-            return fenced_match.group(1).strip()
+            cleaned = fenced_match.group(1).strip()
+        else:
+            first_brace = cleaned.find("{")
+            last_brace = cleaned.rfind("}")
+            if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+                cleaned = cleaned[first_brace:last_brace + 1].strip()
 
-        first_brace = cleaned.find("{")
-        last_brace = cleaned.rfind("}")
-
-        if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
-            return cleaned[first_brace:last_brace + 1].strip()
+        # Repair malformed append_fields: Gemma sometimes generates
+        # ["key": value] instead of {"key": value} for object fields.
+        # Fix by converting [ ... ] blocks that contain key:value pairs to { ... }
+        cleaned = self._repair_malformed_objects(cleaned)
 
         return cleaned
+
+    def _repair_malformed_objects(self, text):
+        """Convert Gemma's malformed ["key": value] patterns to {"key": value}.
+
+        Gemma sometimes outputs append_fields or set_fields as a JSON-invalid
+        array-of-key-values like ["key": value] instead of {"key": value}.
+        Uses bracket depth tracking to find and replace the outermost [ ] for
+        known object fields when the content looks like key:value pairs.
+        """
+        for field in ["append_fields", "set_fields"]:
+            pattern = f'"{field}"\\s*:\\s*'
+            for m in re.finditer(pattern, text):
+                start = m.end()
+                if start >= len(text) or text[start] != "[":
+                    continue
+                # Track bracket depth to find the matching closing ]
+                depth = 0
+                end = start
+                for i in range(start, len(text)):
+                    if text[i] == "[":
+                        depth += 1
+                    elif text[i] == "]":
+                        depth -= 1
+                        if depth == 0:
+                            end = i
+                            break
+                inner = text[start + 1:end]
+                # Only convert if content looks like key:value pairs
+                if re.search(r'"[^"]+"\s*:', inner):
+                    text = text[:start] + "{" + inner + "}" + text[end + 1:]
+                    break
+        return text
 
     def _merge_dict_list(self, value):
         merged = {}
@@ -446,7 +482,7 @@ class BoundedLLMExtractor:
             "missing_clarifications_to_add",
         }
 
-        if set(parsed.keys()) != required_keys:
+        if not required_keys.issubset(set(parsed.keys())):
             raise ValueError(f"LLM response keys invalid: {parsed.keys()}")
 
         if not isinstance(parsed["set_fields"], dict):

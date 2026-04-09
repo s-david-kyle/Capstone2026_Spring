@@ -243,8 +243,11 @@ DIZZINESS_POLICY = {
     "display_name": "Dizziness",
     "aliases": [
         "dizziness",
+        "dizzy",
         "lightheadedness",
+        "lightheaded",
         "feeling faint",
+        "feel dizzy",
         "vertigo",
     ],
     "critical_followups": [

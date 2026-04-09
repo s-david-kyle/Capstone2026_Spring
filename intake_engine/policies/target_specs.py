@@ -62,9 +62,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.fever_or_neck_stiffness",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Have you had a fever or a stiff neck with the headache?",
+        "question_text": "Have you had a fever or a stiff neck?",
         "question_instruction": (
-            "Ask whether the patient has fever or a stiff neck with the headache."
+            "Ask whether the patient has fever or a stiff neck. Reference their specific complaint if relevant."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.fever_or_neck_stiffness".'
@@ -243,9 +243,9 @@ TARGET_SPECS = {
         "question_mode": "yes_no_template",
         "question_aux": "Does",
         "question_subject": "light",
-        "question_predicate": "make the headache worse",
+        "question_predicate": "bother you or make your symptoms worse",
         "question_instruction": (
-            "Ask whether light makes the headache worse or whether the patient is sensitive to light."
+            "Ask whether light makes the patient's symptoms worse or whether they are sensitive to light. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.photophobia".'
@@ -258,9 +258,9 @@ TARGET_SPECS = {
         "question_mode": "yes_no_template",
         "question_aux": "Does",
         "question_subject": "sound",
-        "question_predicate": "make the headache worse",
+        "question_predicate": "bother you or make your symptoms worse",
         "question_instruction": (
-            "Ask whether sound makes the headache worse or whether the patient is sensitive to noise."
+            "Ask whether sound makes the patient's symptoms worse or whether they are sensitive to noise. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.phonophobia".'
@@ -271,9 +271,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.nausea_or_vomiting",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Have you had nausea or vomiting with the headache?",
+        "question_text": "Have you had nausea or vomiting?",
         "question_instruction": (
-            "Ask whether there has been nausea or vomiting with the headache."
+            "Ask whether the patient has had nausea or vomiting. Reference their specific complaint if relevant."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.nausea_or_vomiting".'
@@ -298,9 +298,9 @@ TARGET_SPECS = {
         "question_mode": "yes_no_template",
         "question_aux": "Did",
         "question_subject": "exercise, coughing, straining, or exertion",
-        "question_predicate": "trigger the headache",
+        "question_predicate": "trigger or worsen your symptoms",
         "question_instruction": (
-            "Ask whether exercise, coughing, straining, or exertion triggered the headache."
+            "Ask whether exercise, coughing, straining, or exertion triggered or worsened the patient's symptoms. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.exertional_trigger".'
@@ -313,9 +313,9 @@ TARGET_SPECS = {
         "question_mode": "yes_no_template",
         "question_aux": "Does",
         "question_subject": "the headache",
-        "question_predicate": "change when you lie down, sit up, or stand",
+        "question_predicate": "change or get worse when you lie down, sit up, or stand",
         "question_instruction": (
-            "Ask whether the headache changes with lying down, sitting up, or standing."
+            "Ask whether the patient's symptoms change with position changes such as lying down, sitting up, or standing. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.positional_component".'
@@ -326,9 +326,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.new_or_progressive_pattern",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Is this a new kind of headache or has it been getting worse over time?",
+        "question_text": "Is this a new kind of symptom for you or has it been getting worse over time?",
         "question_instruction": (
-            "Ask whether this is a new kind of headache or whether it has been getting worse over time."
+            "Ask whether this is a new pattern for the patient or whether the symptom has been progressively worsening. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.new_or_progressive_pattern".'
@@ -339,9 +339,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.medication_overuse_context",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Have you been using pain medicine frequently for this headache?",
+        "question_text": "Have you been using pain medicine frequently for this?",
         "question_instruction": (
-            "Ask whether the patient has been using pain medicine frequently for this headache."
+            "Ask whether the patient has been frequently using pain medicine for their current symptoms. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.medication_overuse_context".'
@@ -352,9 +352,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.shortness_of_breath",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Do you have shortness of breath or trouble breathing with the chest pain?",
+        "question_text": "Do you have shortness of breath or trouble breathing?",
         "question_instruction": (
-            "Ask whether there is shortness of breath or trouble breathing with the chest pain."
+            "Ask whether the patient has shortness of breath or trouble breathing. Reference their specific complaint if relevant."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.shortness_of_breath".'
@@ -382,7 +382,7 @@ TARGET_SPECS = {
         "question_subject": "the chest pain",
         "question_predicate": "getting worse quickly right now",
         "question_instruction": (
-            "Ask whether the chest pain is getting worse quickly right now."
+            "Ask whether the patient's symptoms are getting worse quickly right now. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.rapid_worsening".'
@@ -405,9 +405,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.nausea",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Have you had nausea with the chest pain?",
+        "question_text": "Have you had any nausea?",
         "question_instruction": (
-            "Ask whether there has been nausea with the chest pain."
+            "Ask whether the patient has had nausea. Reference their specific complaint if relevant."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.nausea".'
@@ -418,9 +418,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.diaphoresis",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Have you had sweating or clamminess with the chest pain?",
+        "question_text": "Have you had sweating or clamminess?",
         "question_instruction": (
-            "Ask whether there has been sweating or clamminess with the chest pain."
+            "Ask whether the patient has had sweating or clamminess. Reference their specific complaint if relevant."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.diaphoresis".'
@@ -433,9 +433,9 @@ TARGET_SPECS = {
         "question_mode": "yes_no_template",
         "question_aux": "Does",
         "question_subject": "the chest pain",
-        "question_predicate": "come on or get worse with physical activity",
+        "question_predicate": "come on or get worse with physical activity or exertion",
         "question_instruction": (
-            "Ask whether the chest pain comes on or gets worse with physical activity."
+            "Ask whether the patient's symptoms come on or worsen with physical activity or exertion. Reference their specific complaint."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.exertional_component".'
@@ -669,7 +669,7 @@ TARGET_SPECS = {
         "state_path": "policy_answers.recent_heavy_lifting",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Did the pain start after heavy lifting, twisting, or strain?",
+        "question_text": "Did your symptoms start after heavy lifting, twisting, or physical strain?",
         "question_instruction": (
             "Ask whether the pain started after heavy lifting, twisting, or physical strain."
         ),
@@ -697,9 +697,9 @@ TARGET_SPECS = {
         "state_path": "policy_answers.chest_pain",
         "fallback_parse_mode": "yes_no",
         "question_mode": "deterministic",
-        "question_text": "Have you had chest pain with the dizziness?",
+        "question_text": "Have you had any chest pain?",
         "question_instruction": (
-            "Ask whether the patient has had chest pain with the dizziness."
+            "Ask whether the patient has had chest pain. Reference their specific complaint if relevant."
         ),
         "extraction_instruction": (
             'Extract a boolean into set_fields under "policy_answers.chest_pain".'
