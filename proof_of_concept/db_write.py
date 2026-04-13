@@ -23,12 +23,12 @@ def get_session_id():
     # cursor.execute("SELECT SessionId FROM Session")
     cursor.execute("SELECT MAX(SessionId) FROM Turn")
     values = [row[0] for row in cursor.fetchall()]
-
+    print('Session ID greatest number:', values)
+    # init for new db
+    greatest_number = 0
     # Find the maximum, increment
-    if values:
+    if values[0] is not None:
         greatest_number = max(values)
-    else:
-        greatest_number = 0
     session_id = greatest_number + 1
     return session_id
 

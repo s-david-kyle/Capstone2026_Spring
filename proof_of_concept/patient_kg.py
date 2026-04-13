@@ -42,6 +42,9 @@ if "system_drilldown_start" not in st.session_state:
 if "question_phase" not in st.session_state:
     st.session_state.question_phase = 1
 
+if "symptom_phase" not in st.session_state:
+    st.session_state.symptom_phase = 1
+
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
 # ==========================================
@@ -163,7 +166,7 @@ if prompt:
         try:
             # UMLS KG function call here
             umls_symptoms = umls_knowledge_graph(new_symptom, 50)  # modify number for tests
-            symtom_system_graph = system_grouping(umls_symptoms, 
+            symptom_system_graph = system_grouping(umls_symptoms, 
                                                 new_symptom, 
                                                 session_id, 
                                                 st.session_state.turn_number)
@@ -221,7 +224,15 @@ if prompt:
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # generate new prompt from filtered systems
-        response = drilldown_symptom(prompt, session_id, st.session_state.turn_number)
+        response, turn_number, current_phase, symptom_phase = drilldown_symptom(prompt, 
+                                                                session_id, 
+                                                                st.session_state.turn_number, 
+                                                                st.session_state.question_phase,
+                                                                st.session_state.symptom_phase)
+        # update state turn_number
+        st.session_state.turn_number = turn_number
+        st.session_state.question_phase = current_phase
+        st.session_state.symptom_phase = symptom_phase
     else:
         # likely end conversation here
         pass

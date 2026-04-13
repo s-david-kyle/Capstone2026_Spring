@@ -15,9 +15,12 @@ from db_read import (get_conversations,
                      get_system_symptom_df, 
                      get_previous_drilldown_messages,
                      check_prev_rank_1,
-                     retreive_system_symptom_kg)
+                     retreive_system_symptom_kg,
+                     check_symptom_rank_1,
+                     check_session_consistency)
 from knowledge_graph import convert_df_to_kg
 from db_write import push_kg_to_db, push_ranking_to_db
+from external_data_pull import umls_knowledge_graph
 
 # external data needed for MTS dialogue doctor conversation mimic
 mts_dialogue = pd.read_csv('data/mts_dialogue/MTS-Dialog-TrainingSet (SDHP).csv')
@@ -413,7 +416,7 @@ def system_grouping(df, symptom, selected_session, turn_number):
         symptom_list.remove(symptom)
     # prep list for LLM
     symptom_string = ', '.join(symptom_list)
-    # TODO: add edges list
+    # edges list (DKG-LLM)
     edges = [
         "Causal",
         "Therapeutic",
@@ -456,16 +459,17 @@ def system_grouping(df, symptom, selected_session, turn_number):
             "2. Each symptom, biological system, and relationship must be followed by a newline "
             "3. There must be at least 2 biological systems"
             "4. Only include this formatted text in the response, do not add number to rows."
+            "5. DO NOT NUMBER ROWS. "
         )
     }
     response = ollama.chat(model=MODEL, messages=[system_instruction])
     response = response['message']['content']
-    print(response)
+    # print(response)
     # Parse response into dataframe
     lines = response.strip().split('\n')
     data = []
     for line in lines:
-        print('LLM response for KG:', line)
+        # print('LLM response for KG:', line)
         # match = re.match(r"(\d+\.) (\w+) : (\w+)", line)
         # match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
         match = re.match(r"([^:]+)\s+:\s+([^:]+)\s+:\s+([^:]+)", line)
@@ -492,12 +496,98 @@ def system_grouping(df, symptom, selected_session, turn_number):
                   'SymptomSystemKG', 
                   overwrite=False,
                   continue_session=True)
+    return symptom_kg
 
-    # TODO: create a list of unique systems?
-    # TODO: ask a question that will hint at which system may be affected
-    # TODO: once system is picked, create list of symptoms associate with system
-    # TODO: requery UMLS for chosen system and repeate process until no more nodes
+def symptom_grouping(df, freq_symptom, selected_session, turn_number):
+    # generate system groupings for tail column data
+    # comment out if you want to broaden results to Finding, Intellectual Product, Pathologic Function, etc
+    df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
+    # print(df.head())
+    symptom_list = df['symptom'].tolist()
+    # remove system searched for in UMLS
+    if freq_symptom in symptom_list:
+        symptom_list.remove(freq_symptom)
+    print(f'UMLS symptoms pulled from {freq_symptom}')
+    # prep list for LLM
+    symptom_string = ', '.join(symptom_list)
+    # edges list (DKG-LLM)
+    edges = [
+        "Causal",
+        "Therapeutic",
+        "Associative",
+        "Contraindicative",
+        "Diagnostic",
+        "Preventive",
+        "Exacerbative",
+        "Ameliorative",
+        "Temporal",
+        "Dosage-Related",
+        "Side Effect",
+        "Interaction",
+        "Epidemiological",
+        "Genetic",
+        "Allergic",
+        "Monitoring",
+        "Supportive",
+        "Concomitant",
+        "Risk-Associated",
+        "Symptom-Symptom",
+        "Procedure-Related",
+        "Outcome-Related",
+        "Age-Related",
+        "Lifestyle-Related",
+        "Biomarker-Related",
+        "Comorbidity-Related"
+    ]
+    edge_string = ', '.join(edges)
+    # llm prompt
+    system_instruction = {
+        "role": "system",
+        "content": (
+            f"Assign a relationship to primary symptom {freq_symptom} using the following list of symptoms:"
+            f"{symptom_list} and its relations using these relationships: {edge_string}"
+            "STRICT RULES: "
+            "The response must be formatted as followed: "
+            "1. The primary symptom must be followed by an :  the relationship : the related symptom "
+            "2. An example would be Itchy scalp : Symptom-Symptom : Pruritus of scalp"
+            "3. Each primary symptom, relationship, and related system must be followed by a newline "
+            "4. Only include this formatted text in the response, do not add number to rows."
+        )
+    }
+    response = ollama.chat(model=MODEL, messages=[system_instruction])
+    response = response['message']['content']
+    print(response)
+    # Parse response into dataframe
+    lines = response.strip().split('\n')
+    data = []
+    for line in lines:
+        print('LLM response for KG:', line)
+        # match = re.match(r"(\d+\.) (\w+) : (\w+)", line)
+        # match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
+        match = re.match(r"([^:]+)\s+:\s+([^:]+)\s+:\s+([^:]+)", line)
+        if match:
+            # formatting symptom - relation - system
+            kg_symptom = match.group(1)
+            relationship = match.group(2)
+            system = match.group(3)
+            data.append({'symptom': kg_symptom, 'system': system, 'relation': relationship})
+    symptom_system = pd.DataFrame(data)
+    print(symptom_system)
 
+    # create a graph out of this with each system as it's own central node
+    symptom_kg_df = symptom_system.copy()
+    symptom_kg_df.columns = ['tail', 'head', 'relation']
+    # symptom_kg_df['relation'] = 'symptom'
+    symptom_kg = convert_df_to_kg(symptom_kg_df)
+
+    # push this to database - include session number and turn number
+    # temporary assignment
+    symptom_system['turn'] = turn_number
+    push_kg_to_db(symptom_system, 
+                  selected_session, 
+                  'SymptomSystemKG', 
+                  overwrite=False,
+                  continue_session=True)
     return symptom_kg
 
 def form_system_question(session_id, turn_number, symptom):
@@ -537,7 +627,7 @@ def form_system_question(session_id, turn_number, symptom):
 def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, current_phase):
     # query DB with session_id, turn_number
     df = get_system_symptom_df(session_id, turn_number)
-    print('drilldown system:', df)
+    # print('drilldown system:', df)
     # pull unique systems
     systems = df['system'].unique().tolist()
     systems_str = ", ".join(systems)
@@ -574,7 +664,7 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
             relationship = match.group(2)
             data.append({'rank': rank, 'system': relationship})
     system_rank = pd.DataFrame(data)
-    print('system_rank df:', system_rank)
+    # print('system_rank df:', system_rank)
     
     # log rank, system, session_id, turn_number, something to indicate start of drilldown
     system_rank['SessionId'] = session_id
@@ -672,7 +762,7 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
                             'SymptomSystemKG', 
                             overwrite=False,
                             continue_session=True)
-            # TODO: generate a question from the list of symptoms in KG
+            # generate a question from the list of symptoms in KG
             symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
             symptom_list = ", ".join(symptom_list)
             try:
@@ -705,19 +795,37 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
     # need to add extra turn since decremented for this function
     return response, turn_number + 2, drilldown_start, current_phase
 
-def drilldown_symptom(prompt, session_id, turn_number):
-    # TODO: pull a list of the symptoms from db (SymptomSystemKG)
+def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_phase):
+    # pull a list of the symptoms from db (SymptomSystemKG)
+    # TODO: uncomment once tables are created
+    # check_session_consistency()
     system_symptom_df = get_system_symptom_df(session_id, turn_number)
-    symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+    # TODO: switch this to system to see if it accurately pulls related symptoms (was symptom)
+    # try for symptom_phase = 1 use symptom, symptom_phase > 1 use system
+    # chart is symptom-only, and system field shows related symptoms
+    if symptom_phase > 1:
+        symptom_list = system_symptom_df['system'].drop_duplicates().tolist()
+    # chart resembles structure from system investigation
+    else:
+        symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+
+    # # TODO: see if this is needed (may be the reason why old KG keeps popping into new phase)
+    # # push the system_symptom_df to the database to pair with turns
+    # system_symptom_df['turn'] = turn_number + 1  # needed to place in proper order
+    # push_kg_to_db(system_symptom_df, 
+    #             session_id, 
+    #             'SymptomSystemKG', 
+    #             overwrite=False,
+    #             continue_session=True)
     print('Drilldown symptom list:', symptom_list)
-    # TODO: pull history of discussion from db (Turn)
+    # pull history of discussion from db (Turn)
     discussion = get_conversations(session_id)
     result = ""
     for index, row in discussion.iterrows():
         speaker = row["Speaker"]
         message = row["Message"]
         result += f"'{speaker}: {message}'"
-    # TODO: create a new ranking of symptoms (store in new SymptomRank table)
+    # create a new ranking of symptoms (store in new SymptomRank table)
     system_instruction = {
         "role": "system",
         "content": (
@@ -729,36 +837,100 @@ def drilldown_symptom(prompt, session_id, turn_number):
             "STRICT RULES: "
             "The response must be formatted as followed: "
             "1. Show the ranking number, followed by a colon and then the symptom"
-            "2. Only include this formatted text in the response"
-            "3. Do not include any notes or explanations"
+            "2. An example would be 1: Generalized pruritus"
+            "3. Only include this formatted text in the response"
+            "4. Do not include any notes or explanations"
         )
     }
     response = ollama.chat(model=MODEL, messages=[system_instruction])
     response = response['message']['content']
     # except Exception as e:
     #     response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
-        
+    
     # parse and log rankings in the database
     lines = response.strip().split('\n')
     data = [] # store rankings here
     for line in lines:
+        # TODO: there may be an issue if there's no match made here, add test for 2 groups
+        # TODO: sometimes it creates 1. Generalized pruritus instead of 1: Generalized pruritus
+        # An error occurred: single positional indexer is out-of-bounds
         match = re.match(r"(\d+): (.*)", line)
         if match:
             # formatting symptom - relation - system
             rank = int(match.group(1))
             relationship = match.group(2)
             data.append({'rank': rank, 'symptom': relationship})
+    print('Symptom rank LLM-parsed rankings: ', data, lines)
     symptom_rank = pd.DataFrame(data)
-    print('system_rank df:', symptom_rank)
-    
+    # print('symptom_rank df:', symptom_rank)
     # log rank, system, session_id, turn_number, something to indicate start of drilldown
     symptom_rank['SessionId'] = session_id
     symptom_rank['turn_number'] = turn_number
     symptom_rank['timestamp'] = dt.now()
+    symptom_rank['symptom_phase'] = symptom_phase
     push_ranking_to_db(symptom_rank, 'SymptomRank', session_id)
-    # TODO: generate next question
-    response = '2nd question to narrow down system from freq_system'
-    return response
+
+    # pull rank 1 systems for all previous rankings and see if there are 3 reoccuring
+    freq_symptom = check_symptom_rank_1(session_id, symptom_phase)
+    # when there are 3 matches:
+    if freq_symptom:
+        print(f'Will focus on: {freq_symptom}')
+        # modify some phase var to move out of this phase
+        symptom_phase += 1
+        # TODO: investigate this phase to make sure it is updating kg correctly
+        # trigger UMLS query for freq_symptom
+        new_symptoms_df = umls_knowledge_graph(freq_symptom, 50)
+        # print('New symptoms pulled from UMLS: ', new_symptoms_df)
+        symptom_system_graph = symptom_grouping(new_symptoms_df, 
+                                            freq_symptom, 
+                                            session_id, 
+                                            turn_number + 1)
+        # # push this kg to the SymptomSystemKG
+        # # filter current kg down to system
+        # system_symptom_df = get_system_symptom_df(session_id, turn_number)
+        # system_symptom_df = system_symptom_df[system_symptom_df['symptom'] == freq_symptom]
+        # # push this kg to the SymptomSystemKG
+        # system_symptom_df['turn'] = turn_number + 1  # needed to place in proper order
+        # push_kg_to_db(system_symptom_df, 
+        #                 session_id, 
+        #                 'SymptomSystemKG', 
+        #                 overwrite=False,
+        #                 continue_session=True)
+        # TODO: run a check to see if there is only one node
+
+    else:
+        print('Still locating symptom for focus')
+
+    # generate next question
+    symptom_list = symptom_rank['symptom'].drop_duplicates().tolist()
+    symptom_list = ", ".join(symptom_list)
+    try:
+        system_instruction = {
+            "role": "system",
+            "content": (
+                "You are a clinical intake bot. "
+                f"""Take the following list of symptoms: {symptom_list} and 
+                    form a question that narrows down which symptom to focus on for a 
+                    patient. Use these messages for context: {discussion}.
+                """
+                "STRICT RULES: "
+                "1. Ask only ONE question at a time. "
+                "2. Keep responses under 15 words. "
+                "3. Make sure language is easily understandable and non-threatening. "
+                "4. Refer to symptoms in layman's terms that anyone could understand. "
+                "5. Assume the patient cannot describe the exact symptoms themselves, and refer to something they may feel or see. "
+                # "6. Do not mention the biological system you are focusing on. "
+                "6. No pleasantries or small talk. "
+                # "6. Be direct and precise."
+            )
+        }
+        response = ollama.chat(model=MODEL, messages=[system_instruction])
+        response = response['message']['content']
+    except Exception as e:
+        response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
+    # response = '2nd question to narrow down system from freq_system'
+    # need to add extra turn since decremented for this function
+    return response, turn_number + 1, question_phase, symptom_phase
 
 if __name__ == "__main__":
     pass
