@@ -8,31 +8,16 @@
   "can_be_secondary": true,
   "primary_system": "genitourinary",
   "related_systems": {
-    "high_yield": [
-      "constitutional_infectious",
-      "renal"
-    ],
-    "selective_cross_system": [
-      "gynecologic",
-      "vascular"
-    ],
-    "contextual": [
-      "sexual_history",
-      "structural_anatomic"
-    ]
+    "high_yield": ["constitutional_infectious", "renal"],
+    "selective_cross_system": ["gynecologic", "vascular"],
+    "contextual": ["sexual_history", "structural_anatomic"]
   },
   "pivot_triggers": {
     "abdominal_pain": "acute_abdomen_pattern",
     "fever": "possible_sepsis_pattern"
   },
   "start_sequence_contract": {
-    "approved_start_sequence": [
-      "presenting_complaint_narrative",
-      "onset",
-      "duration",
-      "character",
-      "frequency_or_urgency"
-    ],
+    "approved_start_sequence": ["presenting_complaint_narrative", "onset", "duration", "character", "frequency_or_urgency"],
     "sequence_mode": "complaint_owned",
     "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
   },
@@ -49,12 +34,7 @@
     "secondary_mode": {
       "secondary_question_budget": 4,
       "secondary_question_budget_override_if_red_flag": 6,
-      "priority_question_ids_if_secondary": [
-        "onset",
-        "duration",
-        "character",
-        "frequency_or_urgency"
-      ],
+      "priority_question_ids_if_secondary": ["onset", "duration", "character", "frequency_or_urgency"],
       "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
     },
     "ros_mode": {
@@ -73,56 +53,37 @@
     ]
   },
   "question_schedule": {
-    "enforced_phase_order": [
-      "opening",
-      "core_characterize",
-      "early_danger_screen",
-      "extended_characterize",
-      "critical_followup",
-      "high_priority_followup",
-      "context_and_history"
-    ],
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
     "default_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "onset",
-        "duration",
-        "character",
-        "frequency_or_urgency",
-        "severity"
-      ],
-      "early_danger_screen": [
-        "fever_or_rigors",
-        "loin_pain",
-        "retention_or_anuria",
-        "immunocompromised_status",
-        "painless_haematuria"
-      ],
-      "extended_characterize": [
-        "haematuria_type",
-        "flank_or_loin_pain",
-        "functional_impact",
-        "sex_related_symptom_timing",
-        "vaginal_or_penile_discharge"
-      ],
-      "critical_followup": [
-        "visible_blood_clots",
-        "bilateral_symptoms"
-      ],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "recent_catheter",
-        "prior_uti",
-        "prior_stones",
-        "anticoagulant_use",
-        "weight_loss",
-        "family_history_bladder_or_kidney_cancer"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "character", "frequency_or_urgency", "severity"],
+      "early_danger_screen": ["fever_or_rigors", "loin_pain", "retention_or_anuria", "immunocompromised_status", "painless_haematuria"],
+      "extended_characterize": ["haematuria_type", "flank_or_loin_pain", "functional_impact", "sex_related_symptom_timing", "vaginal_or_penile_discharge"],
+      "critical_followup": ["visible_blood_clots", "bilateral_symptoms"],
+      "high_priority_followup": ["associated_symptoms", "recent_catheter", "prior_uti", "prior_stones", "anticoagulant_use", "weight_loss", "family_history_bladder_or_kidney_cancer"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "character", "frequency_or_urgency", "severity"],
+      "early_danger_screen": ["fever_or_rigors", "loin_pain", "recent_change_in_pattern"],
+      "extended_characterize": ["haematuria_type", "flank_or_loin_pain", "functional_impact", "sex_related_symptom_timing", "vaginal_or_penile_discharge"],
+      "critical_followup": ["visible_blood_clots", "bilateral_symptoms"],
+      "high_priority_followup": ["associated_symptoms", "recent_catheter", "prior_uti", "prior_stones", "anticoagulant_use", "weight_loss", "family_history_bladder_or_kidney_cancer", "retention_or_anuria", "immunocompromised_status", "painless_haematuria"],
       "context_and_history": []
     },
     "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
       {
         "rule_id": "stay_on_default",
         "trigger": "No alternate complaint-specific profile is active",
@@ -136,9 +97,7 @@
       "phase": "opening",
       "text": "Please tell me briefly what brought you in today and how this started.",
       "response_type": "NARRATIVE_FREE_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Presenting Complaint Narrative",
@@ -150,9 +109,7 @@
       "phase": "core_characterize",
       "text": "When did the symptoms start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Onset",
       "canonical_question_key": "onset",
       "canonical_concept": "onset"
@@ -162,9 +119,7 @@
       "phase": "core_characterize",
       "text": "How long have they been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Duration",
       "canonical_question_key": "duration",
       "canonical_concept": "duration"
@@ -172,20 +127,25 @@
     "character": {
       "field": "character",
       "phase": "core_characterize",
-      "text": "Can you describe what it feels like?",
+      "text": "Can you describe what the burning or pain feels like?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "character_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["character_details"],
       "ui_label": "Character",
       "canonical_question_key": "character",
-      "if_positive_ask": [
-        "character_details"
-      ],
+      "canonical_concept": "character"
+    },
+    "character_details": {
+      "field": "character_details",
+      "phase": "core_characterize",
+      "text": "Is it a burning sensation, sharp pain, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "character",
+      "ui_label": "Character details",
+      "canonical_question_key": "character_details",
       "canonical_concept": "character"
     },
     "severity": {
@@ -193,9 +153,7 @@
       "phase": "core_characterize",
       "text": "How severe are the symptoms on a scale of 0 to 10?",
       "response_type": "SCALE_0_10",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Severity",
       "canonical_question_key": "severity",
       "canonical_concept": "severity"
@@ -205,11 +163,7 @@
       "phase": "core_characterize",
       "text": "Are you passing urine more often than usual or feeling a sudden urgent need to go?",
       "response_type": "COUNT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Frequency or urgency",
       "canonical_question_key": "frequency_or_urgency",
       "canonical_concept": "urinary_frequency_or_urgency"
@@ -219,11 +173,7 @@
       "phase": "extended_characterize",
       "text": "If you have noticed blood, is it at the start, end, or throughout the urine? Is it clearly visible or only something you were told about on a test?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Haematuria type",
       "canonical_question_key": "haematuria_type",
       "canonical_concept": "haematuria_type"
@@ -233,42 +183,55 @@
       "phase": "extended_characterize",
       "text": "Any pain in your side or back, around the kidney area?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "flank_or_loin_pain_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["flank_or_loin_pain_details"],
       "ui_label": "Flank or loin pain",
       "canonical_question_key": "flank_or_loin_pain",
-      "if_positive_ask": [
-        "flank_or_loin_pain_details"
-      ],
+      "canonical_concept": "flank_or_loin_pain"
+    },
+    "flank_or_loin_pain_details": {
+      "field": "flank_or_loin_pain_details",
+      "phase": "extended_characterize",
+      "text": "Which side? Constant or colicky?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "flank_or_loin_pain",
+      "ui_label": "Flank pain details",
+      "canonical_question_key": "flank_or_loin_pain_details",
       "canonical_concept": "flank_or_loin_pain"
     },
     "associated_symptoms": {
       "field": "associated_symptoms",
       "phase": "high_priority_followup",
-      "text": "What other symptoms came with this?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Have any other symptoms come with the burning or pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
       "ui_label": "Associated symptoms",
       "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
       "canonical_concept": "associated_symptoms"
     },
     "functional_impact": {
       "field": "functional_impact",
       "phase": "extended_characterize",
-      "text": "How much is it affecting your daily life or sleep?",
+      "text": "How much is the dysuria affecting your daily life or sleep?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Functional impact",
       "canonical_question_key": "functional_impact",
       "canonical_concept": "functional_impact"
@@ -278,18 +241,23 @@
       "phase": "early_danger_screen",
       "text": "Any fever, shaking chills, or rigors?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fever_or_rigors_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["fever_or_rigors_details"],
       "ui_label": "Fever or rigors",
       "canonical_question_key": "fever_or_rigors",
-      "if_positive_ask": [
-        "fever_or_rigors_details"
-      ],
+      "canonical_concept": "fever_or_rigors"
+    },
+    "fever_or_rigors_details": {
+      "field": "fever_or_rigors_details",
+      "phase": "early_danger_screen",
+      "text": "What was the highest temperature? How long did chills last?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "fever_or_rigors",
+      "ui_label": "Fever details",
+      "canonical_question_key": "fever_or_rigors_details",
       "canonical_concept": "fever_or_rigors"
     },
     "loin_pain": {
@@ -297,16 +265,23 @@
       "phase": "early_danger_screen",
       "text": "Any severe pain in your flank that comes in waves?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "loin_pain_details",
+      "if_positive_ask": ["loin_pain_details"],
       "ui_label": "Loin pain",
       "canonical_question_key": "loin_pain",
-      "if_positive_ask": [
-        "loin_pain_details"
-      ],
+      "canonical_concept": "loin_pain"
+    },
+    "loin_pain_details": {
+      "field": "loin_pain_details",
+      "phase": "early_danger_screen",
+      "text": "Which side? How severe? Does it travel to the groin?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "loin_pain",
+      "ui_label": "Loin pain details",
+      "canonical_question_key": "loin_pain_details",
       "canonical_concept": "loin_pain"
     },
     "retention_or_anuria": {
@@ -314,18 +289,23 @@
       "phase": "early_danger_screen",
       "text": "Are you passing much less urine than usual, or none at all?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "retention_or_anuria_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["retention_or_anuria_details"],
       "ui_label": "Retention or anuria",
       "canonical_question_key": "retention_or_anuria",
-      "if_positive_ask": [
-        "retention_or_anuria_details"
-      ],
+      "canonical_concept": "retention_or_anuria"
+    },
+    "retention_or_anuria_details": {
+      "field": "retention_or_anuria_details",
+      "phase": "early_danger_screen",
+      "text": "When did you last pass urine? Any pain?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "retention_or_anuria",
+      "ui_label": "Retention details",
+      "canonical_question_key": "retention_or_anuria_details",
       "canonical_concept": "retention_or_anuria"
     },
     "immunocompromised_status": {
@@ -333,32 +313,47 @@
       "phase": "early_danger_screen",
       "text": "Do you have diabetes, a weakened immune system, or are you on steroids or chemotherapy?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "immunocompromised_status_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["immunocompromised_status_details"],
       "ui_label": "Immunocompromised",
       "canonical_question_key": "immunocompromised_status",
-      "if_positive_ask": [
-        "immunocompromised_status_details"
-      ],
+      "canonical_concept": "immunocompromised_status"
+    },
+    "immunocompromised_status_details": {
+      "field": "immunocompromised_status_details",
+      "phase": "early_danger_screen",
+      "text": "What condition or treatment?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "immunocompromised_status",
+      "ui_label": "Immunocompromised details",
+      "canonical_question_key": "immunocompromised_status_details",
       "canonical_concept": "immunocompromised_status"
     },
     "painless_haematuria": {
       "field": "painless_haematuria",
       "phase": "early_danger_screen",
       "text": "Is the blood in the urine painless — without burning or discomfort?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "painless_haematuria_details",
+      "if_positive_ask": ["painless_haematuria_details"],
       "ui_label": "Painless haematuria",
       "canonical_question_key": "painless_haematuria",
+      "canonical_concept": "painless_haematuria"
+    },
+    "painless_haematuria_details": {
+      "field": "painless_haematuria_details",
+      "phase": "early_danger_screen",
+      "text": "When did you first notice the blood?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "painless_haematuria",
+      "ui_label": "Painless haematuria details",
+      "canonical_question_key": "painless_haematuria_details",
       "canonical_concept": "painless_haematuria"
     },
     "visible_blood_clots": {
@@ -366,16 +361,23 @@
       "phase": "critical_followup",
       "text": "Have you passed any blood clots?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "visible_blood_clots_details",
+      "if_positive_ask": ["visible_blood_clots_details"],
       "ui_label": "Visible blood clots",
       "canonical_question_key": "visible_blood_clots",
-      "if_positive_ask": [
-        "visible_blood_clots_details"
-      ],
+      "canonical_concept": "visible_blood_clots"
+    },
+    "visible_blood_clots_details": {
+      "field": "visible_blood_clots_details",
+      "phase": "critical_followup",
+      "text": "How big are the clots? How many?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "visible_blood_clots",
+      "ui_label": "Blood clots details",
+      "canonical_question_key": "visible_blood_clots_details",
       "canonical_concept": "visible_blood_clots"
     },
     "bilateral_symptoms": {
@@ -383,18 +385,23 @@
       "phase": "critical_followup",
       "text": "Do you have pain or symptoms on both sides?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "bilateral_symptoms_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["bilateral_symptoms_details"],
       "ui_label": "Bilateral symptoms",
       "canonical_question_key": "bilateral_symptoms",
-      "if_positive_ask": [
-        "bilateral_symptoms_details"
-      ],
+      "canonical_concept": "bilateral_symptoms"
+    },
+    "bilateral_symptoms_details": {
+      "field": "bilateral_symptoms_details",
+      "phase": "critical_followup",
+      "text": "Which symptoms on both sides?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "bilateral_symptoms",
+      "ui_label": "Bilateral symptoms details",
+      "canonical_question_key": "bilateral_symptoms_details",
       "canonical_concept": "bilateral_symptoms"
     },
     "sex_related_symptom_timing": {
@@ -402,12 +409,25 @@
       "phase": "extended_characterize",
       "text": "Do the symptoms seem related to sex or become worse after sex?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "sensitive_topic": true,
+      "capture_detail_if_positive": true,
+      "detail_field": "sex_related_symptom_timing_details",
+      "if_positive_ask": ["sex_related_symptom_timing_details"],
       "ui_label": "Symptoms related to sex",
       "canonical_question_key": "sex_related_symptom_timing",
+      "canonical_concept": "sex_related_symptom_timing"
+    },
+    "sex_related_symptom_timing_details": {
+      "field": "sex_related_symptom_timing_details",
+      "phase": "extended_characterize",
+      "text": "When do they appear after sex?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "sensitive_topic": true,
+      "parent_field": "sex_related_symptom_timing",
+      "ui_label": "Sex-related timing details",
+      "canonical_question_key": "sex_related_symptom_timing_details",
       "canonical_concept": "sex_related_symptom_timing"
     },
     "vaginal_or_penile_discharge": {
@@ -415,35 +435,49 @@
       "phase": "extended_characterize",
       "text": "Any unusual discharge?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "vaginal_or_penile_discharge_details",
+      "if_positive_ask": ["vaginal_or_penile_discharge_details"],
+      "sensitive_topic": true,
       "ui_label": "Vaginal or penile discharge",
       "canonical_question_key": "vaginal_or_penile_discharge",
-      "if_positive_ask": [
-        "vaginal_or_penile_discharge_details"
-      ],
       "canonical_concept": "vaginal_discharge"
+    },
+    "vaginal_or_penile_discharge_details": {
+      "field": "vaginal_or_penile_discharge_details",
+      "phase": "extended_characterize",
+      "text": "What colour, consistency, and odour?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "sensitive_topic": true,
+      "parent_field": "vaginal_or_penile_discharge",
+      "ui_label": "Discharge details",
+      "canonical_question_key": "vaginal_or_penile_discharge_details",
+      "canonical_concept": "vaginal_or_penile_discharge"
     },
     "recent_catheter": {
       "field": "recent_catheter",
       "phase": "high_priority_followup",
       "text": "Any recent catheter, cystoscopy, or urological procedure?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "recent_catheter_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["recent_catheter_details"],
       "ui_label": "Recent catheter",
       "canonical_question_key": "recent_catheter",
-      "if_positive_ask": [
-        "recent_catheter_details"
-      ],
+      "canonical_concept": "recent_catheter"
+    },
+    "recent_catheter_details": {
+      "field": "recent_catheter_details",
+      "phase": "high_priority_followup",
+      "text": "When? For how long?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_catheter",
+      "ui_label": "Catheter details",
+      "canonical_question_key": "recent_catheter_details",
       "canonical_concept": "recent_catheter"
     },
     "prior_uti": {
@@ -451,16 +485,23 @@
       "phase": "high_priority_followup",
       "text": "Have you had urinary infections before? How often?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "prior_uti_details",
-      "ui_label": "Prior uti",
+      "if_positive_ask": ["prior_uti_details"],
+      "ui_label": "Prior UTI",
       "canonical_question_key": "prior_uti",
-      "if_positive_ask": [
-        "prior_uti_details"
-      ],
+      "canonical_concept": "prior_uti"
+    },
+    "prior_uti_details": {
+      "field": "prior_uti_details",
+      "phase": "high_priority_followup",
+      "text": "How many times? Were they confirmed by urine tests?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "prior_uti",
+      "ui_label": "UTI history details",
+      "canonical_question_key": "prior_uti_details",
       "canonical_concept": "prior_uti"
     },
     "prior_stones": {
@@ -468,16 +509,23 @@
       "phase": "high_priority_followup",
       "text": "Any history of kidney stones?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "prior_stones_details",
+      "if_positive_ask": ["prior_stones_details"],
       "ui_label": "Prior stones",
       "canonical_question_key": "prior_stones",
-      "if_positive_ask": [
-        "prior_stones_details"
-      ],
+      "canonical_concept": "prior_stones"
+    },
+    "prior_stones_details": {
+      "field": "prior_stones_details",
+      "phase": "high_priority_followup",
+      "text": "When? Were they treated?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "prior_stones",
+      "ui_label": "Stone details",
+      "canonical_question_key": "prior_stones_details",
       "canonical_concept": "prior_stones"
     },
     "anticoagulant_use": {
@@ -486,16 +534,23 @@
       "text": "Do you take blood thinners?",
       "ask_if": "ALWAYS",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "anticoagulant_use_details",
+      "if_positive_ask": ["anticoagulant_use_details"],
       "ui_label": "Anticoagulant use",
       "canonical_question_key": "anticoagulant_use",
-      "if_positive_ask": [
-        "anticoagulant_use_details"
-      ],
+      "canonical_concept": "anticoagulant_use"
+    },
+    "anticoagulant_use_details": {
+      "field": "anticoagulant_use_details",
+      "phase": "high_priority_followup",
+      "text": "Which medication and dose?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "anticoagulant_use",
+      "ui_label": "Anticoagulant details",
+      "canonical_question_key": "anticoagulant_use_details",
       "canonical_concept": "anticoagulant_use"
     },
     "weight_loss": {
@@ -503,9 +558,7 @@
       "phase": "high_priority_followup",
       "text": "Any unintentional weight loss?",
       "response_type": "NUMERIC_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Weight loss",
       "canonical_question_key": "weight_loss",
       "canonical_concept": "weight_loss"
@@ -515,241 +568,68 @@
       "phase": "high_priority_followup",
       "text": "Any family history of bladder or kidney cancer?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "ui_label": "Family history of bladder or kidney cancer",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "family_history_bladder_or_kidney_cancer_details",
+      "if_positive_ask": ["family_history_bladder_or_kidney_cancer_details"],
+      "ui_label": "Family history of bladder/kidney cancer",
       "canonical_question_key": "family_history_bladder_or_kidney_cancer",
       "canonical_concept": "family_history_bladder_or_kidney_cancer"
     },
-    "character_details": {
-      "field": "character_details",
-      "phase": "core_characterize",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "character",
-      "ui_label": "Character details",
-      "canonical_question_key": "character_details",
-      "canonical_concept": "character"
-    },
-    "flank_or_loin_pain_details": {
-      "field": "flank_or_loin_pain_details",
-      "phase": "extended_characterize",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "flank_or_loin_pain",
-      "ui_label": "Flank or loin pain details",
-      "canonical_question_key": "flank_or_loin_pain_details",
-      "canonical_concept": "flank_or_loin_pain"
-    },
-    "fever_or_rigors_details": {
-      "field": "fever_or_rigors_details",
-      "phase": "early_danger_screen",
-      "text": "Please describe the fever or chills briefly, including temperature if known.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "fever_or_rigors",
-      "ui_label": "Fever or rigors details",
-      "canonical_question_key": "fever_or_rigors_details",
-      "canonical_concept": "fever_or_rigors"
-    },
-    "loin_pain_details": {
-      "field": "loin_pain_details",
-      "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "loin_pain",
-      "ui_label": "Loin pain details",
-      "canonical_question_key": "loin_pain_details",
-      "canonical_concept": "loin_pain"
-    },
-    "retention_or_anuria_details": {
-      "field": "retention_or_anuria_details",
-      "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "retention_or_anuria",
-      "ui_label": "Retention or anuria details",
-      "canonical_question_key": "retention_or_anuria_details",
-      "canonical_concept": "retention_or_anuria"
-    },
-    "immunocompromised_status_details": {
-      "field": "immunocompromised_status_details",
-      "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "immunocompromised_status",
-      "ui_label": "Immunocompromised details",
-      "canonical_question_key": "immunocompromised_status_details",
-      "canonical_concept": "immunocompromised_status"
-    },
-    "visible_blood_clots_details": {
-      "field": "visible_blood_clots_details",
-      "phase": "critical_followup",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "visible_blood_clots",
-      "ui_label": "Visible blood clots details",
-      "canonical_question_key": "visible_blood_clots_details",
-      "canonical_concept": "visible_blood_clots"
-    },
-    "bilateral_symptoms_details": {
-      "field": "bilateral_symptoms_details",
-      "phase": "critical_followup",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "bilateral_symptoms",
-      "ui_label": "Bilateral symptoms details",
-      "canonical_question_key": "bilateral_symptoms_details",
-      "canonical_concept": "bilateral_symptoms"
-    },
-    "vaginal_or_penile_discharge_details": {
-      "field": "vaginal_or_penile_discharge_details",
-      "phase": "extended_characterize",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "vaginal_or_penile_discharge",
-      "ui_label": "Vaginal or penile discharge details",
-      "canonical_question_key": "vaginal_or_penile_discharge_details",
-      "canonical_concept": "vaginal_or_penile_discharge"
-    },
-    "recent_catheter_details": {
-      "field": "recent_catheter_details",
+    "family_history_bladder_or_kidney_cancer_details": {
+      "field": "family_history_bladder_or_kidney_cancer_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "Which relative? At what age?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "recent_catheter",
-      "ui_label": "Recent catheter details",
-      "canonical_question_key": "recent_catheter_details",
-      "canonical_concept": "recent_catheter"
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "family_history_bladder_or_kidney_cancer",
+      "ui_label": "Family history details",
+      "canonical_question_key": "family_history_bladder_or_kidney_cancer_details",
+      "canonical_concept": "family_history_bladder_or_kidney_cancer"
     },
-    "prior_uti_details": {
-      "field": "prior_uti_details",
-      "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "prior_uti",
-      "ui_label": "Prior uti details",
-      "canonical_question_key": "prior_uti_details",
-      "canonical_concept": "prior_uti"
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pattern of urinary symptoms changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
     },
-    "prior_stones_details": {
-      "field": "prior_stones_details",
-      "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – frequency, severity, or associated symptoms?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "prior_stones",
-      "ui_label": "Prior stones details",
-      "canonical_question_key": "prior_stones_details",
-      "canonical_concept": "prior_stones"
-    },
-    "anticoagulant_use_details": {
-      "field": "anticoagulant_use_details",
-      "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "anticoagulant_use",
-      "ui_label": "Anticoagulant use details",
-      "canonical_question_key": "anticoagulant_use_details",
-      "canonical_concept": "anticoagulant_use"
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
     }
   },
   "derived_red_flag_patterns": {
-    "urosepsis_pattern": [
-      "fever_or_rigors",
-      "loin_pain"
-    ],
-    "renal_colic_pattern": [
-      "loin_pain",
-      "haematuria_type"
-    ],
-    "malignancy_pattern": [
-      "painless_haematuria",
-      "weight_loss",
-      "family_history_bladder_or_kidney_cancer"
-    ],
-    "retention_pattern": [
-      "retention_or_anuria"
-    ]
+    "urosepsis_pattern": ["fever_or_rigors", "loin_pain"],
+    "renal_colic_pattern": ["loin_pain", "haematuria_type"],
+    "malignancy_pattern": ["painless_haematuria", "weight_loss", "family_history_bladder_or_kidney_cancer"],
+    "retention_pattern": ["retention_or_anuria"]
   },
   "targeted_ros_plan": {
     "primary_system": "genitourinary",
-    "high_yield_systems": [
-      "constitutional_infectious",
-      "renal"
-    ],
-    "cross_system_systems": [
-      "gynecologic",
-      "vascular",
-      "sexual_history",
-      "structural_anatomic"
-    ],
+    "high_yield_systems": ["constitutional_infectious", "renal"],
+    "cross_system_systems": ["gynecologic", "vascular", "sexual_history", "structural_anatomic"],
     "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
   },
   "summary_contract": {
     "missing_clarifications": {
-      "source": [
-        "unanswered_core_questions",
-        "unanswered_critical_followups",
-        "unanswered_high_priority_followups"
-      ]
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
     },
     "flags": {
-      "source": [
-        "derived_red_flag_patterns",
-        "EscalationLevel"
-      ]
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
     }
   },
   "acuity_tier": "medium"

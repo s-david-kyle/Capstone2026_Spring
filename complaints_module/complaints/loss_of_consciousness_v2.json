@@ -8,19 +8,9 @@
   "can_be_secondary": true,
   "primary_system": "neurological",
   "related_systems": {
-    "high_yield": [
-      "cardiovascular",
-      "metabolic_toxic",
-      "trauma"
-    ],
-    "selective_cross_system": [
-      "infectious",
-      "respiratory"
-    ],
-    "contextual": [
-      "witness_history",
-      "substance_medication"
-    ]
+    "high_yield": ["cardiovascular", "metabolic_toxic", "trauma"],
+    "selective_cross_system": ["infectious", "respiratory"],
+    "contextual": ["witness_history", "substance_medication"]
   },
   "pivot_triggers": {
     "chest_pain": "cardiac_collapse_pattern",
@@ -29,13 +19,7 @@
     "palpitations": "cardiac_syncope_pattern"
   },
   "start_sequence_contract": {
-    "approved_start_sequence": [
-      "presenting_complaint_narrative",
-      "event_timing",
-      "duration",
-      "witnessed_or_unwitnessed",
-      "prodrome"
-    ],
+    "approved_start_sequence": ["presenting_complaint_narrative", "event_timing", "duration", "witnessed_or_unwitnessed", "prodrome"],
     "sequence_mode": "complaint_owned",
     "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
   },
@@ -52,12 +36,7 @@
     "secondary_mode": {
       "secondary_question_budget": 5,
       "secondary_question_budget_override_if_red_flag": 8,
-      "priority_question_ids_if_secondary": [
-        "event_timing",
-        "duration",
-        "witnessed_or_unwitnessed",
-        "prodrome"
-      ],
+      "priority_question_ids_if_secondary": ["event_timing", "duration", "witnessed_or_unwitnessed", "prodrome"],
       "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
     },
     "ros_mode": {
@@ -76,101 +55,32 @@
     ]
   },
   "question_schedule": {
-    "enforced_phase_order": [
-      "opening",
-      "core_characterize",
-      "early_danger_screen",
-      "extended_characterize",
-      "critical_followup",
-      "high_priority_followup",
-      "context_and_history"
-    ],
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
     "default_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "event_timing",
-        "duration",
-        "witnessed_or_unwitnessed",
-        "prodrome"
-      ],
-      "early_danger_screen": [
-        "ongoing_confusion",
-        "head_injury",
-        "focal_neurologic_symptoms",
-        "chest_pain",
-        "during_exertion",
-        "supine_event"
-      ],
-      "extended_characterize": [
-        "position_before_event",
-        "activity_before_event",
-        "injury_sustained",
-        "recovery_pattern"
-      ],
-      "critical_followup": [
-        "palpitations",
-        "shortness_of_breath",
-        "seizure_features",
-        "persistent_vomiting",
-        "fever_or_meningitic_features",
-        "substance_or_overdose_concern",
-        "pregnancy_context"
-      ],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "tongue_biting",
-        "incontinence",
-        "post_event_weakness",
-        "diabetes_history",
-        "known_heart_disease",
-        "prior_similar_events",
-        "new_medication",
-        "alcohol_or_drug_use",
-        "standing_trigger",
-        "heat_or_pain_trigger",
-        "dehydration",
-        "vomiting_or_diarrhea",
-        "family_history_sudden_death",
-        "safeguarding_concern_loc"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["event_timing", "duration", "witnessed_or_unwitnessed", "prodrome"],
+      "early_danger_screen": ["ongoing_confusion", "head_injury", "focal_neurologic_symptoms", "chest_pain", "during_exertion", "supine_event"],
+      "extended_characterize": ["position_before_event", "activity_before_event", "injury_sustained", "recovery_pattern"],
+      "critical_followup": ["palpitations", "shortness_of_breath", "seizure_features", "persistent_vomiting", "fever_or_meningitic_features", "substance_or_overdose_concern", "pregnancy_context"],
+      "high_priority_followup": ["associated_symptoms", "tongue_biting", "incontinence", "post_event_weakness", "diabetes_history", "known_heart_disease", "prior_similar_events", "new_medication", "alcohol_or_drug_use", "standing_trigger", "heat_or_pain_trigger", "dehydration", "vomiting_or_diarrhea", "family_history_sudden_death", "safeguarding_concern_loc"],
       "context_and_history": []
     },
     "vasovagal_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "event_timing",
-        "duration",
-        "witnessed_or_unwitnessed",
-        "prodrome"
-      ],
-      "early_danger_screen": [
-        "ongoing_confusion",
-        "head_injury",
-        "chest_pain"
-      ],
-      "extended_characterize": [
-        "position_before_event",
-        "activity_before_event",
-        "injury_sustained",
-        "recovery_pattern"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["event_timing", "duration", "witnessed_or_unwitnessed", "prodrome"],
+      "early_danger_screen": ["ongoing_confusion", "head_injury", "chest_pain"],
+      "extended_characterize": ["position_before_event", "activity_before_event", "injury_sustained", "recovery_pattern"],
       "critical_followup": [],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "diabetes_history",
-        "prior_similar_events",
-        "new_medication",
-        "standing_trigger",
-        "heat_or_pain_trigger",
-        "dehydration",
-        "vomiting_or_diarrhea",
-        "family_history_sudden_death",
-        "safeguarding_concern_loc"
-      ],
+      "high_priority_followup": ["associated_symptoms", "diabetes_history", "prior_similar_events", "new_medication", "standing_trigger", "heat_or_pain_trigger", "dehydration", "vomiting_or_diarrhea", "family_history_sudden_death", "safeguarding_concern_loc"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["event_timing", "duration", "witnessed_or_unwitnessed", "prodrome"],
+      "early_danger_screen": ["ongoing_confusion", "head_injury", "recent_change_in_pattern"],
+      "extended_characterize": ["position_before_event", "activity_before_event", "injury_sustained", "recovery_pattern"],
+      "critical_followup": ["palpitations", "shortness_of_breath", "seizure_features", "persistent_vomiting", "fever_or_meningitic_features", "substance_or_overdose_concern", "pregnancy_context"],
+      "high_priority_followup": ["associated_symptoms", "tongue_biting", "incontinence", "post_event_weakness", "diabetes_history", "known_heart_disease", "prior_similar_events", "new_medication", "alcohol_or_drug_use", "standing_trigger", "heat_or_pain_trigger", "dehydration", "vomiting_or_diarrhea", "family_history_sudden_death", "safeguarding_concern_loc", "focal_neurologic_symptoms", "chest_pain", "during_exertion", "supine_event"],
       "context_and_history": []
     },
     "profile_switch_rules": [
@@ -179,61 +89,29 @@
         "trigger": {
           "op": "all",
           "conditions": [
-            {
-              "op": "field_text_contains_any",
-              "field_ref": "prodrome",
-              "value": [
-                "nausea",
-                "warmth",
-                "lightheaded",
-                "dimming",
-                "pale",
-                "sweat"
-              ]
-            },
-            {
-              "op": "field_text_contains",
-              "field_ref": "recovery_pattern",
-              "value": "minute"
-            },
-            {
-              "op": "field_equals",
-              "field_ref": "chest_pain",
-              "value": false
-            },
-            {
-              "op": "field_equals",
-              "field_ref": "palpitations",
-              "value": false
-            },
-            {
-              "op": "field_equals",
-              "field_ref": "seizure_features",
-              "value": false
-            },
-            {
-              "op": "field_equals",
-              "field_ref": "focal_neurologic_symptoms",
-              "value": false
-            },
-            {
-              "op": "field_equals",
-              "field_ref": "head_injury",
-              "value": false
-            },
-            {
-              "op": "field_equals",
-              "field_ref": "family_history_sudden_death",
-              "value": false
-            },
-            {
-              "op": "field_equals",
-              "field_ref": "during_exertion",
-              "value": false
-            }
+            { "op": "field_text_contains_any", "field_ref": "prodrome", "value": ["nausea", "warmth", "lightheaded", "dimming", "pale", "sweat"] },
+            { "op": "field_text_contains", "field_ref": "recovery_pattern", "value": "minute" },
+            { "op": "field_equals", "field_ref": "chest_pain", "value": false },
+            { "op": "field_equals", "field_ref": "palpitations", "value": false },
+            { "op": "field_equals", "field_ref": "seizure_features", "value": false },
+            { "op": "field_equals", "field_ref": "focal_neurologic_symptoms", "value": false },
+            { "op": "field_equals", "field_ref": "head_injury", "value": false },
+            { "op": "field_equals", "field_ref": "family_history_sudden_death", "value": false },
+            { "op": "field_equals", "field_ref": "during_exertion", "value": false }
           ]
         },
         "action": "use vasovagal_profile"
+      },
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
       },
       {
         "rule_id": "stay_on_default",
@@ -248,9 +126,7 @@
       "phase": "opening",
       "text": "Please tell me briefly what happened and what brought you in today.",
       "response_type": "NARRATIVE_FREE_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Presenting Complaint Narrative",
@@ -262,9 +138,7 @@
       "phase": "core_characterize",
       "text": "When did this happen?",
       "response_type": "TEMPORAL_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Event timing",
       "canonical_question_key": "event_timing",
       "canonical_concept": "event_timing"
@@ -274,11 +148,7 @@
       "phase": "core_characterize",
       "text": "How long were you out, as far as you know? If you can, tell me in minutes, hours, days, weeks, months, or years.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Duration",
       "canonical_question_key": "duration",
       "canonical_concept": "duration"
@@ -286,44 +156,57 @@
     "witnessed_or_unwitnessed": {
       "field": "witnessed_or_unwitnessed",
       "phase": "core_characterize",
-      "text": "Did anyone see it happen?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Did anyone see the event happen?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "witnessed_or_unwitnessed_details",
+      "if_positive_ask": ["witnessed_or_unwitnessed_details"],
       "ui_label": "Witnessed or unwitnessed",
       "canonical_question_key": "witnessed_or_unwitnessed",
+      "canonical_concept": "witnessed_or_unwitnessed"
+    },
+    "witnessed_or_unwitnessed_details": {
+      "field": "witnessed_or_unwitnessed_details",
+      "phase": "core_characterize",
+      "text": "Who saw it? What did they tell you happened?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "witnessed_or_unwitnessed",
+      "ui_label": "Witness details",
+      "canonical_question_key": "witnessed_or_unwitnessed_details",
       "canonical_concept": "witnessed_or_unwitnessed"
     },
     "prodrome": {
       "field": "prodrome",
       "phase": "core_characterize",
-      "text": "Did you feel anything beforehand \u2014 dizziness, nausea, visual dimming, chest symptoms, or an aura?",
+      "text": "Did you feel anything beforehand — dizziness, nausea, visual dimming, chest symptoms, or an aura?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "prodrome_details",
-      "if_positive_ask": [
-        "prodrome_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["prodrome_details"],
       "ui_label": "Prodrome",
       "canonical_question_key": "prodrome",
+      "canonical_concept": "prodrome"
+    },
+    "prodrome_details": {
+      "field": "prodrome_details",
+      "phase": "core_characterize",
+      "text": "What did you feel just before? How long did it last?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "prodrome",
+      "ui_label": "Prodrome details",
+      "canonical_question_key": "prodrome_details",
       "canonical_concept": "prodrome"
     },
     "position_before_event": {
       "field": "position_before_event",
       "phase": "extended_characterize",
       "text": "Were you standing, sitting, lying, or exerting yourself before it happened?",
-      "response_type": "TEMPORAL_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Position before event",
       "canonical_question_key": "position_before_event",
       "canonical_concept": "position_before_event"
@@ -332,10 +215,8 @@
       "field": "activity_before_event",
       "phase": "extended_characterize",
       "text": "What were you doing immediately before it happened?",
-      "response_type": "TEMPORAL_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Activity before event",
       "canonical_question_key": "activity_before_event",
       "canonical_concept": "activity_before_event"
@@ -345,28 +226,31 @@
       "phase": "extended_characterize",
       "text": "Did you hit your head or injure yourself when you went down?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "injury_sustained_details",
-      "if_positive_ask": [
-        "injury_sustained_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["injury_sustained_details"],
       "ui_label": "Injury sustained",
       "canonical_question_key": "injury_sustained",
+      "canonical_concept": "injury_sustained"
+    },
+    "injury_sustained_details": {
+      "field": "injury_sustained_details",
+      "phase": "extended_characterize",
+      "text": "Where were you injured? How severe?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "injury_sustained",
+      "ui_label": "Injury details",
+      "canonical_question_key": "injury_sustained_details",
       "canonical_concept": "injury_sustained"
     },
     "recovery_pattern": {
       "field": "recovery_pattern",
       "phase": "extended_characterize",
       "text": "How quickly did you come back to normal afterward?",
-      "response_type": "TEMPORAL_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Recovery pattern",
       "canonical_question_key": "recovery_pattern",
       "canonical_concept": "recovery_pattern"
@@ -374,15 +258,25 @@
     "associated_symptoms": {
       "field": "associated_symptoms",
       "phase": "high_priority_followup",
-      "text": "What symptoms happened just before, during, or after the event?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "text": "Have any other symptoms come with the episode?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
       "ui_label": "Associated symptoms",
       "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms happened just before, during, or after?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
       "canonical_concept": "associated_symptoms"
     },
     "ongoing_confusion": {
@@ -390,16 +284,10 @@
       "phase": "early_danger_screen",
       "text": "Are you still confused, drowsy, or not back to normal?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "ongoing_confusion_details",
-      "if_positive_ask": [
-        "ongoing_confusion_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["ongoing_confusion_details"],
       "ui_label": "Ongoing confusion",
       "canonical_question_key": "ongoing_confusion",
       "canonical_concept": "ongoing_confusion"
@@ -407,12 +295,12 @@
     "ongoing_confusion_details": {
       "field": "ongoing_confusion_details",
       "phase": "early_danger_screen",
-      "text": "How confused or drowsy?",
+      "text": "How confused or drowsy? When did you last feel normal?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "ongoing_confusion",
+      "ui_label": "Confusion details",
+      "canonical_question_key": "ongoing_confusion_details",
       "canonical_concept": "ongoing_confusion"
     },
     "head_injury": {
@@ -420,16 +308,10 @@
       "phase": "early_danger_screen",
       "text": "Did you strike your head or have neck pain after the fall?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "head_injury_details",
-      "if_positive_ask": [
-        "head_injury_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["head_injury_details"],
       "ui_label": "Head injury",
       "canonical_question_key": "head_injury",
       "canonical_concept": "head_injury"
@@ -437,12 +319,12 @@
     "head_injury_details": {
       "field": "head_injury_details",
       "phase": "early_danger_screen",
-      "text": "Did you lose consciousness? Any bleeding?",
+      "text": "Where did you hit? Did you lose consciousness?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "head_injury",
+      "ui_label": "Head injury details",
+      "canonical_question_key": "head_injury_details",
       "canonical_concept": "head_injury"
     },
     "focal_neurologic_symptoms": {
@@ -450,16 +332,10 @@
       "phase": "early_danger_screen",
       "text": "Any weakness, numbness, speech trouble, or one-sided symptoms?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "focal_neurologic_symptoms_details",
-      "if_positive_ask": [
-        "focal_neurologic_symptoms_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["focal_neurologic_symptoms_details"],
       "ui_label": "Focal neurologic symptoms",
       "canonical_question_key": "focal_neurologic_symptoms",
       "canonical_concept": "focal_neurologic_symptoms"
@@ -467,12 +343,12 @@
     "focal_neurologic_symptoms_details": {
       "field": "focal_neurologic_symptoms_details",
       "phase": "early_danger_screen",
-      "text": "Which side? What exactly?",
+      "text": "Which side? Is it constant or comes and goes?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "focal_neurologic_symptoms",
+      "ui_label": "Focal symptoms details",
+      "canonical_question_key": "focal_neurologic_symptoms_details",
       "canonical_concept": "focal_neurologic_symptoms"
     },
     "chest_pain": {
@@ -480,16 +356,10 @@
       "phase": "early_danger_screen",
       "text": "Any chest pain before or after it happened?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "chest_pain_details",
-      "if_positive_ask": [
-        "chest_pain_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["chest_pain_details"],
       "ui_label": "Chest Pain",
       "canonical_question_key": "chest_pain",
       "canonical_concept": "chest_pain"
@@ -497,12 +367,12 @@
     "chest_pain_details": {
       "field": "chest_pain_details",
       "phase": "early_danger_screen",
-      "text": "Can you describe the chest pain \u2014 where exactly, what does it feel like, and does it go anywhere?",
+      "text": "Where exactly? What did it feel like?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "chest_pain",
+      "ui_label": "Chest pain details",
+      "canonical_question_key": "chest_pain_details",
       "canonical_concept": "chest_pain"
     },
     "palpitations": {
@@ -510,16 +380,10 @@
       "phase": "critical_followup",
       "text": "Any racing or irregular heartbeat before it happened?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "palpitations_details",
-      "if_positive_ask": [
-        "palpitations_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["palpitations_details"],
       "ui_label": "Palpitations",
       "canonical_question_key": "palpitations",
       "canonical_concept": "palpitations"
@@ -527,12 +391,12 @@
     "palpitations_details": {
       "field": "palpitations_details",
       "phase": "critical_followup",
-      "text": "Fast, irregular, or pounding?",
+      "text": "Fast, irregular, or pounding? How long did they last?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "palpitations",
+      "ui_label": "Palpitations details",
+      "canonical_question_key": "palpitations_details",
       "canonical_concept": "palpitations"
     },
     "shortness_of_breath": {
@@ -540,14 +404,10 @@
       "phase": "critical_followup",
       "text": "Any shortness of breath before it happened?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "shortness_of_breath_details",
-      "if_positive_ask": [
-        "shortness_of_breath_details"
-      ],
+      "if_positive_ask": ["shortness_of_breath_details"],
       "ui_label": "Shortness of breath",
       "canonical_question_key": "shortness_of_breath",
       "canonical_concept": "shortness_of_breath"
@@ -555,29 +415,23 @@
     "shortness_of_breath_details": {
       "field": "shortness_of_breath_details",
       "phase": "critical_followup",
-      "text": "Is the shortness of breath at rest, on exertion, or lying flat?",
+      "text": "Was it at rest, on exertion, or lying flat? How severe?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "shortness_of_breath",
+      "ui_label": "Shortness of breath details",
+      "canonical_question_key": "shortness_of_breath_details",
       "canonical_concept": "shortness_of_breath"
     },
     "seizure_features": {
       "field": "seizure_features",
       "phase": "critical_followup",
       "text": "Was there shaking, stiffening, eye deviation, or a witnessed fit?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "seizure_features_details",
-      "if_positive_ask": [
-        "seizure_features_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["seizure_features_details"],
       "ui_label": "Seizure features",
       "canonical_question_key": "seizure_features",
       "canonical_concept": "seizure_features"
@@ -585,12 +439,12 @@
     "seizure_features_details": {
       "field": "seizure_features_details",
       "phase": "critical_followup",
-      "text": "Which body parts? How long?",
+      "text": "Which body parts? How long did it last?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "seizure_features",
+      "ui_label": "Seizure features details",
+      "canonical_question_key": "seizure_features_details",
       "canonical_concept": "seizure_features"
     },
     "persistent_vomiting": {
@@ -598,14 +452,10 @@
       "phase": "critical_followup",
       "text": "Have you been vomiting repeatedly since then?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "persistent_vomiting_details",
-      "if_positive_ask": [
-        "persistent_vomiting_details"
-      ],
+      "if_positive_ask": ["persistent_vomiting_details"],
       "ui_label": "Persistent vomiting",
       "canonical_question_key": "persistent_vomiting",
       "canonical_concept": "persistent_vomiting"
@@ -615,10 +465,10 @@
       "phase": "critical_followup",
       "text": "How many times? Can you keep fluids down?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "persistent_vomiting",
+      "ui_label": "Vomiting details",
+      "canonical_question_key": "persistent_vomiting_details",
       "canonical_concept": "persistent_vomiting"
     },
     "fever_or_meningitic_features": {
@@ -626,16 +476,10 @@
       "phase": "critical_followup",
       "text": "Any fever, severe headache, or stiff neck?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fever_or_meningitic_features_details",
-      "if_positive_ask": [
-        "fever_or_meningitic_features_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["fever_or_meningitic_features_details"],
       "ui_label": "Fever or meningitic features",
       "canonical_question_key": "fever_or_meningitic_features",
       "canonical_concept": "fever_or_meningitic_features"
@@ -643,12 +487,12 @@
     "fever_or_meningitic_features_details": {
       "field": "fever_or_meningitic_features_details",
       "phase": "critical_followup",
-      "text": "What was the temperature? Can you touch chin to chest?",
+      "text": "What was the temperature? Can you touch your chin to your chest?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "fever_or_meningitic_features",
+      "ui_label": "Fever/meningitis details",
+      "canonical_question_key": "fever_or_meningitic_features_details",
       "canonical_concept": "fever_or_meningitic_features"
     },
     "substance_or_overdose_concern": {
@@ -656,16 +500,10 @@
       "phase": "critical_followup",
       "text": "Any concern for alcohol, recreational drugs, opioids, or overdose?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "substance_or_overdose_concern_details",
-      "if_positive_ask": [
-        "substance_or_overdose_concern_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["substance_or_overdose_concern_details"],
       "ui_label": "Substance or overdose concern",
       "canonical_question_key": "substance_or_overdose_concern",
       "canonical_concept": "substance_or_overdose_concern"
@@ -675,10 +513,10 @@
       "phase": "critical_followup",
       "text": "What substance? When?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "substance_or_overdose_concern",
+      "ui_label": "Substance details",
+      "canonical_question_key": "substance_or_overdose_concern_details",
       "canonical_concept": "substance_or_overdose_concern"
     },
     "tongue_biting": {
@@ -686,14 +524,10 @@
       "phase": "high_priority_followup",
       "text": "Did you bite your tongue?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "tongue_biting_details",
-      "if_positive_ask": [
-        "tongue_biting_details"
-      ],
+      "if_positive_ask": ["tongue_biting_details"],
       "ui_label": "Tongue biting",
       "canonical_question_key": "tongue_biting",
       "canonical_concept": "tongue_biting"
@@ -701,12 +535,12 @@
     "tongue_biting_details": {
       "field": "tongue_biting_details",
       "phase": "high_priority_followup",
-      "text": "Side or tip?",
+      "text": "Side or tip? Any bleeding?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "tongue_biting",
+      "ui_label": "Tongue biting details",
+      "canonical_question_key": "tongue_biting_details",
       "canonical_concept": "tongue_biting"
     },
     "incontinence": {
@@ -714,16 +548,10 @@
       "phase": "high_priority_followup",
       "text": "Any loss of urine or stool during the event?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "incontinence_details",
-      "if_positive_ask": [
-        "incontinence_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["incontinence_details"],
       "ui_label": "Incontinence",
       "canonical_question_key": "incontinence",
       "canonical_concept": "incontinence"
@@ -733,10 +561,10 @@
       "phase": "high_priority_followup",
       "text": "Urine, stool, or both?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "incontinence",
+      "ui_label": "Incontinence details",
+      "canonical_question_key": "incontinence_details",
       "canonical_concept": "incontinence"
     },
     "post_event_weakness": {
@@ -744,16 +572,10 @@
       "phase": "high_priority_followup",
       "text": "Any weakness or heavy feeling after the event?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "post_event_weakness_details",
-      "if_positive_ask": [
-        "post_event_weakness_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["post_event_weakness_details"],
       "ui_label": "Post event weakness",
       "canonical_question_key": "post_event_weakness",
       "canonical_concept": "post_event_weakness"
@@ -763,10 +585,10 @@
       "phase": "high_priority_followup",
       "text": "Which side? How long did it last?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "post_event_weakness",
+      "ui_label": "Post-event weakness details",
+      "canonical_question_key": "post_event_weakness_details",
       "canonical_concept": "post_event_weakness"
     },
     "diabetes_history": {
@@ -774,16 +596,10 @@
       "phase": "high_priority_followup",
       "text": "Do you have diabetes or episodes of low sugar?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "diabetes_history_details",
-      "if_positive_ask": [
-        "diabetes_history_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["diabetes_history_details"],
       "ui_label": "Diabetes history",
       "canonical_question_key": "diabetes_history",
       "canonical_concept": "diabetes_history"
@@ -793,10 +609,10 @@
       "phase": "high_priority_followup",
       "text": "Type 1 or 2? What medications?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "diabetes_history",
+      "ui_label": "Diabetes details",
+      "canonical_question_key": "diabetes_history_details",
       "canonical_concept": "diabetes_history"
     },
     "known_heart_disease": {
@@ -804,16 +620,10 @@
       "phase": "high_priority_followup",
       "text": "Any known heart condition or family history of sudden death?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "known_heart_disease_details",
-      "if_positive_ask": [
-        "known_heart_disease_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["known_heart_disease_details"],
       "ui_label": "Known heart disease",
       "canonical_question_key": "known_heart_disease",
       "canonical_concept": "known_heart_disease"
@@ -823,22 +633,34 @@
       "phase": "high_priority_followup",
       "text": "What condition? Any procedures?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "known_heart_disease",
+      "ui_label": "Heart disease details",
+      "canonical_question_key": "known_heart_disease_details",
       "canonical_concept": "known_heart_disease"
     },
     "prior_similar_events": {
       "field": "prior_similar_events",
       "phase": "high_priority_followup",
       "text": "Has this happened before?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "prior_similar_events_details",
+      "if_positive_ask": ["prior_similar_events_details"],
       "ui_label": "Prior similar events",
       "canonical_question_key": "prior_similar_events",
+      "canonical_concept": "prior_similar_events"
+    },
+    "prior_similar_events_details": {
+      "field": "prior_similar_events_details",
+      "phase": "high_priority_followup",
+      "text": "When did they happen? What was the diagnosis?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "prior_similar_events",
+      "ui_label": "Prior events details",
+      "canonical_question_key": "prior_similar_events_details",
       "canonical_concept": "prior_similar_events"
     },
     "new_medication": {
@@ -846,16 +668,10 @@
       "phase": "high_priority_followup",
       "text": "Any new medicine, blood pressure tablet, sedative, or dose change?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "new_medication_details",
-      "if_positive_ask": [
-        "new_medication_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["new_medication_details"],
       "ui_label": "New medication",
       "canonical_question_key": "new_medication",
       "canonical_concept": "new_medication"
@@ -865,10 +681,10 @@
       "phase": "high_priority_followup",
       "text": "Which medication? When did you start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "new_medication",
+      "ui_label": "New medication details",
+      "canonical_question_key": "new_medication_details",
       "canonical_concept": "new_medication"
     },
     "alcohol_or_drug_use": {
@@ -877,16 +693,10 @@
       "text": "Any alcohol or drug use beforehand?",
       "ask_if": "ALWAYS",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "alcohol_or_drug_use_details",
-      "if_positive_ask": [
-        "alcohol_or_drug_use_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["alcohol_or_drug_use_details"],
       "ui_label": "Alcohol or drug use",
       "canonical_question_key": "alcohol_or_drug_use",
       "canonical_concept": "alcohol_or_drug_use"
@@ -896,50 +706,82 @@
       "phase": "high_priority_followup",
       "text": "What and how much?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "alcohol_or_drug_use",
+      "ui_label": "Alcohol/drug details",
+      "canonical_question_key": "alcohol_or_drug_use_details",
       "canonical_concept": "alcohol_or_drug_use"
     },
     "during_exertion": {
       "field": "during_exertion",
       "phase": "early_danger_screen",
       "text": "Did it happen during exercise or while exerting yourself?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "during_exertion_details",
+      "if_positive_ask": ["during_exertion_details"],
       "ui_label": "During exertion",
       "canonical_question_key": "during_exertion",
+      "canonical_concept": "during_exertion"
+    },
+    "during_exertion_details": {
+      "field": "during_exertion_details",
+      "phase": "early_danger_screen",
+      "text": "What activity were you doing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "during_exertion",
+      "ui_label": "Exertion details",
+      "canonical_question_key": "during_exertion_details",
       "canonical_concept": "during_exertion"
     },
     "supine_event": {
       "field": "supine_event",
       "phase": "early_danger_screen",
       "text": "Did it happen while lying down?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "supine_event_details",
+      "if_positive_ask": ["supine_event_details"],
       "ui_label": "Supine event",
       "canonical_question_key": "supine_event",
+      "canonical_concept": "supine_event"
+    },
+    "supine_event_details": {
+      "field": "supine_event_details",
+      "phase": "early_danger_screen",
+      "text": "Were you lying down? Did you just wake up?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "supine_event",
+      "ui_label": "Supine event details",
+      "canonical_question_key": "supine_event_details",
       "canonical_concept": "supine_event"
     },
     "standing_trigger": {
       "field": "standing_trigger",
       "phase": "high_priority_followup",
       "text": "Did it happen after standing up or standing for a long time?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "standing_trigger_details",
+      "if_positive_ask": ["standing_trigger_details"],
       "ui_label": "Standing trigger",
       "canonical_question_key": "standing_trigger",
+      "canonical_concept": "standing_trigger"
+    },
+    "standing_trigger_details": {
+      "field": "standing_trigger_details",
+      "phase": "high_priority_followup",
+      "text": "How long had you been standing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "standing_trigger",
+      "ui_label": "Standing trigger details",
+      "canonical_question_key": "standing_trigger_details",
       "canonical_concept": "standing_trigger"
     },
     "heat_or_pain_trigger": {
@@ -947,16 +789,10 @@
       "phase": "high_priority_followup",
       "text": "Was it triggered by heat, pain, blood draw, coughing, urination, or emotion?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "heat_or_pain_trigger_details",
-      "if_positive_ask": [
-        "heat_or_pain_trigger_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["heat_or_pain_trigger_details"],
       "ui_label": "Heat or pain trigger",
       "canonical_question_key": "heat_or_pain_trigger",
       "canonical_concept": "heat_or_pain_trigger"
@@ -966,10 +802,10 @@
       "phase": "high_priority_followup",
       "text": "What exactly triggered it?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "heat_or_pain_trigger",
+      "ui_label": "Trigger details",
+      "canonical_question_key": "heat_or_pain_trigger_details",
       "canonical_concept": "heat_or_pain_trigger"
     },
     "dehydration": {
@@ -977,16 +813,10 @@
       "phase": "high_priority_followup",
       "text": "Were you dehydrated or had poor oral intake?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "dehydration_details",
-      "if_positive_ask": [
-        "dehydration_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["dehydration_details"],
       "ui_label": "Dehydration",
       "canonical_question_key": "dehydration",
       "canonical_concept": "dehydration"
@@ -994,12 +824,12 @@
     "dehydration_details": {
       "field": "dehydration_details",
       "phase": "high_priority_followup",
-      "text": "How much have you been drinking?",
+      "text": "How much had you been drinking?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "dehydration",
+      "ui_label": "Dehydration details",
+      "canonical_question_key": "dehydration_details",
       "canonical_concept": "dehydration"
     },
     "vomiting_or_diarrhea": {
@@ -1007,16 +837,10 @@
       "phase": "high_priority_followup",
       "text": "Any vomiting or diarrhea around the time?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "vomiting_or_diarrhea_details",
-      "if_positive_ask": [
-        "vomiting_or_diarrhea_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["vomiting_or_diarrhea_details"],
       "ui_label": "Vomiting or diarrhea",
       "canonical_question_key": "vomiting_or_diarrhea",
       "canonical_concept": "vomiting_or_diarrhea"
@@ -1026,10 +850,10 @@
       "phase": "high_priority_followup",
       "text": "How many times?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "vomiting_or_diarrhea",
+      "ui_label": "Vomiting/diarrhea details",
+      "canonical_question_key": "vomiting_or_diarrhea_details",
       "canonical_concept": "vomiting_or_diarrhea"
     },
     "family_history_sudden_death": {
@@ -1037,16 +861,10 @@
       "phase": "high_priority_followup",
       "text": "Any family history of sudden death or unexplained collapse?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "family_history_sudden_death_details",
-      "if_positive_ask": [
-        "family_history_sudden_death_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["family_history_sudden_death_details"],
       "ui_label": "Family history sudden death",
       "canonical_question_key": "family_history_sudden_death",
       "canonical_concept": "family_history_sudden_death"
@@ -1056,10 +874,10 @@
       "phase": "high_priority_followup",
       "text": "Which relative? At what age?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "family_history_sudden_death",
+      "ui_label": "Family history details",
+      "canonical_question_key": "family_history_sudden_death_details",
       "canonical_concept": "family_history_sudden_death"
     },
     "safeguarding_concern_loc": {
@@ -1067,70 +885,40 @@
       "phase": "high_priority_followup",
       "text": "Is there any possibility someone may have given you something, or any safety concern at home or elsewhere?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "safeguarding_concern_loc_details",
-      "if_positive_ask": [
-        "safeguarding_concern_loc_details"
-      ],
+      "if_positive_ask": ["safeguarding_concern_loc_details"],
+      "sensitive_topic": true,
       "ui_label": "Safeguarding concern",
       "canonical_question_key": "safeguarding_concern_loc",
-      "sensitive_topic": true,
       "canonical_concept": "safeguarding_concern_loc"
     },
     "safeguarding_concern_loc_details": {
       "field": "safeguarding_concern_loc_details",
       "phase": "high_priority_followup",
-      "text": "Please tell me more so I can help.",
+      "text": "Do you feel safe to go home? Do you want to speak to someone?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
+      "parent_field": "safeguarding_concern_loc",
+      "ui_label": "Safeguarding details",
+      "canonical_question_key": "safeguarding_concern_loc_details",
       "canonical_concept": "safeguarding_concern_loc"
-    },
-    "prodrome_details": {
-      "field": "prodrome_details",
-      "phase": "core_characterize",
-      "text": "What did you feel just before?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "canonical_concept": "prodrome"
-    },
-    "injury_sustained_details": {
-      "field": "injury_sustained_details",
-      "phase": "extended_characterize",
-      "text": "Where did you injure yourself?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "canonical_concept": "injury_sustained"
     },
     "pregnancy_context": {
       "field": "pregnancy_context",
       "phase": "critical_followup",
       "text": "Could you be pregnant now, or are you recently postpartum?",
-      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
       "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "pregnancy_context_details",
+      "if_positive_ask": ["pregnancy_context_details"],
       "sensitive_topic": true,
       "ui_label": "Pregnancy context",
       "canonical_question_key": "pregnancy_context",
-      "if_positive_ask": [
-        "pregnancy_context_details"
-      ],
       "canonical_concept": "pregnancy_context"
     },
     "pregnancy_context_details": {
@@ -1139,92 +927,63 @@
       "text": "How far along are you, or how many weeks postpartum?",
       "response_type": "SHORT_TEXT",
       "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
+      "parent_field": "pregnancy_context",
       "ui_label": "Pregnancy details",
       "canonical_question_key": "pregnancy_context_details",
       "canonical_concept": "pregnancy_context"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pattern of these episodes changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – frequency, triggers, or recovery?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
     }
   },
   "derived_red_flag_patterns": {
-    "cardiac_collapse_pattern": [
-      "chest_pain",
-      "palpitations",
-      "shortness_of_breath"
-    ],
-    "seizure_pattern": [
-      "seizure_features",
-      "tongue_biting",
-      "incontinence"
-    ],
-    "head_injury_pattern": [
-      "head_injury",
-      "persistent_vomiting"
-    ],
-    "cns_infection_pattern": [
-      "fever_or_meningitic_features",
-      "ongoing_confusion"
-    ],
-    "stroke_pattern": [
-      "focal_neurologic_symptoms",
-      "ongoing_confusion"
-    ],
-    "toxic_metabolic_pattern": [
-      "substance_or_overdose_concern"
-    ],
-    "cardiac_syncope_pattern": [
-      "during_exertion",
-      "supine_event",
-      "palpitations",
-      "family_history_sudden_death"
-    ],
-    "acute_cardiopulmonary_pattern": [
-      "chest_pain",
-      "shortness_of_breath"
-    ],
-    "neurologic_pattern": [
-      "ongoing_confusion",
-      "focal_neurologic_symptoms",
-      "tongue_biting"
-    ],
-    "trauma_pattern": [
-      "head_injury"
-    ],
-    "pregnancy_related_pattern": [
-      "pregnancy_context"
-    ]
+    "cardiac_collapse_pattern": ["chest_pain", "palpitations", "shortness_of_breath"],
+    "seizure_pattern": ["seizure_features", "tongue_biting", "incontinence"],
+    "head_injury_pattern": ["head_injury", "persistent_vomiting"],
+    "cns_infection_pattern": ["fever_or_meningitic_features", "ongoing_confusion"],
+    "stroke_pattern": ["focal_neurologic_symptoms", "ongoing_confusion"],
+    "toxic_metabolic_pattern": ["substance_or_overdose_concern"],
+    "cardiac_syncope_pattern": ["during_exertion", "supine_event", "palpitations", "family_history_sudden_death"],
+    "acute_cardiopulmonary_pattern": ["chest_pain", "shortness_of_breath"],
+    "neurologic_pattern": ["ongoing_confusion", "focal_neurologic_symptoms", "tongue_biting"],
+    "trauma_pattern": ["head_injury"],
+    "pregnancy_related_pattern": ["pregnancy_context"]
   },
   "targeted_ros_plan": {
     "primary_system": "neurological",
-    "high_yield_systems": [
-      "cardiovascular",
-      "metabolic_toxic",
-      "trauma"
-    ],
-    "cross_system_systems": [
-      "infectious",
-      "respiratory",
-      "witness_history",
-      "substance_medication"
-    ],
+    "high_yield_systems": ["cardiovascular", "metabolic_toxic", "trauma"],
+    "cross_system_systems": ["infectious", "respiratory", "witness_history", "substance_medication"],
     "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
   },
   "summary_contract": {
     "missing_clarifications": {
-      "source": [
-        "unanswered_core_questions",
-        "unanswered_critical_followups",
-        "unanswered_high_priority_followups"
-      ]
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
     },
     "flags": {
-      "source": [
-        "derived_red_flag_patterns",
-        "EscalationLevel"
-      ]
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
     }
   },
   "acuity_tier": "high"

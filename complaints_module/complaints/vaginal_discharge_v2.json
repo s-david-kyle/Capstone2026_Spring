@@ -8,34 +8,16 @@
   "can_be_secondary": true,
   "primary_system": "gynecologic",
   "related_systems": {
-    "high_yield": [
-      "genitourinary",
-      "sexual_reproductive",
-      "infectious_systemic"
-    ],
-    "selective_cross_system": [
-      "pregnancy_related",
-      "dermatologic_mucosal",
-      "pelvic_abdominal"
-    ],
-    "contextual": [
-      "sexual_history",
-      "menstrual_history",
-      "medication_antibiotic_history"
-    ]
+    "high_yield": ["genitourinary", "sexual_reproductive", "infectious_systemic"],
+    "selective_cross_system": ["pregnancy_related", "dermatologic_mucosal", "pelvic_abdominal"],
+    "contextual": ["sexual_history", "menstrual_history", "medication_antibiotic_history"]
   },
   "pivot_triggers": {
     "abdominal_pain": "pid_pattern",
     "dysuria_hematuria": "genitourinary_overlap_pattern"
   },
   "start_sequence_contract": {
-    "approved_start_sequence": [
-      "presenting_complaint_narrative",
-      "onset",
-      "duration",
-      "discharge_amount",
-      "discharge_color"
-    ],
+    "approved_start_sequence": ["presenting_complaint_narrative", "onset", "duration", "discharge_amount", "discharge_color"],
     "sequence_mode": "complaint_owned",
     "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
   },
@@ -52,12 +34,7 @@
     "secondary_mode": {
       "secondary_question_budget": 4,
       "secondary_question_budget_override_if_red_flag": 7,
-      "priority_question_ids_if_secondary": [
-        "onset",
-        "duration",
-        "discharge_amount",
-        "discharge_color"
-      ],
+      "priority_question_ids_if_secondary": ["onset", "duration", "discharge_amount", "discharge_color"],
       "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
     },
     "ros_mode": {
@@ -76,58 +53,37 @@
     ]
   },
   "question_schedule": {
-    "enforced_phase_order": [
-      "opening",
-      "core_characterize",
-      "early_danger_screen",
-      "extended_characterize",
-      "critical_followup",
-      "high_priority_followup",
-      "context_and_history"
-    ],
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
     "default_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "onset",
-        "duration",
-        "discharge_amount",
-        "discharge_color",
-        "discharge_consistency",
-        "discharge_odor"
-      ],
-      "early_danger_screen": [
-        "lower_abdominal_or_pelvic_pain",
-        "fever",
-        "heavy_or_unusual_bleeding"
-      ],
-      "extended_characterize": [
-        "itching_or_irritation",
-        "timing_with_cycle",
-        "functional_impact"
-      ],
-      "critical_followup": [
-        "postcoital_or_postmenopausal_bleeding",
-        "severe_vulval_pain_or_swelling",
-        "retained_foreign_body_concern",
-        "sexual_assault_or_safeguarding_concern",
-        "pregnancy_context"
-      ],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "dysuria",
-        "frequency_or_urgency",
-        "dyspareunia",
-        "genital_ulcers_or_sores",
-        "rash_or_skin_change",
-        "recent_antibiotics",
-        "diabetes_history",
-        "known_sti_exposure"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "discharge_amount", "discharge_color", "discharge_consistency", "discharge_odor"],
+      "early_danger_screen": ["lower_abdominal_or_pelvic_pain", "fever", "heavy_or_unusual_bleeding"],
+      "extended_characterize": ["itching_or_irritation", "timing_with_cycle", "functional_impact"],
+      "critical_followup": ["postcoital_or_postmenopausal_bleeding", "severe_vulval_pain_or_swelling", "retained_foreign_body_concern", "sexual_assault_or_safeguarding_concern", "pregnancy_context"],
+      "high_priority_followup": ["associated_symptoms", "dysuria", "frequency_or_urgency", "dyspareunia", "genital_ulcers_or_sores", "rash_or_skin_change", "recent_antibiotics", "diabetes_history", "known_sti_exposure"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "discharge_amount", "discharge_color", "discharge_consistency", "discharge_odor"],
+      "early_danger_screen": ["lower_abdominal_or_pelvic_pain", "recent_change_in_pattern"],
+      "extended_characterize": ["itching_or_irritation", "timing_with_cycle", "functional_impact"],
+      "critical_followup": ["postcoital_or_postmenopausal_bleeding", "severe_vulval_pain_or_swelling", "retained_foreign_body_concern", "sexual_assault_or_safeguarding_concern", "pregnancy_context"],
+      "high_priority_followup": ["associated_symptoms", "dysuria", "frequency_or_urgency", "dyspareunia", "genital_ulcers_or_sores", "rash_or_skin_change", "recent_antibiotics", "diabetes_history", "known_sti_exposure", "fever", "heavy_or_unusual_bleeding"],
       "context_and_history": []
     },
     "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
       {
         "rule_id": "stay_on_default",
         "trigger": "No alternate complaint-specific profile is active",
@@ -141,9 +97,7 @@
       "phase": "opening",
       "text": "Please tell me briefly what brought you in today and how this started.",
       "response_type": "NARRATIVE_FREE_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Presenting Complaint Narrative",
       "canonical_question_key": "presenting_complaint_narrative",
       "canonical_concept": "presenting_complaint_narrative"
@@ -153,9 +107,7 @@
       "phase": "core_characterize",
       "text": "When did it start? If you can, tell me in minutes, hours, days, weeks, months, or years.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Onset",
       "canonical_question_key": "onset",
       "canonical_concept": "onset"
@@ -163,11 +115,9 @@
     "duration": {
       "field": "duration",
       "phase": "core_characterize",
-      "text": "How should I understand the pattern? Please answer in one of these formats: 'continuous for 2 days' or 'comes and goes; each episode lasts about 30 minutes'.",
+      "text": "Please answer in one of these formats: \"continuous for [time]\" or \"comes and goes; each episode lasts about [time]\".",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Duration",
       "canonical_question_key": "duration",
       "canonical_concept": "duration"
@@ -175,11 +125,9 @@
     "discharge_amount": {
       "field": "discharge_amount",
       "phase": "core_characterize",
-      "text": "How much discharge are you noticing\u2014just a little, moderate, or a lot?",
+      "text": "How much discharge are you noticing—just a little, moderate, or a lot?",
       "response_type": "NUMERIC_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Discharge amount",
       "canonical_question_key": "discharge_amount",
       "canonical_concept": "discharge_amount"
@@ -187,13 +135,9 @@
     "discharge_color": {
       "field": "discharge_color",
       "phase": "core_characterize",
-      "text": "What color is it\u2014clear, white, yellow, green, brown, blood-stained, or something else?",
+      "text": "What color is it—clear, white, yellow, green, brown, blood-stained, or something else?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Discharge color",
       "canonical_question_key": "discharge_color",
       "canonical_concept": "discharge_color"
@@ -201,13 +145,9 @@
     "discharge_consistency": {
       "field": "discharge_consistency",
       "phase": "core_characterize",
-      "text": "What is it like\u2014thin, watery, thick, clumpy, frothy, or something else?",
+      "text": "What is it like—thin, watery, thick, clumpy, frothy, or something else?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Discharge consistency",
       "canonical_question_key": "discharge_consistency",
       "canonical_concept": "discharge_consistency"
@@ -217,11 +157,7 @@
       "phase": "core_characterize",
       "text": "Does it have any noticeable smell, such as fishy or foul, or no strong odor?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Discharge odor",
       "canonical_question_key": "discharge_odor",
       "canonical_concept": "discharge_odor"
@@ -231,16 +167,10 @@
       "phase": "extended_characterize",
       "text": "Is there itching, irritation, soreness, or burning around the vagina or vulva?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "itching_or_irritation_details",
-      "if_positive_ask": [
-        "itching_or_irritation_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["itching_or_irritation_details"],
       "ui_label": "Itching or irritation",
       "canonical_question_key": "itching_or_irritation",
       "canonical_concept": "itching_or_irritation"
@@ -248,37 +178,44 @@
     "itching_or_irritation_details": {
       "field": "itching_or_irritation_details",
       "phase": "extended_characterize",
-      "text": "Please describe that briefly.",
+      "text": "How severe is the itching? Does anything make it better or worse?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "itching_or_irritation",
-      "ui_label": "Itching or irritation details",
+      "ui_label": "Itching details",
       "canonical_question_key": "itching_or_irritation_details",
       "canonical_concept": "itching_or_irritation"
     },
     "associated_symptoms": {
       "field": "associated_symptoms",
       "phase": "high_priority_followup",
-      "text": "What other symptoms have come with it?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Have any other symptoms come with the discharge?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
       "ui_label": "Associated symptoms",
       "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the discharge – pain, fever, burning, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
       "canonical_concept": "associated_symptoms"
     },
     "timing_with_cycle": {
       "field": "timing_with_cycle",
       "phase": "extended_characterize",
-      "text": "Does it vary with your menstrual cycle or seem unrelated to it?",
+      "text": "Does the discharge vary with your menstrual cycle or seem unrelated to it?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ask_if": "SEX_FEMALE",
       "sensitive_topic": true,
       "ui_label": "Timing with cycle",
@@ -288,11 +225,9 @@
     "functional_impact": {
       "field": "functional_impact",
       "phase": "extended_characterize",
-      "text": "How much is it affecting your comfort, sleep, or usual activities?",
+      "text": "How much is the discharge affecting your comfort, sleep, or usual activities?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Functional impact",
       "canonical_question_key": "functional_impact",
       "canonical_concept": "functional_impact"
@@ -300,16 +235,12 @@
     "lower_abdominal_or_pelvic_pain": {
       "field": "lower_abdominal_or_pelvic_pain",
       "phase": "early_danger_screen",
-      "text": "Any lower abdominal or pelvic pain with it?",
+      "text": "Any lower abdominal or pelvic pain with the discharge?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "lower_abdominal_or_pelvic_pain_details",
-      "if_positive_ask": [
-        "lower_abdominal_or_pelvic_pain_details"
-      ],
+      "if_positive_ask": ["lower_abdominal_or_pelvic_pain_details"],
       "ui_label": "Lower abdominal or pelvic pain",
       "canonical_question_key": "lower_abdominal_or_pelvic_pain",
       "canonical_concept": "lower_abdominal_or_pelvic_pain"
@@ -317,14 +248,11 @@
     "lower_abdominal_or_pelvic_pain_details": {
       "field": "lower_abdominal_or_pelvic_pain_details",
       "phase": "early_danger_screen",
-      "text": "Where exactly? How severe?",
+      "text": "Where exactly? How severe on 0-10?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "lower_abdominal_or_pelvic_pain",
-      "ui_label": "Lower abdominal or pelvic pain details",
+      "ui_label": "Pelvic pain details",
       "canonical_question_key": "lower_abdominal_or_pelvic_pain_details",
       "canonical_concept": "lower_abdominal_or_pelvic_pain"
     },
@@ -333,14 +261,10 @@
       "phase": "early_danger_screen",
       "text": "Have you had fever, even if you have not had chills or rigors?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fever_details",
-      "if_positive_ask": [
-        "fever_details"
-      ],
+      "if_positive_ask": ["fever_details"],
       "ui_label": "Fever",
       "canonical_question_key": "fever",
       "canonical_concept": "fever"
@@ -350,10 +274,7 @@
       "phase": "early_danger_screen",
       "text": "What was the highest temperature?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "fever",
       "ui_label": "Fever details",
       "canonical_question_key": "fever_details",
@@ -364,17 +285,11 @@
       "phase": "early_danger_screen",
       "text": "Any heavy bleeding, bleeding between periods, or bleeding that feels unusual for you?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "heavy_or_unusual_bleeding_details",
-      "if_positive_ask": [
-        "heavy_or_unusual_bleeding_details"
-      ],
+      "if_positive_ask": ["heavy_or_unusual_bleeding_details"],
       "sensitive_topic": true,
-      "compound_question": false,
-      "extract_entities_if_positive": true,
       "ui_label": "Heavy or unusual bleeding",
       "canonical_question_key": "heavy_or_unusual_bleeding",
       "canonical_concept": "heavy_or_unusual_bleeding"
@@ -382,15 +297,12 @@
     "heavy_or_unusual_bleeding_details": {
       "field": "heavy_or_unusual_bleeding_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "How much bleeding? How often?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
       "parent_field": "heavy_or_unusual_bleeding",
-      "ui_label": "Heavy or unusual bleeding details",
+      "ui_label": "Bleeding details",
       "canonical_question_key": "heavy_or_unusual_bleeding_details",
       "canonical_concept": "heavy_or_unusual_bleeding"
     },
@@ -399,34 +311,25 @@
       "phase": "critical_followup",
       "text": "Any bleeding after sex, or bleeding after menopause?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "postcoital_or_postmenopausal_bleeding_details",
-      "if_positive_ask": [
-        "postcoital_or_postmenopausal_bleeding_details"
-      ],
+      "if_positive_ask": ["postcoital_or_postmenopausal_bleeding_details"],
       "sensitive_topic": true,
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "ask_if": "SEX_FEMALE",
       "ui_label": "Postcoital or postmenopausal bleeding",
       "canonical_question_key": "postcoital_or_postmenopausal_bleeding",
-      "ask_if": "SEX_FEMALE",
       "canonical_concept": "postcoital_or_postmenopausal_bleeding"
     },
     "postcoital_or_postmenopausal_bleeding_details": {
       "field": "postcoital_or_postmenopausal_bleeding_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "How much bleeding? When did it start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
       "parent_field": "postcoital_or_postmenopausal_bleeding",
-      "ui_label": "Postcoital or postmenopausal bleeding details",
+      "ui_label": "Postcoital bleeding details",
       "canonical_question_key": "postcoital_or_postmenopausal_bleeding_details",
       "canonical_concept": "postcoital_or_postmenopausal_bleeding"
     },
@@ -435,16 +338,10 @@
       "phase": "critical_followup",
       "text": "Any severe pain, marked swelling, or a very tender lump around the vulva?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "severe_vulval_pain_or_swelling_details",
-      "if_positive_ask": [
-        "severe_vulval_pain_or_swelling_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["severe_vulval_pain_or_swelling_details"],
       "ui_label": "Severe vulval pain or swelling",
       "canonical_question_key": "severe_vulval_pain_or_swelling",
       "canonical_concept": "severe_vulval_pain_or_swelling"
@@ -452,14 +349,11 @@
     "severe_vulval_pain_or_swelling_details": {
       "field": "severe_vulval_pain_or_swelling_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "Where exactly? How severe?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "severe_vulval_pain_or_swelling",
-      "ui_label": "Severe vulval pain or swelling details",
+      "ui_label": "Vulval pain details",
       "canonical_question_key": "severe_vulval_pain_or_swelling_details",
       "canonical_concept": "severe_vulval_pain_or_swelling"
     },
@@ -468,17 +362,11 @@
       "phase": "critical_followup",
       "text": "Could there be a forgotten tampon, condom, pessary, or other object?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "retained_foreign_body_concern_details",
-      "if_positive_ask": [
-        "retained_foreign_body_concern_details"
-      ],
+      "if_positive_ask": ["retained_foreign_body_concern_details"],
       "sensitive_topic": true,
-      "compound_question": false,
-      "extract_entities_if_positive": true,
       "ui_label": "Retained foreign body concern",
       "canonical_question_key": "retained_foreign_body_concern",
       "canonical_concept": "retained_foreign_body_concern"
@@ -486,15 +374,12 @@
     "retained_foreign_body_concern_details": {
       "field": "retained_foreign_body_concern_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "What object? How long ago?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
       "parent_field": "retained_foreign_body_concern",
-      "ui_label": "Retained foreign body concern details",
+      "ui_label": "Foreign body details",
       "canonical_question_key": "retained_foreign_body_concern_details",
       "canonical_concept": "retained_foreign_body_concern"
     },
@@ -503,17 +388,11 @@
       "phase": "critical_followup",
       "text": "I want to make sure you are safe. Is there any chance someone has hurt you, pressured you, or that you feel unsafe?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "sexual_assault_or_safeguarding_concern_details",
-      "if_positive_ask": [
-        "sexual_assault_or_safeguarding_concern_details"
-      ],
+      "if_positive_ask": ["sexual_assault_or_safeguarding_concern_details"],
       "sensitive_topic": true,
-      "compound_question": false,
-      "extract_entities_if_positive": true,
       "ui_label": "Sexual assault or safeguarding concern",
       "canonical_question_key": "sexual_assault_or_safeguarding_concern",
       "canonical_concept": "sexual_assault_or_safeguarding_concern"
@@ -521,15 +400,12 @@
     "sexual_assault_or_safeguarding_concern_details": {
       "field": "sexual_assault_or_safeguarding_concern_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "Do you feel safe to go home? Do you want to speak to someone?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
       "parent_field": "sexual_assault_or_safeguarding_concern",
-      "ui_label": "Sexual assault or safeguarding concern details",
+      "ui_label": "Safeguarding details",
       "canonical_question_key": "sexual_assault_or_safeguarding_concern_details",
       "canonical_concept": "sexual_assault_or_safeguarding_concern"
     },
@@ -538,14 +414,10 @@
       "phase": "high_priority_followup",
       "text": "Any burning when you pass urine?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "dysuria_details",
-      "if_positive_ask": [
-        "dysuria_details"
-      ],
+      "if_positive_ask": ["dysuria_details"],
       "ui_label": "Dysuria",
       "canonical_question_key": "dysuria",
       "canonical_concept": "dysuria"
@@ -553,12 +425,9 @@
     "dysuria_details": {
       "field": "dysuria_details",
       "phase": "high_priority_followup",
-      "text": "At the start or end? Any frequency?",
+      "text": "At the start or end of urination?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "dysuria",
       "ui_label": "Dysuria details",
       "canonical_question_key": "dysuria_details",
@@ -568,17 +437,11 @@
       "field": "frequency_or_urgency",
       "phase": "high_priority_followup",
       "text": "Any frequent urination or sudden urgency to pass urine?",
-      "response_type": "COUNT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "frequency_or_urgency_details",
-      "if_positive_ask": [
-        "frequency_or_urgency_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["frequency_or_urgency_details"],
       "ui_label": "Frequency or urgency",
       "canonical_question_key": "frequency_or_urgency",
       "canonical_concept": "urinary_frequency_or_urgency"
@@ -586,28 +449,23 @@
     "frequency_or_urgency_details": {
       "field": "frequency_or_urgency_details",
       "phase": "high_priority_followup",
-      "text": "How often? Is it waking you at night?",
+      "text": "How many times per day? Is it waking you at night?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "canonical_concept": "frequency_or_urgency",
-      "parent_field": "frequency_or_urgency"
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "frequency_or_urgency",
+      "ui_label": "Urgency details",
+      "canonical_question_key": "frequency_or_urgency_details",
+      "canonical_concept": "frequency_or_urgency"
     },
     "dyspareunia": {
       "field": "dyspareunia",
       "phase": "high_priority_followup",
       "text": "If it is okay to ask, is there pain during sex?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "dyspareunia_details",
-      "if_positive_ask": [
-        "dyspareunia_details"
-      ],
+      "if_positive_ask": ["dyspareunia_details"],
       "sensitive_topic": true,
       "ui_label": "Dyspareunia",
       "canonical_question_key": "dyspareunia",
@@ -618,10 +476,7 @@
       "phase": "high_priority_followup",
       "text": "Is it deep or superficial?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
       "parent_field": "dyspareunia",
       "ui_label": "Dyspareunia details",
@@ -633,17 +488,11 @@
       "phase": "high_priority_followup",
       "text": "Any sores, ulcers, blisters, or cuts around the genital area?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "genital_ulcers_or_sores_details",
-      "if_positive_ask": [
-        "genital_ulcers_or_sores_details"
-      ],
+      "if_positive_ask": ["genital_ulcers_or_sores_details"],
       "sensitive_topic": true,
-      "compound_question": false,
-      "extract_entities_if_positive": true,
       "ui_label": "Genital ulcers or sores",
       "canonical_question_key": "genital_ulcers_or_sores",
       "canonical_concept": "genital_ulcers_or_sores"
@@ -651,15 +500,12 @@
     "genital_ulcers_or_sores_details": {
       "field": "genital_ulcers_or_sores_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "Where are they? Are they painful?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
       "parent_field": "genital_ulcers_or_sores",
-      "ui_label": "Genital ulcers or sores details",
+      "ui_label": "Ulcers details",
       "canonical_question_key": "genital_ulcers_or_sores_details",
       "canonical_concept": "genital_ulcers_or_sores"
     },
@@ -668,14 +514,10 @@
       "phase": "high_priority_followup",
       "text": "Any rash, redness, or skin change around the vulva or groin?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "rash_or_skin_change_details",
-      "if_positive_ask": [
-        "rash_or_skin_change_details"
-      ],
+      "if_positive_ask": ["rash_or_skin_change_details"],
       "ui_label": "Rash or skin change",
       "canonical_question_key": "rash_or_skin_change",
       "canonical_concept": "rash_or_skin_change"
@@ -683,14 +525,11 @@
     "rash_or_skin_change_details": {
       "field": "rash_or_skin_change_details",
       "phase": "high_priority_followup",
-      "text": "What does it look like?",
+      "text": "What does the rash look like?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "rash_or_skin_change",
-      "ui_label": "Rash or skin change details",
+      "ui_label": "Rash details",
       "canonical_question_key": "rash_or_skin_change_details",
       "canonical_concept": "rash_or_skin_change"
     },
@@ -699,14 +538,10 @@
       "phase": "high_priority_followup",
       "text": "Have you taken antibiotics recently?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "recent_antibiotics_details",
-      "if_positive_ask": [
-        "recent_antibiotics_details"
-      ],
+      "if_positive_ask": ["recent_antibiotics_details"],
       "ui_label": "Recent antibiotics",
       "canonical_question_key": "recent_antibiotics",
       "canonical_concept": "recent_antibiotics"
@@ -716,12 +551,9 @@
       "phase": "high_priority_followup",
       "text": "Which antibiotic and when?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "recent_antibiotics",
-      "ui_label": "Recent antibiotics details",
+      "ui_label": "Antibiotic details",
       "canonical_question_key": "recent_antibiotics_details",
       "canonical_concept": "recent_antibiotics"
     },
@@ -730,14 +562,10 @@
       "phase": "high_priority_followup",
       "text": "Do you have diabetes or high blood sugar problems?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "diabetes_history_details",
-      "if_positive_ask": [
-        "diabetes_history_details"
-      ],
+      "if_positive_ask": ["diabetes_history_details"],
       "ui_label": "Diabetes history",
       "canonical_question_key": "diabetes_history",
       "canonical_concept": "diabetes_history"
@@ -747,12 +575,9 @@
       "phase": "high_priority_followup",
       "text": "Type 1 or 2? How well controlled?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "diabetes_history",
-      "ui_label": "Diabetes history details",
+      "ui_label": "Diabetes details",
       "canonical_question_key": "diabetes_history_details",
       "canonical_concept": "diabetes_history"
     },
@@ -760,19 +585,15 @@
       "field": "pregnancy_context",
       "phase": "critical_followup",
       "text": "Could you be pregnant now, or are you recently postpartum?",
-      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
       "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "pregnancy_context_details",
+      "if_positive_ask": ["pregnancy_context_details"],
       "sensitive_topic": true,
       "ui_label": "Pregnancy context",
       "canonical_question_key": "pregnancy_context",
-      "if_positive_ask": [
-        "pregnancy_context_details"
-      ],
       "canonical_concept": "pregnancy_context"
     },
     "pregnancy_context_details": {
@@ -780,15 +601,11 @@
       "phase": "critical_followup",
       "text": "How far along are you, or how many weeks postpartum?",
       "response_type": "SHORT_TEXT",
-      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
+      "parent_field": "pregnancy_context",
       "ui_label": "Pregnancy details",
       "canonical_question_key": "pregnancy_context_details",
-      "parent_field": "pregnancy_context",
       "canonical_concept": "pregnancy_context"
     },
     "known_sti_exposure": {
@@ -796,93 +613,75 @@
       "phase": "high_priority_followup",
       "text": "Do you know of any recent STI exposure?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "known_sti_exposure_details",
+      "if_positive_ask": ["known_sti_exposure_details"],
       "sensitive_topic": true,
       "ui_label": "Known STI exposure",
       "canonical_question_key": "known_sti_exposure",
-      "if_positive_ask": [
-        "known_sti_exposure_details"
-      ],
       "canonical_concept": "known_sti_exposure"
     },
     "known_sti_exposure_details": {
       "field": "known_sti_exposure_details",
       "phase": "high_priority_followup",
-      "text": "Please describe the exposure briefly.",
+      "text": "What exposure? When?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "sensitive_topic": true,
       "parent_field": "known_sti_exposure",
-      "ui_label": "Known STI exposure details",
+      "ui_label": "STI exposure details",
       "canonical_question_key": "known_sti_exposure_details",
       "canonical_concept": "known_sti_exposure"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pattern of discharge changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – amount, color, odour, or associated symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
     }
   },
   "derived_red_flag_patterns": {
-    "pid_pattern": [
-      "lower_abdominal_or_pelvic_pain",
-      "fever",
-      "dyspareunia",
-      "known_sti_exposure"
-    ],
-    "pregnancy_complication_pattern": [
-      "pregnancy_context",
-      "lower_abdominal_or_pelvic_pain",
-      "heavy_or_unusual_bleeding",
-      "fever"
-    ],
-    "severe_infection_or_foreign_body_pattern": [
-      "retained_foreign_body_concern",
-      "fever",
-      "severe_vulval_pain_or_swelling"
-    ],
-    "cervical_or_malignancy_pattern": [
-      "postcoital_or_postmenopausal_bleeding"
-    ]
+    "pid_pattern": ["lower_abdominal_or_pelvic_pain", "fever", "dyspareunia", "known_sti_exposure"],
+    "pregnancy_complication_pattern": ["pregnancy_context", "lower_abdominal_or_pelvic_pain", "heavy_or_unusual_bleeding", "fever"],
+    "severe_infection_or_foreign_body_pattern": ["retained_foreign_body_concern", "fever", "severe_vulval_pain_or_swelling"],
+    "cervical_or_malignancy_pattern": ["postcoital_or_postmenopausal_bleeding"]
   },
   "targeted_ros_plan": {
     "primary_system": "gynecologic",
-    "high_yield_systems": [
-      "genitourinary",
-      "sexual_reproductive",
-      "infectious_systemic"
-    ],
-    "cross_system_systems": [
-      "pregnancy_related",
-      "dermatologic_mucosal",
-      "pelvic_abdominal",
-      "sexual_history",
-      "menstrual_history",
-      "medication_antibiotic_history"
-    ],
+    "high_yield_systems": ["genitourinary", "sexual_reproductive", "infectious_systemic"],
+    "cross_system_systems": ["pregnancy_related", "dermatologic_mucosal", "pelvic_abdominal", "sexual_history", "menstrual_history", "medication_antibiotic_history"],
     "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
   },
   "summary_contract": {
     "missing_clarifications": {
-      "source": [
-        "unanswered_core_questions",
-        "unanswered_critical_followups",
-        "unanswered_high_priority_followups"
-      ]
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
     },
     "flags": {
-      "source": [
-        "derived_red_flag_patterns",
-        "EscalationLevel"
-      ]
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
     }
   },
   "acuity_tier": "medium",
   "eligibility": {
-    "allowed_patient_sex": [
-      "female"
-    ],
+    "allowed_patient_sex": ["female"],
     "message": "Would you consider reviewing your sex again? Vaginal discharge clerking is currently configured only for female encounters in this build."
   }
 }

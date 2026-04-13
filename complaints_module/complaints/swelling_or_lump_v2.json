@@ -8,32 +8,16 @@
   "can_be_secondary": true,
   "primary_system": "mass_swelling_lymphatic",
   "related_systems": {
-    "high_yield": [
-      "skin_soft_tissue",
-      "constitutional",
-      "regional_systems"
-    ],
-    "selective_cross_system": [
-      "vascular",
-      "breast_or_endocrine"
-    ],
-    "contextual": [
-      "infection_exposure",
-      "cancer_risk"
-    ]
+    "high_yield": ["skin_soft_tissue", "constitutional", "regional_systems"],
+    "selective_cross_system": ["vascular", "breast_or_endocrine"],
+    "contextual": ["infection_exposure", "cancer_risk"]
   },
   "pivot_triggers": {
     "sore_throat_neck_swelling": "airway_emergency_pattern",
     "weight_loss": "malignancy_pattern"
   },
   "start_sequence_contract": {
-    "approved_start_sequence": [
-      "presenting_complaint_narrative",
-      "duration",
-      "site",
-      "size_change",
-      "pain_or_tenderness"
-    ],
+    "approved_start_sequence": ["presenting_complaint_narrative", "duration", "site", "size_change", "pain_or_tenderness"],
     "sequence_mode": "complaint_owned",
     "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
   },
@@ -50,11 +34,7 @@
     "secondary_mode": {
       "secondary_question_budget": 3,
       "secondary_question_budget_override_if_red_flag": 6,
-      "priority_question_ids_if_secondary": [
-        "duration",
-        "site",
-        "size_change"
-      ],
+      "priority_question_ids_if_secondary": ["duration", "site", "size_change"],
       "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
     },
     "ros_mode": {
@@ -73,57 +53,37 @@
     ]
   },
   "question_schedule": {
-    "enforced_phase_order": [
-      "opening",
-      "core_characterize",
-      "early_danger_screen",
-      "extended_characterize",
-      "critical_followup",
-      "high_priority_followup",
-      "context_and_history"
-    ],
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
     "default_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "duration",
-        "site",
-        "size_change",
-        "pain_or_tenderness"
-      ],
-      "early_danger_screen": [
-        "airway_or_swallowing_effect",
-        "red_hot_swelling",
-        "severe_pain",
-        "rapid_growth"
-      ],
-      "extended_characterize": [
-        "consistency_description",
-        "mobility_change",
-        "skin_change",
-        "functional_impact"
-      ],
-      "critical_followup": [
-        "fixed_hard_mass",
-        "systemic_weight_loss_or_night_sweats",
-        "neurologic_or_vascular_compromise",
-        "breast_skin_or_nipple_change"
-      ],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "fever",
-        "drainage_or_discharge",
-        "trauma_history",
-        "regional_infection",
-        "multiple_nodes",
-        "thyroid_pressure_symptoms",
-        "leg_swelling_pattern",
-        "family_history_cancer"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["duration", "site", "size_change", "pain_or_tenderness"],
+      "early_danger_screen": ["airway_or_swallowing_effect", "red_hot_swelling", "severe_pain", "rapid_growth"],
+      "extended_characterize": ["consistency_description", "mobility_change", "skin_change", "functional_impact"],
+      "critical_followup": ["fixed_hard_mass", "systemic_weight_loss_or_night_sweats", "neurologic_or_vascular_compromise", "breast_skin_or_nipple_change"],
+      "high_priority_followup": ["associated_symptoms", "fever", "drainage_or_discharge", "trauma_history", "regional_infection", "multiple_nodes", "thyroid_pressure_symptoms", "leg_swelling_pattern", "family_history_cancer"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["duration", "site", "size_change", "pain_or_tenderness"],
+      "early_danger_screen": ["airway_or_swallowing_effect", "rapid_growth", "recent_change_in_pattern"],
+      "extended_characterize": ["consistency_description", "mobility_change", "skin_change", "functional_impact"],
+      "critical_followup": ["fixed_hard_mass", "systemic_weight_loss_or_night_sweats", "neurologic_or_vascular_compromise", "breast_skin_or_nipple_change"],
+      "high_priority_followup": ["associated_symptoms", "fever", "drainage_or_discharge", "trauma_history", "regional_infection", "multiple_nodes", "thyroid_pressure_symptoms", "leg_swelling_pattern", "family_history_cancer", "red_hot_swelling", "severe_pain"],
       "context_and_history": []
     },
     "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
       {
         "rule_id": "stay_on_default",
         "trigger": "No alternate complaint-specific profile is active",
@@ -137,9 +97,7 @@
       "phase": "opening",
       "text": "Please tell me briefly what brought you in today and how this started.",
       "response_type": "NARRATIVE_FREE_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Presenting Complaint Narrative",
@@ -149,11 +107,9 @@
     "duration": {
       "field": "duration",
       "phase": "core_characterize",
-      "text": "How long has it been there? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "text": "How long has the lump or swelling been there? If you can, tell me in minutes, hours, days, weeks, months, or years.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Duration",
       "canonical_question_key": "duration",
       "canonical_concept": "duration"
@@ -163,11 +119,7 @@
       "phase": "core_characterize",
       "text": "Where exactly is the lump or swelling?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Site",
       "canonical_question_key": "site",
       "canonical_concept": "site"
@@ -175,18 +127,12 @@
     "size_change": {
       "field": "size_change",
       "phase": "core_characterize",
-      "text": "Has it grown, shrunk, or changed recently?",
+      "text": "Has the lump grown, shrunk, or changed recently?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "size_change_details",
-      "if_positive_ask": [
-        "size_change_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["size_change_details"],
       "ui_label": "Size change",
       "canonical_question_key": "size_change",
       "canonical_concept": "size_change"
@@ -194,12 +140,9 @@
     "size_change_details": {
       "field": "size_change_details",
       "phase": "core_characterize",
-      "text": "Please describe that briefly.",
+      "text": "How much has it changed? Over what period?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "size_change",
       "ui_label": "Size change details",
       "canonical_question_key": "size_change_details",
@@ -208,18 +151,12 @@
     "pain_or_tenderness": {
       "field": "pain_or_tenderness",
       "phase": "core_characterize",
-      "text": "Is it painful or tender?",
+      "text": "Is the lump painful or tender to touch?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "pain_or_tenderness_details",
-      "if_positive_ask": [
-        "pain_or_tenderness_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["pain_or_tenderness_details"],
       "ui_label": "Pain or tenderness",
       "canonical_question_key": "pain_or_tenderness",
       "canonical_concept": "pain_or_tenderness"
@@ -227,27 +164,20 @@
     "pain_or_tenderness_details": {
       "field": "pain_or_tenderness_details",
       "phase": "core_characterize",
-      "text": "Please describe that briefly.",
+      "text": "How severe is the pain? Does it come and go?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "pain_or_tenderness",
-      "ui_label": "Pain or tenderness details",
+      "ui_label": "Pain details",
       "canonical_question_key": "pain_or_tenderness_details",
       "canonical_concept": "pain_or_tenderness"
     },
     "consistency_description": {
       "field": "consistency_description",
       "phase": "extended_characterize",
-      "text": "Does it feel soft, firm, hard, or fluid-filled?",
+      "text": "Does the lump feel soft, firm, hard, or fluid-filled?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Consistency description",
       "canonical_question_key": "consistency_description",
       "canonical_concept": "consistency_description"
@@ -255,13 +185,9 @@
     "mobility_change": {
       "field": "mobility_change",
       "phase": "extended_characterize",
-      "text": "Does it move under the skin or feel fixed?",
+      "text": "Does the lump move under the skin or feel fixed in place?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Mobility change",
       "canonical_question_key": "mobility_change",
       "canonical_concept": "mobility_change"
@@ -269,18 +195,12 @@
     "skin_change": {
       "field": "skin_change",
       "phase": "extended_characterize",
-      "text": "Any redness, warmth, ulceration, dimpling, or skin color change over it?",
+      "text": "Any redness, warmth, ulceration, dimpling, or skin color change over the lump?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "skin_change_details",
-      "if_positive_ask": [
-        "skin_change_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["skin_change_details"],
       "ui_label": "Skin change",
       "canonical_question_key": "skin_change",
       "canonical_concept": "skin_change"
@@ -288,12 +208,9 @@
     "skin_change_details": {
       "field": "skin_change_details",
       "phase": "extended_characterize",
-      "text": "Please describe that briefly.",
+      "text": "What changes have you noticed – colour, texture, or temperature?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "skin_change",
       "ui_label": "Skin change details",
       "canonical_question_key": "skin_change_details",
@@ -302,30 +219,36 @@
     "associated_symptoms": {
       "field": "associated_symptoms",
       "phase": "high_priority_followup",
-      "text": "What other symptoms came with it?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Have any other symptoms come with the lump?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
       "ui_label": "Associated symptoms",
       "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the lump – fever, weight loss, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
       "canonical_concept": "associated_symptoms"
     },
     "functional_impact": {
       "field": "functional_impact",
       "phase": "extended_characterize",
-      "text": "Is it affecting what you can do?",
+      "text": "Is the lump affecting what you can do?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "functional_impact_details",
-      "if_positive_ask": [
-        "functional_impact_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["functional_impact_details"],
       "ui_label": "Functional impact",
       "canonical_question_key": "functional_impact",
       "canonical_concept": "functional_impact"
@@ -335,10 +258,7 @@
       "phase": "extended_characterize",
       "text": "Is it affecting movement or your usual daily activity?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "functional_impact",
       "ui_label": "Functional impact details",
       "canonical_question_key": "functional_impact_details",
@@ -347,16 +267,12 @@
     "rapid_growth": {
       "field": "rapid_growth",
       "phase": "early_danger_screen",
-      "text": "Has it enlarged quickly over days to weeks?",
+      "text": "Has the lump enlarged quickly over days to weeks?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "rapid_growth_details",
-      "if_positive_ask": [
-        "rapid_growth_details"
-      ],
+      "if_positive_ask": ["rapid_growth_details"],
       "ui_label": "Rapid growth",
       "canonical_question_key": "rapid_growth",
       "canonical_concept": "rapid_growth"
@@ -366,10 +282,7 @@
       "phase": "early_danger_screen",
       "text": "How fast? From what size to what size?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "rapid_growth",
       "ui_label": "Rapid growth details",
       "canonical_question_key": "rapid_growth_details",
@@ -380,16 +293,10 @@
       "phase": "early_danger_screen",
       "text": "Any trouble breathing, swallowing, or voice change?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "airway_or_swallowing_effect_details",
-      "if_positive_ask": [
-        "airway_or_swallowing_effect_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["airway_or_swallowing_effect_details"],
       "ui_label": "Airway or swallowing effect",
       "canonical_question_key": "airway_or_swallowing_effect",
       "canonical_concept": "airway_or_swallowing_effect"
@@ -397,32 +304,23 @@
     "airway_or_swallowing_effect_details": {
       "field": "airway_or_swallowing_effect_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "What kind of difficulty? When did it start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "airway_or_swallowing_effect",
-      "ui_label": "Airway or swallowing effect details",
+      "ui_label": "Airway details",
       "canonical_question_key": "airway_or_swallowing_effect_details",
       "canonical_concept": "airway_or_swallowing_effect"
     },
     "red_hot_swelling": {
       "field": "red_hot_swelling",
       "phase": "early_danger_screen",
-      "text": "Is it red, hot, and inflamed?",
+      "text": "Is the lump red, hot, and inflamed?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "red_hot_swelling_details",
-      "if_positive_ask": [
-        "red_hot_swelling_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["red_hot_swelling_details"],
       "ui_label": "Red hot swelling",
       "canonical_question_key": "red_hot_swelling",
       "canonical_concept": "red_hot_swelling"
@@ -430,14 +328,11 @@
     "red_hot_swelling_details": {
       "field": "red_hot_swelling_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "How red and hot? Is it spreading?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "red_hot_swelling",
-      "ui_label": "Red hot swelling details",
+      "ui_label": "Redness details",
       "canonical_question_key": "red_hot_swelling_details",
       "canonical_concept": "red_hot_swelling"
     },
@@ -445,31 +340,35 @@
       "field": "severe_pain",
       "phase": "early_danger_screen",
       "text": "Is the pain severe or worsening?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "severe_pain_details",
+      "if_positive_ask": ["severe_pain_details"],
       "ui_label": "Severe pain",
       "canonical_question_key": "severe_pain",
+      "canonical_concept": "severe_pain"
+    },
+    "severe_pain_details": {
+      "field": "severe_pain_details",
+      "phase": "early_danger_screen",
+      "text": "How severe on 0-10? Is it constant?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "severe_pain",
+      "ui_label": "Severe pain details",
+      "canonical_question_key": "severe_pain_details",
       "canonical_concept": "severe_pain"
     },
     "fixed_hard_mass": {
       "field": "fixed_hard_mass",
       "phase": "critical_followup",
-      "text": "Does it feel hard and fixed in place?",
+      "text": "Does the lump feel hard and fixed in place (doesn't move when you push it)?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fixed_hard_mass_details",
-      "if_positive_ask": [
-        "fixed_hard_mass_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["fixed_hard_mass_details"],
       "ui_label": "Fixed hard mass",
       "canonical_question_key": "fixed_hard_mass",
       "canonical_concept": "fixed_hard_mass"
@@ -477,14 +376,11 @@
     "fixed_hard_mass_details": {
       "field": "fixed_hard_mass_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "Where is it? When did you notice it was fixed?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "fixed_hard_mass",
-      "ui_label": "Fixed hard mass details",
+      "ui_label": "Fixed mass details",
       "canonical_question_key": "fixed_hard_mass_details",
       "canonical_concept": "fixed_hard_mass"
     },
@@ -493,46 +389,20 @@
       "phase": "critical_followup",
       "text": "Any weight loss, fever, or night sweats?",
       "response_type": "NUMERIC_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "capture_detail_if_positive": true,
-      "detail_field": "systemic_weight_loss_or_night_sweats_details",
-      "if_positive_ask": [
-        "systemic_weight_loss_or_night_sweats_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Systemic weight loss or night sweats",
       "canonical_question_key": "systemic_weight_loss_or_night_sweats",
-      "canonical_concept": "systemic_weight_loss_or_night_sweats"
-    },
-    "systemic_weight_loss_or_night_sweats_details": {
-      "field": "systemic_weight_loss_or_night_sweats_details",
-      "phase": "critical_followup",
-      "text": "How much weight? How often are night sweats?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
       "canonical_concept": "systemic_weight_loss_or_night_sweats"
     },
     "neurologic_or_vascular_compromise": {
       "field": "neurologic_or_vascular_compromise",
       "phase": "critical_followup",
-      "text": "Any numbness, weakness, color change, or reduced blood flow beyond it?",
+      "text": "Any numbness, weakness, color change, or reduced blood flow beyond the lump?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "neurologic_or_vascular_compromise_details",
-      "if_positive_ask": [
-        "neurologic_or_vascular_compromise_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["neurologic_or_vascular_compromise_details"],
       "ui_label": "Neurologic or vascular compromise",
       "canonical_question_key": "neurologic_or_vascular_compromise",
       "canonical_concept": "neurologic_or_vascular_compromise"
@@ -540,30 +410,37 @@
     "neurologic_or_vascular_compromise_details": {
       "field": "neurologic_or_vascular_compromise_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "Which symptoms? Which limb or area?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "neurologic_or_vascular_compromise",
-      "ui_label": "Neurologic or vascular compromise details",
+      "ui_label": "Neurologic compromise details",
       "canonical_question_key": "neurologic_or_vascular_compromise_details",
       "canonical_concept": "neurologic_or_vascular_compromise"
     },
     "breast_skin_or_nipple_change": {
       "field": "breast_skin_or_nipple_change",
       "phase": "critical_followup",
-      "text": "If in the breast area, any dimpling, peau d'orange, nipple inversion, or discharge?",
+      "text": "If the lump is in the breast area, any dimpling, peau d'orange, nipple inversion, or discharge?",
       "ask_if": "PAIN_SITE_IS_BREAST",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "breast_skin_or_nipple_change_details",
+      "if_positive_ask": ["breast_skin_or_nipple_change_details"],
       "ui_label": "Breast skin or nipple change",
       "canonical_question_key": "breast_skin_or_nipple_change",
+      "canonical_concept": "breast_skin_or_nipple_change"
+    },
+    "breast_skin_or_nipple_change_details": {
+      "field": "breast_skin_or_nipple_change_details",
+      "phase": "critical_followup",
+      "text": "What changes have you noticed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "breast_skin_or_nipple_change",
+      "ui_label": "Breast change details",
+      "canonical_question_key": "breast_skin_or_nipple_change_details",
       "canonical_concept": "breast_skin_or_nipple_change"
     },
     "fever": {
@@ -571,16 +448,10 @@
       "phase": "high_priority_followup",
       "text": "Any fever or chills?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fever_details",
-      "if_positive_ask": [
-        "fever_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["fever_details"],
       "ui_label": "Fever",
       "canonical_question_key": "fever",
       "canonical_concept": "fever"
@@ -588,12 +459,9 @@
     "fever_details": {
       "field": "fever_details",
       "phase": "high_priority_followup",
-      "text": "Please describe the fever or chills briefly, including temperature if known.",
+      "text": "What was the highest temperature?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "fever",
       "ui_label": "Fever details",
       "canonical_question_key": "fever_details",
@@ -602,18 +470,12 @@
     "drainage_or_discharge": {
       "field": "drainage_or_discharge",
       "phase": "high_priority_followup",
-      "text": "Any pus, fluid, or nipple discharge?",
-      "response_type": "NUMERIC_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Any pus, fluid, or nipple discharge from the lump?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "drainage_or_discharge_details",
-      "if_positive_ask": [
-        "drainage_or_discharge_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["drainage_or_discharge_details"],
       "ui_label": "Drainage or discharge",
       "canonical_question_key": "drainage_or_discharge",
       "canonical_concept": "drainage_or_discharge"
@@ -623,22 +485,34 @@
       "phase": "high_priority_followup",
       "text": "What colour? How much?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "drainage_or_discharge",
+      "ui_label": "Discharge details",
+      "canonical_question_key": "drainage_or_discharge_details",
       "canonical_concept": "drainage_or_discharge"
     },
     "trauma_history": {
       "field": "trauma_history",
       "phase": "high_priority_followup",
-      "text": "Did it appear after trauma?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Did the lump appear after trauma?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "trauma_history_details",
+      "if_positive_ask": ["trauma_history_details"],
       "ui_label": "Trauma history",
       "canonical_question_key": "trauma_history",
+      "canonical_concept": "trauma_history"
+    },
+    "trauma_history_details": {
+      "field": "trauma_history_details",
+      "phase": "high_priority_followup",
+      "text": "What happened and when?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "trauma_history",
+      "ui_label": "Trauma details",
+      "canonical_question_key": "trauma_history_details",
       "canonical_concept": "trauma_history"
     },
     "regional_infection": {
@@ -646,16 +520,10 @@
       "phase": "high_priority_followup",
       "text": "Any nearby skin infection, dental issue, sore throat, or wound?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "regional_infection_details",
-      "if_positive_ask": [
-        "regional_infection_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["regional_infection_details"],
       "ui_label": "Regional infection",
       "canonical_question_key": "regional_infection",
       "canonical_concept": "regional_infection"
@@ -663,14 +531,11 @@
     "regional_infection_details": {
       "field": "regional_infection_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "What infection? Where?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "regional_infection",
-      "ui_label": "Regional infection details",
+      "ui_label": "Infection details",
       "canonical_question_key": "regional_infection_details",
       "canonical_concept": "regional_infection"
     },
@@ -678,42 +543,72 @@
       "field": "multiple_nodes",
       "phase": "high_priority_followup",
       "text": "Are there multiple lumps or swollen glands?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "multiple_nodes_details",
+      "if_positive_ask": ["multiple_nodes_details"],
       "ui_label": "Multiple nodes",
       "canonical_question_key": "multiple_nodes",
+      "canonical_concept": "multiple_nodes"
+    },
+    "multiple_nodes_details": {
+      "field": "multiple_nodes_details",
+      "phase": "high_priority_followup",
+      "text": "Where are they? How many?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "multiple_nodes",
+      "ui_label": "Multiple nodes details",
+      "canonical_question_key": "multiple_nodes_details",
       "canonical_concept": "multiple_nodes"
     },
     "thyroid_pressure_symptoms": {
       "field": "thyroid_pressure_symptoms",
       "phase": "high_priority_followup",
-      "text": "If it is in the neck, do you feel neck pressure or notice that it moves when you swallow?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "text": "If the lump is in the neck, do you feel neck pressure or notice that it moves when you swallow?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "thyroid_pressure_symptoms_details",
+      "if_positive_ask": ["thyroid_pressure_symptoms_details"],
       "ui_label": "Thyroid pressure symptoms",
       "canonical_question_key": "thyroid_pressure_symptoms",
+      "canonical_concept": "thyroid_pressure_symptoms"
+    },
+    "thyroid_pressure_symptoms_details": {
+      "field": "thyroid_pressure_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "Does it move with swallowing? Any voice change?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "thyroid_pressure_symptoms",
+      "ui_label": "Thyroid details",
+      "canonical_question_key": "thyroid_pressure_symptoms_details",
       "canonical_concept": "thyroid_pressure_symptoms"
     },
     "leg_swelling_pattern": {
       "field": "leg_swelling_pattern",
       "phase": "high_priority_followup",
-      "text": "If in the leg, is it one-sided swelling with pain or warmth?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "text": "If the swelling is in the leg, is it one-sided with pain or warmth?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "leg_swelling_pattern_details",
+      "if_positive_ask": ["leg_swelling_pattern_details"],
       "ui_label": "Leg swelling pattern",
       "canonical_question_key": "leg_swelling_pattern",
+      "canonical_concept": "leg_swelling_pattern"
+    },
+    "leg_swelling_pattern_details": {
+      "field": "leg_swelling_pattern_details",
+      "phase": "high_priority_followup",
+      "text": "Which leg? Any redness or tenderness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "leg_swelling_pattern",
+      "ui_label": "Leg swelling details",
+      "canonical_question_key": "leg_swelling_pattern_details",
       "canonical_concept": "leg_swelling_pattern"
     },
     "family_history_cancer": {
@@ -721,16 +616,10 @@
       "phase": "high_priority_followup",
       "text": "Any family history of cancer or similar lumps?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "family_history_cancer_details",
-      "if_positive_ask": [
-        "family_history_cancer_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["family_history_cancer_details"],
       "ui_label": "Family history cancer",
       "canonical_question_key": "family_history_cancer",
       "canonical_concept": "family_history_cancer"
@@ -738,69 +627,58 @@
     "family_history_cancer_details": {
       "field": "family_history_cancer_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "Which relative and what type of cancer?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "family_history_cancer",
-      "ui_label": "Family history cancer details",
+      "ui_label": "Family history details",
       "canonical_question_key": "family_history_cancer_details",
       "canonical_concept": "family_history_cancer"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the lump or any associated symptom changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – size, consistency, pain, or skin changes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
     }
   },
   "derived_red_flag_patterns": {
-    "deep_neck_or_airway_pattern": [
-      "airway_or_swallowing_effect"
-    ],
-    "abscess_or_cellulitis_pattern": [
-      "red_hot_swelling",
-      "severe_pain",
-      "fever"
-    ],
-    "malignancy_pattern": [
-      "fixed_hard_mass",
-      "systemic_weight_loss_or_night_sweats",
-      "rapid_growth",
-      "family_history_cancer"
-    ],
-    "vascular_compromise_pattern": [
-      "neurologic_or_vascular_compromise"
-    ],
-    "breast_cancer_pattern": [
-      "breast_skin_or_nipple_change",
-      "fixed_hard_mass"
-    ]
+    "deep_neck_or_airway_pattern": ["airway_or_swallowing_effect"],
+    "abscess_or_cellulitis_pattern": ["red_hot_swelling", "severe_pain", "fever"],
+    "malignancy_pattern": ["fixed_hard_mass", "systemic_weight_loss_or_night_sweats", "rapid_growth", "family_history_cancer"],
+    "vascular_compromise_pattern": ["neurologic_or_vascular_compromise"],
+    "breast_cancer_pattern": ["breast_skin_or_nipple_change", "fixed_hard_mass"]
   },
   "targeted_ros_plan": {
     "primary_system": "mass_swelling_lymphatic",
-    "high_yield_systems": [
-      "skin_soft_tissue",
-      "constitutional",
-      "regional_systems"
-    ],
-    "cross_system_systems": [
-      "vascular",
-      "breast_or_endocrine",
-      "infection_exposure",
-      "cancer_risk"
-    ],
+    "high_yield_systems": ["skin_soft_tissue", "constitutional", "regional_systems"],
+    "cross_system_systems": ["vascular", "breast_or_endocrine", "infection_exposure", "cancer_risk"],
     "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
   },
   "summary_contract": {
     "missing_clarifications": {
-      "source": [
-        "unanswered_core_questions",
-        "unanswered_critical_followups",
-        "unanswered_high_priority_followups"
-      ]
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
     },
     "flags": {
-      "source": [
-        "derived_red_flag_patterns",
-        "EscalationLevel"
-      ]
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
     }
   },
   "acuity_tier": "medium"

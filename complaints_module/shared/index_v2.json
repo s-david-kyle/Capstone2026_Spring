@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "package_name": "clinical_intake_runtime_v2_complete",
   "authoritative_sources": {
-    "shared_contract_file": "shared.v2.json",
+    "shared_contract_file": "shared_v2.json",
     "complaint_budget_authority": "Complaint files only",
     "complaint_schedule_authority": "Complaint files only",
-    "module_order_authority": "shared.v2.json:authoritative_module_order"
+    "module_order_authority": "shared_v2.json:authoritative_module_order"
   },
   "session_guardrails": {
     "session_hard_cap_questions": 55,
@@ -21,7 +21,7 @@
   },
   "loader_contract": {
     "required_shared_files": [
-      "shared.v2.json",
+      "shared_v2.json",
       "ros_question_bank.json",
       "pmh_psh_module.json",
       "social_family_history_module.json",
@@ -36,118 +36,97 @@
   "active_complaints": [
     {
       "complaint_id": "headache",
-      "file_name": "complaints/headache.v2.json",
+      "file_name": "complaints/headache_v2.json",
       "ui_name": "Headache",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "fever",
-      "file_name": "complaints/fever.v2.json",
+      "file_name": "complaints/fever_v2.json",
       "ui_name": "Fever",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "vomiting",
-      "file_name": "complaints/vomiting.v2.json",
+      "file_name": "complaints/vomiting_v2.json",
       "ui_name": "Vomiting",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module",
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module", "gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "loose_stool",
-      "file_name": "complaints/loose_stool.v2.json",
+      "file_name": "complaints/loose_stool_v2.json",
       "ui_name": "Loose Stool",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module",
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module", "gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "rash",
-      "file_name": "complaints/rash.v2.json",
+      "file_name": "complaints/rash_v2.json",
       "ui_name": "Rash",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "loss_of_consciousness",
-      "file_name": "complaints/loss_of_consciousness.v2.json",
+      "file_name": "complaints/loss_of_consciousness_v2.json",
       "ui_name": "Loss of Consciousness",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "shortness_of_breath",
-      "file_name": "complaints/shortness_of_breath.v2.json",
+      "file_name": "complaints/shortness_of_breath_v2.json",
       "ui_name": "Shortness of Breath",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "trauma",
-      "file_name": "complaints/trauma.v2.json",
+      "file_name": "complaints/trauma_v2.json",
       "ui_name": "Trauma",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module",
-        "immunization_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module", "immunization_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "cough",
-      "file_name": "complaints/cough.v2.json",
+      "file_name": "complaints/cough_v2.json",
       "ui_name": "Cough",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "pain",
-      "file_name": "complaints/pain.v2.json",
+      "file_name": "complaints/pain_v2.json",
       "ui_name": "Pain",
       "parent_symptom": null,
       "can_be_primary": true,
@@ -157,7 +136,7 @@
     },
     {
       "complaint_id": "chest_pain",
-      "file_name": "complaints/chest_pain.v2.json",
+      "file_name": "complaints/chest_pain_v2.json",
       "ui_name": "Chest Pain",
       "parent_symptom": "pain",
       "can_be_primary": true,
@@ -167,31 +146,27 @@
     },
     {
       "complaint_id": "abdominal_pain",
-      "file_name": "complaints/abdominal_pain.v2.json",
+      "file_name": "complaints/abdominal_pain_v2.json",
       "ui_name": "Abdominal Pain",
       "parent_symptom": "pain",
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "back_pain",
-      "file_name": "complaints/back_pain.v2.json",
+      "file_name": "complaints/back_pain_v2.json",
       "ui_name": "Back Pain",
       "parent_symptom": "pain",
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "weight_loss",
-      "file_name": "complaints/weight_loss.v2.json",
+      "file_name": "complaints/weight_loss_v2.json",
       "ui_name": "Weight Loss",
       "parent_symptom": null,
       "can_be_primary": true,
@@ -201,7 +176,7 @@
     },
     {
       "complaint_id": "swelling_or_lump",
-      "file_name": "complaints/swelling_or_lump.v2.json",
+      "file_name": "complaints/swelling_or_lump_v2.json",
       "ui_name": "Swelling or Lump",
       "parent_symptom": null,
       "can_be_primary": true,
@@ -211,7 +186,7 @@
     },
     {
       "complaint_id": "palpitations",
-      "file_name": "complaints/palpitations.v2.json",
+      "file_name": "complaints/palpitations_v2.json",
       "ui_name": "Palpitations",
       "parent_symptom": null,
       "can_be_primary": true,
@@ -221,7 +196,7 @@
     },
     {
       "complaint_id": "dizziness",
-      "file_name": "complaints/dizziness.v2.json",
+      "file_name": "complaints/dizziness_v2.json",
       "ui_name": "Dizziness",
       "parent_symptom": null,
       "can_be_primary": true,
@@ -231,43 +206,37 @@
     },
     {
       "complaint_id": "seizure",
-      "file_name": "complaints/seizure.v2.json",
+      "file_name": "complaints/seizure_v2.json",
       "ui_name": "Seizure",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "dysuria",
-      "file_name": "complaints/dysuria.v2.json",
+      "file_name": "complaints/dysuria_v2.json",
       "ui_name": "Dysuria",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "hematuria",
-      "file_name": "complaints/hematuria.v2.json",
+      "file_name": "complaints/hematuria_v2.json",
       "ui_name": "Hematuria",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "joint_pain",
-      "file_name": "complaints/joint_pain.v2.json",
+      "file_name": "complaints/joint_pain_v2.json",
       "ui_name": "Joint Pain",
       "parent_symptom": "pain",
       "can_be_primary": true,
@@ -277,31 +246,27 @@
     },
     {
       "complaint_id": "sore_throat",
-      "file_name": "complaints/sore_throat.v2.json",
+      "file_name": "complaints/sore_throat_v2.json",
       "ui_name": "Sore Throat",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "immunization_history_module"
-      ],
+      "conditional_session_modules": ["immunization_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "oedema",
-      "file_name": "complaints/oedema.v2.json",
+      "file_name": "complaints/oedema_v2.json",
       "ui_name": "Oedema",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "fatigue",
-      "file_name": "complaints/fatigue.v2.json",
+      "file_name": "complaints/fatigue_v2.json",
       "ui_name": "Fatigue",
       "parent_symptom": null,
       "can_be_primary": true,
@@ -311,38 +276,22 @@
     },
     {
       "complaint_id": "vaginal_discharge",
-      "file_name": "complaints/vaginal_discharge.v2.json",
+      "file_name": "complaints/vaginal_discharge_v2.json",
       "ui_name": "Vaginal Discharge",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module",
-        "social_family_history_module",
-        "drug_history_module"
-      ],
-      "notes": "Complaint-owned budget and executable schedule.",
-      "allowed_patient_sex": [
-        "female"
-      ],
-      "eligibility_message": "Would you consider reviewing your sex again? Vaginal discharge clerking is currently configured only for female encounters in this build.",
-      "eligibility": {
-        "allowed_patient_sex": [
-          "female"
-        ],
-        "message": "Would you consider reviewing your sex again? This complaint is currently configured for patients reported as female."
-      }
+      "conditional_session_modules": ["gynecologic_history_module", "social_family_history_module", "drug_history_module"],
+      "notes": "Complaint-owned budget and executable schedule."
     },
     {
       "complaint_id": "constipation",
-      "file_name": "complaints/constipation.v2.json",
+      "file_name": "complaints/constipation_v2.json",
       "ui_name": "Constipation",
       "parent_symptom": null,
       "can_be_primary": true,
       "can_be_secondary": true,
-      "conditional_session_modules": [
-        "gynecologic_history_module"
-      ],
+      "conditional_session_modules": ["gynecologic_history_module"],
       "notes": "Complaint-owned budget and executable schedule."
     }
   ],

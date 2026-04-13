@@ -8,30 +8,16 @@
   "can_be_secondary": true,
   "primary_system": "ent_upper_airway",
   "related_systems": {
-    "high_yield": [
-      "constitutional_infectious",
-      "lymphatic"
-    ],
-    "selective_cross_system": [
-      "airway",
-      "hematologic_malignancy"
-    ],
-    "contextual": [
-      "immunocompromise"
-    ]
+    "high_yield": ["constitutional_infectious", "lymphatic"],
+    "selective_cross_system": ["airway", "hematologic_malignancy"],
+    "contextual": ["immunocompromise"]
   },
   "pivot_triggers": {
     "fever": "possible_sepsis_pattern",
     "swelling_or_lump": "malignancy_pattern"
   },
   "start_sequence_contract": {
-    "approved_start_sequence": [
-      "presenting_complaint_narrative",
-      "onset",
-      "duration",
-      "severity",
-      "location"
-    ],
+    "approved_start_sequence": ["presenting_complaint_narrative", "onset", "duration", "severity", "location"],
     "sequence_mode": "complaint_owned",
     "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
   },
@@ -48,11 +34,7 @@
     "secondary_mode": {
       "secondary_question_budget": 3,
       "secondary_question_budget_override_if_red_flag": 6,
-      "priority_question_ids_if_secondary": [
-        "onset",
-        "duration",
-        "severity"
-      ],
+      "priority_question_ids_if_secondary": ["onset", "duration", "severity"],
       "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
     },
     "ros_mode": {
@@ -71,56 +53,37 @@
     ]
   },
   "question_schedule": {
-    "enforced_phase_order": [
-      "opening",
-      "core_characterize",
-      "early_danger_screen",
-      "extended_characterize",
-      "critical_followup",
-      "high_priority_followup",
-      "context_and_history"
-    ],
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
     "default_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "onset",
-        "duration",
-        "severity",
-        "location"
-      ],
-      "early_danger_screen": [
-        "airway_compromise",
-        "drooling_or_inability_to_swallow",
-        "trismus",
-        "muffled_voice",
-        "stridor"
-      ],
-      "extended_characterize": [
-        "swallowing_difficulty",
-        "voice_change",
-        "functional_impact"
-      ],
-      "critical_followup": [
-        "neck_stiffness",
-        "fever",
-        "immunocompromised_status"
-      ],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "lymph_node_swelling",
-        "rash",
-        "tonsillar_exudate",
-        "ear_pain",
-        "recent_sick_contact",
-        "weight_loss",
-        "night_sweats",
-        "sexual_exposure"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "severity", "location"],
+      "early_danger_screen": ["airway_compromise", "drooling_or_inability_to_swallow", "trismus", "muffled_voice", "stridor"],
+      "extended_characterize": ["swallowing_difficulty", "voice_change", "functional_impact"],
+      "critical_followup": ["neck_stiffness", "fever", "immunocompromised_status"],
+      "high_priority_followup": ["associated_symptoms", "lymph_node_swelling", "rash", "tonsillar_exudate", "ear_pain", "recent_sick_contact", "weight_loss", "night_sweats", "sexual_exposure"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "severity", "location"],
+      "early_danger_screen": ["airway_compromise", "drooling_or_inability_to_swallow", "recent_change_in_pattern"],
+      "extended_characterize": ["swallowing_difficulty", "voice_change", "functional_impact"],
+      "critical_followup": ["neck_stiffness", "fever", "immunocompromised_status"],
+      "high_priority_followup": ["associated_symptoms", "lymph_node_swelling", "rash", "tonsillar_exudate", "ear_pain", "recent_sick_contact", "weight_loss", "night_sweats", "sexual_exposure", "trismus", "muffled_voice", "stridor"],
       "context_and_history": []
     },
     "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
       {
         "rule_id": "stay_on_default",
         "trigger": "No alternate complaint-specific profile is active",
@@ -134,9 +97,7 @@
       "phase": "opening",
       "text": "Please tell me briefly what brought you in today and how this started.",
       "response_type": "NARRATIVE_FREE_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Presenting Complaint Narrative",
@@ -146,11 +107,9 @@
     "onset": {
       "field": "onset",
       "phase": "core_characterize",
-      "text": "When did it start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "text": "When did the sore throat start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Onset",
       "canonical_question_key": "onset",
       "canonical_concept": "onset"
@@ -158,11 +117,9 @@
     "duration": {
       "field": "duration",
       "phase": "core_characterize",
-      "text": "How long has it been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "text": "How long has the sore throat been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Duration",
       "canonical_question_key": "duration",
       "canonical_concept": "duration"
@@ -172,9 +129,7 @@
       "phase": "core_characterize",
       "text": "How severe is the pain on a scale of 0 to 10?",
       "response_type": "SCALE_0_10",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Severity",
       "canonical_question_key": "severity",
       "canonical_concept": "severity"
@@ -184,11 +139,7 @@
       "phase": "core_characterize",
       "text": "Is the pain mainly in the throat, neck, ear, or all over?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Location",
       "canonical_question_key": "location",
       "canonical_concept": "location"
@@ -198,16 +149,23 @@
       "phase": "extended_characterize",
       "text": "Are you able to swallow normally? Can you swallow fluids?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "swallowing_difficulty_details",
-      "if_positive_ask": [
-        "swallowing_difficulty_details"
-      ],
+      "if_positive_ask": ["swallowing_difficulty_details"],
       "ui_label": "Swallowing difficulty",
       "canonical_question_key": "swallowing_difficulty",
+      "canonical_concept": "swallowing_difficulty"
+    },
+    "swallowing_difficulty_details": {
+      "field": "swallowing_difficulty_details",
+      "phase": "extended_characterize",
+      "text": "Is it solids, liquids, or both?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "swallowing_difficulty",
+      "ui_label": "Swallowing difficulty details",
+      "canonical_question_key": "swallowing_difficulty_details",
       "canonical_concept": "swallowing_difficulty"
     },
     "voice_change": {
@@ -215,11 +173,7 @@
       "phase": "extended_characterize",
       "text": "Has your voice changed? Does it sound muffled, hoarse, or different?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Voice change",
       "canonical_question_key": "voice_change",
       "canonical_concept": "voice_change"
@@ -227,32 +181,49 @@
     "associated_symptoms": {
       "field": "associated_symptoms",
       "phase": "high_priority_followup",
-      "text": "What other symptoms came with it?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Have any other symptoms come with the sore throat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
       "ui_label": "Associated symptoms",
       "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with it – fever, runny nose, cough, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
       "canonical_concept": "associated_symptoms"
     },
     "functional_impact": {
       "field": "functional_impact",
       "phase": "extended_characterize",
-      "text": "Is it affecting what you can do?",
+      "text": "Is the sore throat affecting what you can do?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "functional_impact_details",
-      "if_positive_ask": [
-        "functional_impact_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["functional_impact_details"],
       "ui_label": "Functional impact",
       "canonical_question_key": "functional_impact",
+      "canonical_concept": "functional_impact"
+    },
+    "functional_impact_details": {
+      "field": "functional_impact_details",
+      "phase": "extended_characterize",
+      "text": "Is it affecting eating, drinking, or breathing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "functional_impact",
+      "ui_label": "Functional impact details",
+      "canonical_question_key": "functional_impact_details",
       "canonical_concept": "functional_impact"
     },
     "airway_compromise": {
@@ -260,16 +231,10 @@
       "phase": "early_danger_screen",
       "text": "Any difficulty breathing or sense of throat tightening?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "airway_compromise_details",
-      "if_positive_ask": [
-        "airway_compromise_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["airway_compromise_details"],
       "ui_label": "Airway compromise",
       "canonical_question_key": "airway_compromise",
       "canonical_concept": "airway_compromise"
@@ -277,12 +242,9 @@
     "airway_compromise_details": {
       "field": "airway_compromise_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "How severe is the breathing difficulty? When did it start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "airway_compromise",
       "ui_label": "Airway compromise details",
       "canonical_question_key": "airway_compromise_details",
@@ -293,16 +255,10 @@
       "phase": "early_danger_screen",
       "text": "Are you drooling or completely unable to swallow even saliva?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "drooling_or_inability_to_swallow_details",
-      "if_positive_ask": [
-        "drooling_or_inability_to_swallow_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["drooling_or_inability_to_swallow_details"],
       "ui_label": "Drooling or inability to swallow",
       "canonical_question_key": "drooling_or_inability_to_swallow",
       "canonical_concept": "drooling_or_inability_to_swallow"
@@ -310,14 +266,11 @@
     "drooling_or_inability_to_swallow_details": {
       "field": "drooling_or_inability_to_swallow_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "How long have you been unable to swallow?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "drooling_or_inability_to_swallow",
-      "ui_label": "Drooling or inability to swallow details",
+      "ui_label": "Drooling details",
       "canonical_question_key": "drooling_or_inability_to_swallow_details",
       "canonical_concept": "drooling_or_inability_to_swallow"
     },
@@ -326,16 +279,10 @@
       "phase": "early_danger_screen",
       "text": "Can you open your mouth fully, or is it locked or very difficult to open?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "trismus_details",
-      "if_positive_ask": [
-        "trismus_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["trismus_details"],
       "ui_label": "Trismus",
       "canonical_question_key": "trismus",
       "canonical_concept": "trismus"
@@ -343,12 +290,9 @@
     "trismus_details": {
       "field": "trismus_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "How far can you open your mouth? Is there pain?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "trismus",
       "ui_label": "Trismus details",
       "canonical_question_key": "trismus_details",
@@ -358,12 +302,24 @@
       "field": "muffled_voice",
       "phase": "early_danger_screen",
       "text": "Does your voice sound like you have a hot potato in your mouth?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "muffled_voice_details",
+      "if_positive_ask": ["muffled_voice_details"],
       "ui_label": "Muffled voice",
       "canonical_question_key": "muffled_voice",
+      "canonical_concept": "muffled_voice"
+    },
+    "muffled_voice_details": {
+      "field": "muffled_voice_details",
+      "phase": "early_danger_screen",
+      "text": "When did the voice change start?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "muffled_voice",
+      "ui_label": "Muffled voice details",
+      "canonical_question_key": "muffled_voice_details",
       "canonical_concept": "muffled_voice"
     },
     "stridor": {
@@ -371,16 +327,10 @@
       "phase": "early_danger_screen",
       "text": "Any noisy breathing or high-pitched sound when you breathe in?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "stridor_details",
-      "if_positive_ask": [
-        "stridor_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["stridor_details"],
       "ui_label": "Stridor",
       "canonical_question_key": "stridor",
       "canonical_concept": "stridor"
@@ -388,12 +338,9 @@
     "stridor_details": {
       "field": "stridor_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "Is the noise when breathing in or out?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "stridor",
       "ui_label": "Stridor details",
       "canonical_question_key": "stridor_details",
@@ -404,16 +351,10 @@
       "phase": "critical_followup",
       "text": "Any stiff neck or pain moving your neck?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "neck_stiffness_details",
-      "if_positive_ask": [
-        "neck_stiffness_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["neck_stiffness_details"],
       "ui_label": "Neck stiffness",
       "canonical_question_key": "neck_stiffness",
       "canonical_concept": "neck_stiffness"
@@ -421,12 +362,9 @@
     "neck_stiffness_details": {
       "field": "neck_stiffness_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "Can you touch your chin to your chest?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "neck_stiffness",
       "ui_label": "Neck stiffness details",
       "canonical_question_key": "neck_stiffness_details",
@@ -437,16 +375,10 @@
       "phase": "critical_followup",
       "text": "Any fever or chills?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fever_details",
-      "if_positive_ask": [
-        "fever_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["fever_details"],
       "ui_label": "Fever",
       "canonical_question_key": "fever",
       "canonical_concept": "fever"
@@ -454,12 +386,9 @@
     "fever_details": {
       "field": "fever_details",
       "phase": "critical_followup",
-      "text": "Please describe the fever or chills briefly, including temperature if known.",
+      "text": "What was the highest temperature?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "fever",
       "ui_label": "Fever details",
       "canonical_question_key": "fever_details",
@@ -470,16 +399,10 @@
       "phase": "critical_followup",
       "text": "Any weakened immune system, chemotherapy, HIV, or steroid use?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "immunocompromised_status_details",
-      "if_positive_ask": [
-        "immunocompromised_status_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["immunocompromised_status_details"],
       "ui_label": "Immunocompromised state",
       "canonical_question_key": "immunocompromised_status",
       "canonical_concept": "immunocompromised_status"
@@ -487,14 +410,11 @@
     "immunocompromised_status_details": {
       "field": "immunocompromised_status_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "What condition or treatment?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "immunocompromised_status",
-      "ui_label": "Immunocompromised state details",
+      "ui_label": "Immunocompromised details",
       "canonical_question_key": "immunocompromised_status_details",
       "canonical_concept": "immunocompromised_status"
     },
@@ -503,16 +423,10 @@
       "phase": "high_priority_followup",
       "text": "Any swollen glands in the neck, armpit, or groin?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "lymph_node_swelling_details",
-      "if_positive_ask": [
-        "lymph_node_swelling_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["lymph_node_swelling_details"],
       "ui_label": "Lymph node swelling",
       "canonical_question_key": "lymph_node_swelling",
       "canonical_concept": "lymph_node_swelling"
@@ -520,14 +434,11 @@
     "lymph_node_swelling_details": {
       "field": "lymph_node_swelling_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "Where are they? Are they tender?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "lymph_node_swelling",
-      "ui_label": "Lymph node swelling details",
+      "ui_label": "Lymph node details",
       "canonical_question_key": "lymph_node_swelling_details",
       "canonical_concept": "lymph_node_swelling"
     },
@@ -536,14 +447,10 @@
       "phase": "high_priority_followup",
       "text": "Any skin rash?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "rash_details",
-      "if_positive_ask": [
-        "rash_details"
-      ],
+      "if_positive_ask": ["rash_details"],
       "ui_label": "Rash",
       "canonical_question_key": "rash",
       "canonical_concept": "rash"
@@ -551,12 +458,9 @@
     "rash_details": {
       "field": "rash_details",
       "phase": "high_priority_followup",
-      "text": "What does it look like? Where is it?",
+      "text": "What does the rash look like? Where is it?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "rash",
       "ui_label": "Rash details",
       "canonical_question_key": "rash_details",
@@ -566,14 +470,24 @@
       "field": "tonsillar_exudate",
       "phase": "high_priority_followup",
       "text": "Has a doctor or nurse noticed white patches on your tonsils?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "tonsillar_exudate_details",
+      "if_positive_ask": ["tonsillar_exudate_details"],
       "ui_label": "Tonsillar exudate",
       "canonical_question_key": "tonsillar_exudate",
+      "canonical_concept": "tonsillar_exudate"
+    },
+    "tonsillar_exudate_details": {
+      "field": "tonsillar_exudate_details",
+      "phase": "high_priority_followup",
+      "text": "What did they say?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "tonsillar_exudate",
+      "ui_label": "Tonsillar exudate details",
+      "canonical_question_key": "tonsillar_exudate_details",
       "canonical_concept": "tonsillar_exudate"
     },
     "ear_pain": {
@@ -581,14 +495,10 @@
       "phase": "high_priority_followup",
       "text": "Any pain in the ear?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "ear_pain_details",
-      "if_positive_ask": [
-        "ear_pain_details"
-      ],
+      "if_positive_ask": ["ear_pain_details"],
       "ui_label": "Ear pain",
       "canonical_question_key": "ear_pain",
       "canonical_concept": "ear_pain"
@@ -598,10 +508,7 @@
       "phase": "high_priority_followup",
       "text": "Which ear? How severe?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "ear_pain",
       "ui_label": "Ear pain details",
       "canonical_question_key": "ear_pain_details",
@@ -611,12 +518,24 @@
       "field": "recent_sick_contact",
       "phase": "high_priority_followup",
       "text": "Anyone around you recently unwell with a similar illness?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_sick_contact_details",
+      "if_positive_ask": ["recent_sick_contact_details"],
       "ui_label": "Recent sick contact",
       "canonical_question_key": "recent_sick_contact",
+      "canonical_concept": "recent_sick_contact"
+    },
+    "recent_sick_contact_details": {
+      "field": "recent_sick_contact_details",
+      "phase": "high_priority_followup",
+      "text": "Who and what symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_sick_contact",
+      "ui_label": "Sick contact details",
+      "canonical_question_key": "recent_sick_contact_details",
       "canonical_concept": "recent_sick_contact"
     },
     "weight_loss": {
@@ -624,11 +543,7 @@
       "phase": "high_priority_followup",
       "text": "Any unintentional weight loss or night sweats?",
       "response_type": "NUMERIC_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Weight loss",
       "canonical_question_key": "weight_loss",
       "canonical_concept": "weight_loss"
@@ -638,14 +553,10 @@
       "phase": "high_priority_followup",
       "text": "Any drenching night sweats?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "night_sweats_details",
-      "if_positive_ask": [
-        "night_sweats_details"
-      ],
+      "if_positive_ask": ["night_sweats_details"],
       "ui_label": "Night sweats",
       "canonical_question_key": "night_sweats",
       "canonical_concept": "night_sweats"
@@ -653,12 +564,9 @@
     "night_sweats_details": {
       "field": "night_sweats_details",
       "phase": "high_priority_followup",
-      "text": "How often? Drenching?",
+      "text": "How often? Do you need to change your sheets?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "parent_field": "night_sweats",
       "ui_label": "Night sweats details",
       "canonical_question_key": "night_sweats_details",
@@ -668,16 +576,12 @@
       "field": "sexual_exposure",
       "phase": "high_priority_followup",
       "text": "I ask this routinely because it can affect the cause of a sore throat. Is there any chance of a sexually transmitted infection, such as pharyngeal gonorrhoea?",
-      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
       "ask_if": "SEXUAL_HISTORY_RELEVANT_SESSION",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "sexual_exposure_details",
-      "if_positive_ask": [
-        "sexual_exposure_details"
-      ],
+      "if_positive_ask": ["sexual_exposure_details"],
       "sensitive_topic": true,
       "ui_label": "Sexual exposure risk",
       "canonical_question_key": "sexual_exposure",
@@ -688,98 +592,57 @@
       "phase": "high_priority_followup",
       "text": "What type of exposure? When?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
       "parent_field": "sexual_exposure",
-      "ui_label": "Sexual exposure risk details",
+      "ui_label": "Sexual exposure details",
       "canonical_question_key": "sexual_exposure_details",
       "canonical_concept": "sexual_exposure"
     },
-    "swallowing_difficulty_details": {
-      "field": "swallowing_difficulty_details",
-      "phase": "extended_characterize",
-      "text": "Is it solids, liquids, or both?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "swallowing_difficulty",
-      "ui_label": "Swallowing difficulty details",
-      "canonical_question_key": "swallowing_difficulty_details",
-      "canonical_concept": "swallowing_difficulty"
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pattern of sore throat changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
     },
-    "functional_impact_details": {
-      "field": "functional_impact_details",
-      "phase": "extended_characterize",
-      "text": "Is it affecting eating, drinking, or breathing?",
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – severity, swallowing, or associated symptoms?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "functional_impact",
-      "ui_label": "Functional impact details",
-      "canonical_question_key": "functional_impact_details",
-      "canonical_concept": "functional_impact"
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
     }
   },
   "derived_red_flag_patterns": {
-    "airway_emergency_pattern": [
-      "stridor",
-      "airway_compromise",
-      "drooling_or_inability_to_swallow"
-    ],
-    "peritonsillar_abscess_pattern": [
-      "trismus",
-      "muffled_voice",
-      "fever"
-    ],
-    "epiglottitis_pattern": [
-      "drooling_or_inability_to_swallow",
-      "stridor",
-      "severity"
-    ],
-    "cns_infection_pattern": [
-      "neck_stiffness",
-      "fever"
-    ],
-    "malignancy_pattern": [
-      "weight_loss",
-      "night_sweats",
-      "lymph_node_swelling"
-    ]
+    "airway_emergency_pattern": ["stridor", "airway_compromise", "drooling_or_inability_to_swallow"],
+    "peritonsillar_abscess_pattern": ["trismus", "muffled_voice", "fever"],
+    "epiglottitis_pattern": ["drooling_or_inability_to_swallow", "stridor", "severity"],
+    "cns_infection_pattern": ["neck_stiffness", "fever"],
+    "malignancy_pattern": ["weight_loss", "night_sweats", "lymph_node_swelling"]
   },
   "targeted_ros_plan": {
     "primary_system": "ent_upper_airway",
-    "high_yield_systems": [
-      "constitutional_infectious",
-      "lymphatic"
-    ],
-    "cross_system_systems": [
-      "airway",
-      "hematologic_malignancy",
-      "immunocompromise",
-      "sexual_exposure"
-    ],
+    "high_yield_systems": ["constitutional_infectious", "lymphatic"],
+    "cross_system_systems": ["airway", "hematologic_malignancy", "immunocompromise", "sexual_exposure"],
     "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
   },
   "summary_contract": {
     "missing_clarifications": {
-      "source": [
-        "unanswered_core_questions",
-        "unanswered_critical_followups",
-        "unanswered_high_priority_followups"
-      ]
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
     },
     "flags": {
-      "source": [
-        "derived_red_flag_patterns",
-        "EscalationLevel"
-      ]
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
     }
   },
   "acuity_tier": "medium"

@@ -8,26 +8,14 @@
   "can_be_secondary": true,
   "parent_symptom": "pain",
   "routing_metadata": {
-    "accepts_handoff_from": [
-      "pain"
-    ],
+    "accepts_handoff_from": ["pain"],
     "handoff_behavior": "If routed from the parent symptom, skip generic router questions and continue with complaint-specific core characterization."
   },
   "primary_system": "musculoskeletal_spine",
   "related_systems": {
-    "high_yield": [
-      "neurological",
-      "genitourinary",
-      "constitutional"
-    ],
-    "selective_cross_system": [
-      "vascular",
-      "trauma"
-    ],
-    "contextual": [
-      "cancer_infection_risk",
-      "pregnancy"
-    ]
+    "high_yield": ["neurological", "genitourinary", "constitutional"],
+    "selective_cross_system": ["vascular", "trauma"],
+    "contextual": ["cancer_infection_risk", "pregnancy"]
   },
   "pivot_triggers": {
     "weakness": "cauda_equina_pattern",
@@ -35,13 +23,7 @@
     "chest_pain": "aortic_pattern"
   },
   "start_sequence_contract": {
-    "approved_start_sequence": [
-      "presenting_complaint_narrative",
-      "onset",
-      "duration",
-      "severity",
-      "location"
-    ],
+    "approved_start_sequence": ["presenting_complaint_narrative", "onset", "timing", "duration", "severity", "location"],
     "sequence_mode": "complaint_owned",
     "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
   },
@@ -58,12 +40,7 @@
     "secondary_mode": {
       "secondary_question_budget": 4,
       "secondary_question_budget_override_if_red_flag": 7,
-      "priority_question_ids_if_secondary": [
-        "onset",
-        "duration",
-        "severity",
-        "location"
-      ],
+      "priority_question_ids_if_secondary": ["onset", "duration", "severity", "location"],
       "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
     },
     "ros_mode": {
@@ -82,63 +59,37 @@
     ]
   },
   "question_schedule": {
-    "enforced_phase_order": [
-      "opening",
-      "core_characterize",
-      "early_danger_screen",
-      "extended_characterize",
-      "critical_followup",
-      "high_priority_followup",
-      "context_and_history"
-    ],
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
     "default_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "onset",
-        "duration",
-        "severity",
-        "location",
-        "character"
-      ],
-      "early_danger_screen": [
-        "leg_weakness",
-        "saddle_numbness",
-        "urinary_retention_or_incontinence",
-        "fecal_incontinence",
-        "night_pain"
-      ],
-      "extended_characterize": [
-        "radiation",
-        "timing",
-        "course",
-        "aggravating_factors",
-        "relieving_factors",
-        "functional_impact"
-      ],
-      "critical_followup": [
-        "fever",
-        "weight_loss",
-        "trauma_history",
-        "history_of_cancer",
-        "iv_drug_use_or_immunosuppression",
-        "abdominal_pulsation_or_tearing_pain",
-        "syncope"
-      ],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "sciatica",
-        "numbness_or_tingling",
-        "rest_pain",
-        "flank_pain_or_hematuria",
-        "prior_back_problems",
-        "osteoporosis_or_steroid_use",
-        "work_or_lifting_trigger"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "timing", "duration", "severity", "location", "character"],
+      "early_danger_screen": ["leg_weakness", "saddle_numbness", "urinary_retention_or_incontinence", "fecal_incontinence", "night_pain"],
+      "extended_characterize": ["radiation", "course", "aggravating_factors", "relieving_factors", "functional_impact"],
+      "critical_followup": ["fever", "weight_loss", "trauma_history", "history_of_cancer", "iv_drug_use_or_immunosuppression", "abdominal_pulsation_or_tearing_pain", "syncope"],
+      "high_priority_followup": ["associated_symptoms", "sciatica", "numbness_or_tingling", "rest_pain", "flank_pain_or_hematuria", "prior_back_problems", "osteoporosis_or_steroid_use", "work_or_lifting_trigger"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "timing", "duration", "severity", "location", "character"],
+      "early_danger_screen": ["night_pain", "recent_change_in_pattern"],
+      "extended_characterize": ["radiation", "course", "aggravating_factors", "relieving_factors", "functional_impact"],
+      "critical_followup": ["fever", "weight_loss", "trauma_history", "history_of_cancer", "iv_drug_use_or_immunosuppression", "abdominal_pulsation_or_tearing_pain", "syncope"],
+      "high_priority_followup": ["leg_weakness", "saddle_numbness", "urinary_retention_or_incontinence", "fecal_incontinence", "sciatica", "numbness_or_tingling", "rest_pain", "flank_pain_or_hematuria", "prior_back_problems", "osteoporosis_or_steroid_use", "work_or_lifting_trigger"],
       "context_and_history": []
     },
     "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
       {
         "rule_id": "stay_on_default",
         "trigger": "No alternate complaint-specific profile is active",
@@ -152,9 +103,7 @@
       "phase": "opening",
       "text": "Please tell me briefly what brought you in today and how this started.",
       "response_type": "NARRATIVE_FREE_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Presenting Complaint Narrative",
@@ -166,21 +115,27 @@
       "phase": "core_characterize",
       "text": "When did the back pain start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Onset",
       "canonical_question_key": "onset",
       "canonical_concept": "onset"
     },
+    "timing": {
+      "field": "timing",
+      "phase": "core_characterize",
+      "text": "Is the pain constant or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "TIMING_ALREADY_RESOLVED"],
+      "ui_label": "Timing",
+      "canonical_question_key": "timing",
+      "canonical_concept": "timing"
+    },
     "duration": {
       "field": "duration",
       "phase": "core_characterize",
-      "text": "How long has it been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "text": "Please answer in one of these formats: \"constant for [time]\" or \"comes and goes; each episode lasts about [time]\".",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Duration",
       "canonical_question_key": "duration",
       "canonical_concept": "duration"
@@ -190,9 +145,7 @@
       "phase": "core_characterize",
       "text": "How severe is it from 0 to 10?",
       "response_type": "SCALE_0_10",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Severity",
       "canonical_question_key": "severity",
       "canonical_concept": "severity"
@@ -202,9 +155,7 @@
       "phase": "core_characterize",
       "text": "Where exactly is the pain—neck, upper back, low back, or flank?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Location",
@@ -216,9 +167,7 @@
       "phase": "core_characterize",
       "text": "How would you describe it—aching, sharp, cramping, burning, or something else?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Character",
@@ -228,18 +177,12 @@
     "radiation": {
       "field": "radiation",
       "phase": "extended_characterize",
-      "text": "Does it travel anywhere else?",
+      "text": "Does the pain travel anywhere else?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "radiation_details",
-      "if_positive_ask": [
-        "radiation_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["radiation_details"],
       "ui_label": "Radiation",
       "canonical_question_key": "radiation",
       "canonical_concept": "radiation"
@@ -249,39 +192,18 @@
       "phase": "extended_characterize",
       "text": "Where does it go — for example into the buttock, leg, groin, abdomen, or somewhere else?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Radiation details",
       "canonical_question_key": "radiation_details",
       "parent_field": "radiation",
       "canonical_concept": "radiation_details"
     },
-    "timing": {
-      "field": "timing",
-      "phase": "extended_characterize",
-      "text": "Is it constant or intermittent?",
-      "response_type": "TEMPORAL_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
-      "ui_label": "Timing",
-      "canonical_question_key": "timing",
-      "canonical_concept": "timing"
-    },
     "course": {
       "field": "course",
       "phase": "extended_characterize",
       "text": "Overall since it started, which best fits it now: getting worse, getting better, or staying about the same?",
-      "response_type": "TEMPORAL_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Course",
       "canonical_question_key": "course",
       "canonical_concept": "course"
@@ -289,18 +211,12 @@
     "aggravating_factors": {
       "field": "aggravating_factors",
       "phase": "extended_characterize",
-      "text": "Does anything make it worse?",
+      "text": "Is there anything that makes the pain worse?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "aggravating_factors_details",
-      "if_positive_ask": [
-        "aggravating_factors_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["aggravating_factors_details"],
       "ui_label": "Aggravating factors",
       "canonical_question_key": "aggravating_factors",
       "canonical_concept": "aggravating_factors"
@@ -310,10 +226,7 @@
       "phase": "extended_characterize",
       "text": "What specifically makes it worse — for example movement, lifting, coughing, bending, or rest?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Aggravating factors details",
       "canonical_question_key": "aggravating_factors_details",
       "parent_field": "aggravating_factors",
@@ -322,18 +235,12 @@
     "relieving_factors": {
       "field": "relieving_factors",
       "phase": "extended_characterize",
-      "text": "Does anything make it better?",
+      "text": "Is there anything that makes the pain better?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "relieving_factors_details",
-      "if_positive_ask": [
-        "relieving_factors_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["relieving_factors_details"],
       "ui_label": "Relieving factors",
       "canonical_question_key": "relieving_factors",
       "canonical_concept": "relieving_factors"
@@ -343,10 +250,7 @@
       "phase": "extended_characterize",
       "text": "What specifically makes it better — for example rest, position, heat, or medication?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Relieving factors details",
       "canonical_question_key": "relieving_factors_details",
       "parent_field": "relieving_factors",
@@ -357,9 +261,7 @@
       "phase": "extended_characterize",
       "text": "What can you no longer do because of it?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Functional impact",
       "canonical_question_key": "functional_impact",
       "canonical_concept": "functional_impact"
@@ -367,30 +269,22 @@
     "associated_symptoms": {
       "field": "associated_symptoms",
       "phase": "high_priority_followup",
-      "text": "Have any other symptoms come with it?",
+      "text": "Have any other symptoms come with the back pain?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "associated_symptoms_details",
-      "if_positive_ask": [
-        "associated_symptoms_details"
-      ],
+      "if_positive_ask": ["associated_symptoms_details"],
       "ui_label": "Associated symptoms",
       "canonical_question_key": "associated_symptoms",
-      "compound_question": false,
       "canonical_concept": "associated_symptoms"
     },
     "associated_symptoms_details": {
       "field": "associated_symptoms_details",
       "phase": "high_priority_followup",
-      "text": "What other symptoms came with it?",
+      "text": "What other symptoms came with the pain?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Associated symptoms details",
       "canonical_question_key": "associated_symptoms_details",
       "parent_field": "associated_symptoms",
@@ -399,18 +293,12 @@
     "leg_weakness": {
       "field": "leg_weakness",
       "phase": "early_danger_screen",
-      "text": "Any weakness in one or both legs?",
+      "text": "Do you have any weakness in one or both legs?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "leg_weakness_details",
-      "if_positive_ask": [
-        "leg_weakness_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["leg_weakness_details"],
       "ui_label": "Leg weakness",
       "canonical_question_key": "leg_weakness",
       "canonical_concept": "leg_weakness"
@@ -418,12 +306,9 @@
     "leg_weakness_details": {
       "field": "leg_weakness_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "Which leg? Is the weakness constant or does it come and go? How severe is it?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Leg weakness details",
       "canonical_question_key": "leg_weakness_details",
       "parent_field": "leg_weakness",
@@ -432,18 +317,12 @@
     "saddle_numbness": {
       "field": "saddle_numbness",
       "phase": "early_danger_screen",
-      "text": "Any numbness around the groin, buttocks, or inner thighs?",
+      "text": "Do you have any numbness around the groin, buttocks, or inner thighs?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "saddle_numbness_details",
-      "if_positive_ask": [
-        "saddle_numbness_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["saddle_numbness_details"],
       "ui_label": "Saddle numbness",
       "canonical_question_key": "saddle_numbness",
       "canonical_concept": "saddle_numbness"
@@ -451,12 +330,9 @@
     "saddle_numbness_details": {
       "field": "saddle_numbness_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "Where exactly – around the groin, buttocks, or inner thighs? Does it affect one side more than the other?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Saddle numbness details",
       "canonical_question_key": "saddle_numbness_details",
       "parent_field": "saddle_numbness",
@@ -465,18 +341,12 @@
     "urinary_retention_or_incontinence": {
       "field": "urinary_retention_or_incontinence",
       "phase": "early_danger_screen",
-      "text": "Any trouble starting urine, retention, or loss of bladder control?",
+      "text": "Do you have any trouble starting urine, retention, or loss of bladder control?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "urinary_retention_or_incontinence_details",
-      "if_positive_ask": [
-        "urinary_retention_or_incontinence_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["urinary_retention_or_incontinence_details"],
       "ui_label": "Urinary retention or incontinence",
       "canonical_question_key": "urinary_retention_or_incontinence",
       "canonical_concept": "urinary_retention_or_incontinence"
@@ -484,13 +354,10 @@
     "urinary_retention_or_incontinence_details": {
       "field": "urinary_retention_or_incontinence_details",
       "phase": "early_danger_screen",
-      "text": "Please describe that briefly.",
+      "text": "When did you last pass urine? Are you able to go when you feel the urge?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "ui_label": "Urinary retention or incontinence details",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Urinary details",
       "canonical_question_key": "urinary_retention_or_incontinence_details",
       "parent_field": "urinary_retention_or_incontinence",
       "canonical_concept": "urinary_retention_or_incontinence"
@@ -498,16 +365,12 @@
     "fecal_incontinence": {
       "field": "fecal_incontinence",
       "phase": "early_danger_screen",
-      "text": "Any loss of bowel control?",
+      "text": "Do you have any loss of bowel control?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fecal_incontinence_details",
-      "if_positive_ask": [
-        "fecal_incontinence_details"
-      ],
+      "if_positive_ask": ["fecal_incontinence_details"],
       "ui_label": "Fecal incontinence",
       "canonical_question_key": "fecal_incontinence",
       "canonical_concept": "fecal_incontinence"
@@ -515,12 +378,9 @@
     "fecal_incontinence_details": {
       "field": "fecal_incontinence_details",
       "phase": "early_danger_screen",
-      "text": "When did this start? How often does it happen?",
+      "text": "Was this a one‑time accident or has it happened more than once? When did it start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Fecal incontinence details",
       "canonical_question_key": "fecal_incontinence_details",
       "parent_field": "fecal_incontinence",
@@ -529,30 +389,60 @@
     "night_pain": {
       "field": "night_pain",
       "phase": "early_danger_screen",
-      "text": "Does it wake you from sleep?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Does the pain wake you from sleep?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "night_pain_details",
+      "if_positive_ask": ["night_pain_details"],
       "ui_label": "Night pain",
       "canonical_question_key": "night_pain",
       "canonical_concept": "night_pain"
+    },
+    "night_pain_details": {
+      "field": "night_pain_details",
+      "phase": "early_danger_screen",
+      "text": "How often does it wake you? Does changing position help?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Night pain details",
+      "canonical_question_key": "night_pain_details",
+      "parent_field": "night_pain",
+      "canonical_concept": "night_pain"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pain or any associated symptom changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – pain severity, frequency, or any new symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "parent_field": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
     },
     "fever": {
       "field": "fever",
       "phase": "critical_followup",
       "text": "Any fever or chills?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fever_details",
-      "if_positive_ask": [
-        "fever_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["fever_details"],
       "ui_label": "Fever",
       "canonical_question_key": "fever",
       "canonical_concept": "fever"
@@ -560,12 +450,9 @@
     "fever_details": {
       "field": "fever_details",
       "phase": "critical_followup",
-      "text": "Please describe the fever or chills briefly, including temperature if known.",
+      "text": "What was the highest temperature? When did the fever start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Fever details",
       "canonical_question_key": "fever_details",
       "parent_field": "fever",
@@ -574,11 +461,9 @@
     "weight_loss": {
       "field": "weight_loss",
       "phase": "critical_followup",
-      "text": "Any unintentional weight loss?",
+      "text": "Have you had any unintentional weight loss?",
       "response_type": "NUMERIC_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Weight loss",
       "canonical_question_key": "weight_loss",
       "canonical_concept": "weight_loss"
@@ -586,18 +471,12 @@
     "trauma_history": {
       "field": "trauma_history",
       "phase": "critical_followup",
-      "text": "Did it start after trauma or a fall?",
+      "text": "Did the pain start after trauma or a fall?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "trauma_history_details",
-      "if_positive_ask": [
-        "trauma_history_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["trauma_history_details"],
       "ui_label": "Trauma history",
       "canonical_question_key": "trauma_history",
       "canonical_concept": "trauma_history"
@@ -605,12 +484,9 @@
     "trauma_history_details": {
       "field": "trauma_history_details",
       "phase": "critical_followup",
-      "text": "Please tell me more about that history.",
+      "text": "What happened? When did it occur?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Trauma history details",
       "canonical_question_key": "trauma_history_details",
       "parent_field": "trauma_history",
@@ -619,16 +495,12 @@
     "history_of_cancer": {
       "field": "history_of_cancer",
       "phase": "critical_followup",
-      "text": "Any personal history of cancer?",
+      "text": "Do you have any personal history of cancer?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "history_of_cancer_details",
-      "if_positive_ask": [
-        "history_of_cancer_details"
-      ],
+      "if_positive_ask": ["history_of_cancer_details"],
       "ui_label": "History of cancer",
       "canonical_question_key": "history_of_cancer",
       "canonical_concept": "history_of_cancer"
@@ -636,13 +508,10 @@
     "history_of_cancer_details": {
       "field": "history_of_cancer_details",
       "phase": "critical_followup",
-      "text": "What type of cancer and when was it treated?",
+      "text": "What type of cancer, and when was it treated?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "ui_label": "History of cancer details",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Cancer history details",
       "canonical_question_key": "history_of_cancer_details",
       "parent_field": "history_of_cancer",
       "canonical_concept": "history_of_cancer"
@@ -650,33 +519,24 @@
     "iv_drug_use_or_immunosuppression": {
       "field": "iv_drug_use_or_immunosuppression",
       "phase": "critical_followup",
-      "text": "Any IV drug use, weakened immune system, or recent infection?",
+      "text": "Do you have a weakened immune system, or have you used IV drugs?",
       "ask_if": "ALWAYS",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "iv_drug_use_or_immunosuppression_details",
-      "if_positive_ask": [
-        "iv_drug_use_or_immunosuppression_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
-      "ui_label": "Iv drug use or immunosuppression",
+      "if_positive_ask": ["iv_drug_use_or_immunosuppression_details"],
+      "ui_label": "IV drug use or immunosuppression",
       "canonical_question_key": "iv_drug_use_or_immunosuppression",
       "canonical_concept": "iv_drug_use_or_immunosuppression"
     },
     "iv_drug_use_or_immunosuppression_details": {
       "field": "iv_drug_use_or_immunosuppression_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "What condition or treatment? Or what substances have you used?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "ui_label": "Iv drug use or immunosuppression details",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Immunosuppression details",
       "canonical_question_key": "iv_drug_use_or_immunosuppression_details",
       "parent_field": "iv_drug_use_or_immunosuppression",
       "canonical_concept": "iv_drug_use_or_immunosuppression"
@@ -684,18 +544,12 @@
     "abdominal_pulsation_or_tearing_pain": {
       "field": "abdominal_pulsation_or_tearing_pain",
       "phase": "critical_followup",
-      "text": "Any abdominal pulsation or tearing pain to the abdomen or chest?",
+      "text": "Do you feel any pulsation in your abdomen, or is the pain tearing in nature and going through to your back or chest?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "abdominal_pulsation_or_tearing_pain_details",
-      "if_positive_ask": [
-        "abdominal_pulsation_or_tearing_pain_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["abdominal_pulsation_or_tearing_pain_details"],
       "ui_label": "Abdominal pulsation or tearing pain",
       "canonical_question_key": "abdominal_pulsation_or_tearing_pain",
       "canonical_concept": "abdominal_pulsation_or_tearing_pain"
@@ -703,13 +557,10 @@
     "abdominal_pulsation_or_tearing_pain_details": {
       "field": "abdominal_pulsation_or_tearing_pain_details",
       "phase": "critical_followup",
-      "text": "Please describe that briefly.",
+      "text": "Where do you feel the pulsation or tearing? When did it start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "ui_label": "Abdominal pulsation or tearing pain details",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Aortic details",
       "canonical_question_key": "abdominal_pulsation_or_tearing_pain_details",
       "parent_field": "abdominal_pulsation_or_tearing_pain",
       "canonical_concept": "abdominal_pulsation_or_tearing_pain"
@@ -717,16 +568,12 @@
     "syncope": {
       "field": "syncope",
       "phase": "critical_followup",
-      "text": "Any fainting or blacking out with the pain?",
+      "text": "Have you fainted or blacked out with the pain?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "syncope_details",
-      "if_positive_ask": [
-        "syncope_details"
-      ],
+      "if_positive_ask": ["syncope_details"],
       "ui_label": "Syncope",
       "canonical_question_key": "syncope",
       "canonical_concept": "syncope"
@@ -736,10 +583,7 @@
       "phase": "critical_followup",
       "text": "How long were you out? Did you have any warning?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Syncope details",
       "canonical_question_key": "syncope_details",
       "parent_field": "syncope",
@@ -748,66 +592,84 @@
     "sciatica": {
       "field": "sciatica",
       "phase": "high_priority_followup",
-      "text": "Does it shoot down the leg below the knee?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Does the pain shoot down the leg below the knee?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "sciatica_details",
+      "if_positive_ask": ["sciatica_details"],
       "ui_label": "Sciatica",
       "canonical_question_key": "sciatica",
+      "canonical_concept": "sciatica"
+    },
+    "sciatica_details": {
+      "field": "sciatica_details",
+      "phase": "high_priority_followup",
+      "text": "Which leg? How far down the leg does it go – to the knee, calf, or foot?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Sciatica details",
+      "canonical_question_key": "sciatica_details",
+      "parent_field": "sciatica",
       "canonical_concept": "sciatica"
     },
     "numbness_or_tingling": {
       "field": "numbness_or_tingling",
       "phase": "high_priority_followup",
-      "text": "Any tingling or numbness in the leg or foot?",
+      "text": "Do you have any tingling or numbness in the leg or foot?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "numbness_or_tingling_details",
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["numbness_or_tingling_details"],
       "ui_label": "Numbness or tingling",
       "canonical_question_key": "numbness_or_tingling",
-      "if_positive_ask": [
-        "numbness_or_tingling_details"
-      ],
+      "canonical_concept": "numbness_or_tingling"
+    },
+    "numbness_or_tingling_details": {
+      "field": "numbness_or_tingling_details",
+      "phase": "high_priority_followup",
+      "text": "Where exactly do you feel it – foot, calf, thigh, or elsewhere?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "numbness_or_tingling",
+      "ui_label": "Numbness details",
+      "canonical_question_key": "numbness_or_tingling_details",
       "canonical_concept": "numbness_or_tingling"
     },
     "rest_pain": {
       "field": "rest_pain",
       "phase": "high_priority_followup",
-      "text": "Is it bad even at rest?",
+      "text": "Is the pain bad even when you are sitting or lying down?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "rest_pain_details",
+      "if_positive_ask": ["rest_pain_details"],
       "ui_label": "Rest pain",
       "canonical_question_key": "rest_pain",
-      "if_positive_ask": [
-        "rest_pain_details"
-      ],
+      "canonical_concept": "rest_pain"
+    },
+    "rest_pain_details": {
+      "field": "rest_pain_details",
+      "phase": "high_priority_followup",
+      "text": "Does it wake you from sleep? Does changing position help?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "rest_pain",
+      "ui_label": "Rest pain details",
+      "canonical_question_key": "rest_pain_details",
       "canonical_concept": "rest_pain"
     },
     "flank_pain_or_hematuria": {
       "field": "flank_pain_or_hematuria",
       "phase": "high_priority_followup",
-      "text": "Any flank pain, urinary symptoms, or blood in urine?",
+      "text": "Do you have any flank pain, urinary symptoms, or blood in your urine?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "flank_pain_or_hematuria_details",
-      "if_positive_ask": [
-        "flank_pain_or_hematuria_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["flank_pain_or_hematuria_details"],
       "ui_label": "Flank pain or hematuria",
       "canonical_question_key": "flank_pain_or_hematuria",
       "canonical_concept": "flank_pain_or_hematuria"
@@ -815,13 +677,10 @@
     "flank_pain_or_hematuria_details": {
       "field": "flank_pain_or_hematuria_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "Which side? Is the pain colicky or constant? Have you seen blood in the urine – pink, red, or dark?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "ui_label": "Flank pain or hematuria details",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Flank pain details",
       "canonical_question_key": "flank_pain_or_hematuria_details",
       "parent_field": "flank_pain_or_hematuria",
       "canonical_concept": "flank_pain_or_hematuria"
@@ -829,16 +688,12 @@
     "prior_back_problems": {
       "field": "prior_back_problems",
       "phase": "high_priority_followup",
-      "text": "Any similar back problems before?",
+      "text": "Have you had similar back problems before?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "prior_back_problems_details",
-      "if_positive_ask": [
-        "prior_back_problems_details"
-      ],
+      "if_positive_ask": ["prior_back_problems_details"],
       "ui_label": "Prior back problems",
       "canonical_question_key": "prior_back_problems",
       "canonical_concept": "prior_back_problems"
@@ -846,12 +701,9 @@
     "prior_back_problems_details": {
       "field": "prior_back_problems_details",
       "phase": "high_priority_followup",
-      "text": "What was the diagnosis? When did it happen?",
+      "text": "What was the diagnosis? When did it happen? How was it treated?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "ui_label": "Prior back problems details",
       "canonical_question_key": "prior_back_problems_details",
       "parent_field": "prior_back_problems",
@@ -860,18 +712,12 @@
     "osteoporosis_or_steroid_use": {
       "field": "osteoporosis_or_steroid_use",
       "phase": "high_priority_followup",
-      "text": "Any osteoporosis or long-term steroid use?",
+      "text": "Do you have osteoporosis or have you taken long‑term steroids?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "osteoporosis_or_steroid_use_details",
-      "if_positive_ask": [
-        "osteoporosis_or_steroid_use_details"
-      ],
-      "compound_question": false,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["osteoporosis_or_steroid_use_details"],
       "ui_label": "Osteoporosis or steroid use",
       "canonical_question_key": "osteoporosis_or_steroid_use",
       "canonical_concept": "osteoporosis_or_steroid_use"
@@ -879,13 +725,10 @@
     "osteoporosis_or_steroid_use_details": {
       "field": "osteoporosis_or_steroid_use_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "Which medication and for how long? Have you had a fracture before?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "ui_label": "Osteoporosis or steroid use details",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Osteoporosis details",
       "canonical_question_key": "osteoporosis_or_steroid_use_details",
       "parent_field": "osteoporosis_or_steroid_use",
       "canonical_concept": "osteoporosis_or_steroid_use"
@@ -893,99 +736,47 @@
     "work_or_lifting_trigger": {
       "field": "work_or_lifting_trigger",
       "phase": "high_priority_followup",
-      "text": "Did it start after lifting or work strain?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "text": "Did the pain start after lifting or work‑related strain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "work_or_lifting_trigger_details",
+      "if_positive_ask": ["work_or_lifting_trigger_details"],
       "ui_label": "Work or lifting trigger",
       "canonical_question_key": "work_or_lifting_trigger",
       "canonical_concept": "work_or_lifting_trigger"
     },
-    "numbness_or_tingling_details": {
-      "field": "numbness_or_tingling_details",
+    "work_or_lifting_trigger_details": {
+      "field": "work_or_lifting_trigger_details",
       "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
+      "text": "What activity triggered it? When did it happen?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "numbness_or_tingling",
-      "ui_label": "Numbness or tingling details",
-      "canonical_question_key": "numbness_or_tingling_details",
-      "canonical_concept": "numbness_or_tingling"
-    },
-    "rest_pain_details": {
-      "field": "rest_pain_details",
-      "phase": "high_priority_followup",
-      "text": "Please describe that briefly.",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "parent_field": "rest_pain",
-      "ui_label": "Rest pain details",
-      "canonical_question_key": "rest_pain_details",
-      "canonical_concept": "rest_pain"
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Lifting trigger details",
+      "canonical_question_key": "work_or_lifting_trigger_details",
+      "parent_field": "work_or_lifting_trigger",
+      "canonical_concept": "work_or_lifting_trigger"
     }
   },
   "derived_red_flag_patterns": {
-    "cauda_equina_pattern": [
-      "leg_weakness",
-      "saddle_numbness",
-      "urinary_retention_or_incontinence",
-      "fecal_incontinence"
-    ],
-    "spinal_infection_pattern": [
-      "fever",
-      "iv_drug_use_or_immunosuppression"
-    ],
-    "malignancy_pattern": [
-      "weight_loss",
-      "history_of_cancer",
-      "night_pain"
-    ],
-    "fracture_pattern": [
-      "trauma_history",
-      "osteoporosis_or_steroid_use"
-    ],
-    "aortic_pattern": [
-      "abdominal_pulsation_or_tearing_pain",
-      "syncope"
-    ]
+    "cauda_equina_pattern": ["leg_weakness", "saddle_numbness", "urinary_retention_or_incontinence", "fecal_incontinence"],
+    "spinal_infection_pattern": ["fever", "iv_drug_use_or_immunosuppression"],
+    "malignancy_pattern": ["weight_loss", "history_of_cancer", "night_pain"],
+    "fracture_pattern": ["trauma_history", "osteoporosis_or_steroid_use"],
+    "aortic_pattern": ["abdominal_pulsation_or_tearing_pain", "syncope"]
   },
   "targeted_ros_plan": {
     "primary_system": "musculoskeletal_spine",
-    "high_yield_systems": [
-      "neurological",
-      "genitourinary",
-      "constitutional"
-    ],
-    "cross_system_systems": [
-      "vascular",
-      "trauma",
-      "cancer_infection_risk",
-      "pregnancy"
-    ],
+    "high_yield_systems": ["neurological", "genitourinary", "constitutional"],
+    "cross_system_systems": ["vascular", "trauma", "cancer_infection_risk", "pregnancy"],
     "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
   },
   "summary_contract": {
     "missing_clarifications": {
-      "source": [
-        "unanswered_core_questions",
-        "unanswered_critical_followups",
-        "unanswered_high_priority_followups"
-      ]
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
     },
     "flags": {
-      "source": [
-        "derived_red_flag_patterns",
-        "EscalationLevel"
-      ]
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
     }
   },
   "acuity_tier": "high"

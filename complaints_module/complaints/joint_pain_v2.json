@@ -9,32 +9,15 @@
   "parent_symptom": "pain",
   "primary_system": "musculoskeletal",
   "related_systems": {
-    "high_yield": [
-      "constitutional",
-      "inflammatory",
-      "infectious"
-    ],
-    "selective_cross_system": [
-      "skin",
-      "genitourinary",
-      "gastrointestinal"
-    ],
-    "contextual": [
-      "trauma",
-      "medication"
-    ]
+    "high_yield": ["constitutional", "inflammatory", "infectious"],
+    "selective_cross_system": ["skin", "genitourinary", "gastrointestinal"],
+    "contextual": ["trauma", "medication"]
   },
   "pivot_triggers": {
     "fever": "possible_sepsis_pattern"
   },
   "start_sequence_contract": {
-    "approved_start_sequence": [
-      "presenting_complaint_narrative",
-      "onset",
-      "duration",
-      "number_of_joints",
-      "joint_distribution"
-    ],
+    "approved_start_sequence": ["presenting_complaint_narrative", "onset", "duration", "number_of_joints", "joint_distribution"],
     "sequence_mode": "complaint_owned",
     "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
   },
@@ -51,12 +34,7 @@
     "secondary_mode": {
       "secondary_question_budget": 4,
       "secondary_question_budget_override_if_red_flag": 7,
-      "priority_question_ids_if_secondary": [
-        "onset",
-        "duration",
-        "number_of_joints",
-        "joint_distribution"
-      ],
+      "priority_question_ids_if_secondary": ["onset", "duration", "number_of_joints", "joint_distribution"],
       "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
     },
     "ros_mode": {
@@ -75,59 +53,37 @@
     ]
   },
   "question_schedule": {
-    "enforced_phase_order": [
-      "opening",
-      "core_characterize",
-      "early_danger_screen",
-      "extended_characterize",
-      "critical_followup",
-      "high_priority_followup",
-      "context_and_history"
-    ],
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
     "default_profile": {
-      "opening": [
-        "presenting_complaint_narrative"
-      ],
-      "core_characterize": [
-        "onset",
-        "duration",
-        "number_of_joints",
-        "joint_distribution",
-        "severity"
-      ],
-      "early_danger_screen": [
-        "fever",
-        "hot_swollen_single_joint",
-        "inability_to_bear_weight",
-        "skin_rash"
-      ],
-      "extended_characterize": [
-        "time_of_day_variation",
-        "swelling_or_redness",
-        "morning_stiffness",
-        "functional_impact"
-      ],
-      "critical_followup": [
-        "eye_symptoms",
-        "recent_infection",
-        "immunocompromised_status",
-        "trauma_history"
-      ],
-      "high_priority_followup": [
-        "associated_symptoms",
-        "urethral_or_vaginal_symptoms",
-        "bowel_symptoms",
-        "psoriasis_history",
-        "family_history_arthritis",
-        "prior_joint_problems",
-        "uric_acid_risk",
-        "new_medication",
-        "weight_loss",
-        "bone_pain_at_rest"
-      ],
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "number_of_joints", "joint_distribution", "severity"],
+      "early_danger_screen": ["fever", "hot_swollen_single_joint", "inability_to_bear_weight", "skin_rash"],
+      "extended_characterize": ["time_of_day_variation", "swelling_or_redness", "morning_stiffness", "functional_impact"],
+      "critical_followup": ["eye_symptoms", "recent_infection", "immunocompromised_status", "trauma_history"],
+      "high_priority_followup": ["associated_symptoms", "urethral_or_vaginal_symptoms", "bowel_symptoms", "psoriasis_history", "family_history_arthritis", "prior_joint_problems", "uric_acid_risk", "new_medication", "weight_loss", "bone_pain_at_rest"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "number_of_joints", "joint_distribution", "severity"],
+      "early_danger_screen": ["fever", "hot_swollen_single_joint", "recent_change_in_pattern"],
+      "extended_characterize": ["time_of_day_variation", "swelling_or_redness", "morning_stiffness", "functional_impact"],
+      "critical_followup": ["eye_symptoms", "recent_infection", "immunocompromised_status", "trauma_history"],
+      "high_priority_followup": ["associated_symptoms", "urethral_or_vaginal_symptoms", "bowel_symptoms", "psoriasis_history", "family_history_arthritis", "prior_joint_problems", "uric_acid_risk", "new_medication", "weight_loss", "bone_pain_at_rest", "inability_to_bear_weight", "skin_rash"],
       "context_and_history": []
     },
     "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
       {
         "rule_id": "stay_on_default",
         "trigger": "No alternate complaint-specific profile is active",
@@ -141,9 +97,7 @@
       "phase": "opening",
       "text": "Please tell me briefly what brought you in today and how this started.",
       "response_type": "NARRATIVE_FREE_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Presenting Complaint Narrative",
@@ -155,9 +109,7 @@
       "phase": "core_characterize",
       "text": "When did it start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Onset",
       "canonical_question_key": "onset",
       "canonical_concept": "onset"
@@ -165,11 +117,9 @@
     "duration": {
       "field": "duration",
       "phase": "core_characterize",
-      "text": "How long has it been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "text": "Please answer in one of these formats: \"constant for [time]\" or \"comes and goes; each episode lasts about [time]\".",
       "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Duration",
       "canonical_question_key": "duration",
       "canonical_concept": "duration"
@@ -179,9 +129,7 @@
       "phase": "extended_characterize",
       "text": "Is the joint pain worse at a particular time of day or night, such as first thing in the morning, later in the day, or overnight?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Time of day variation",
       "canonical_question_key": "time_of_day_variation",
       "canonical_concept": "time_of_day_variation"
@@ -189,11 +137,9 @@
     "number_of_joints": {
       "field": "number_of_joints",
       "phase": "core_characterize",
-      "text": "How many joints are affected\u2014just one, a few, or many?",
+      "text": "How many joints are affected—just one, a few, or many?",
       "response_type": "COUNT_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Number of joints",
       "canonical_question_key": "number_of_joints",
       "canonical_concept": "number_of_joints"
@@ -203,9 +149,7 @@
       "phase": "core_characterize",
       "text": "Which joints? Is it the same joints on both sides or different joints?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "compound_question": true,
       "extract_entities_if_positive": true,
       "ui_label": "Joint distribution",
@@ -217,9 +161,7 @@
       "phase": "core_characterize",
       "text": "How severe is it on a scale of 0 to 10?",
       "response_type": "SCALE_0_10",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Severity",
       "canonical_question_key": "severity",
       "canonical_concept": "severity"
@@ -227,42 +169,57 @@
     "swelling_or_redness": {
       "field": "swelling_or_redness",
       "phase": "extended_characterize",
-      "text": "Is the joint swollen, red, or warm?",
+      "text": "Are any of the affected joints swollen, red, or warm?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "swelling_or_redness_details",
-      "if_positive_ask": [
-        "swelling_or_redness_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["swelling_or_redness_details"],
       "ui_label": "Swelling or redness",
       "canonical_question_key": "swelling_or_redness",
+      "canonical_concept": "swelling_or_redness"
+    },
+    "swelling_or_redness_details": {
+      "field": "swelling_or_redness_details",
+      "phase": "extended_characterize",
+      "text": "Which joint(s)? How swollen? Is it red or warm to touch?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Swelling details",
+      "canonical_question_key": "swelling_or_redness_details",
+      "parent_field": "swelling_or_redness",
       "canonical_concept": "swelling_or_redness"
     },
     "morning_stiffness": {
       "field": "morning_stiffness",
       "phase": "extended_characterize",
       "text": "Are the joints especially stiff in the morning, and if so, for how long?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "morning_stiffness_details",
+      "if_positive_ask": ["morning_stiffness_details"],
       "ui_label": "Morning stiffness",
       "canonical_question_key": "morning_stiffness",
+      "canonical_concept": "morning_stiffness"
+    },
+    "morning_stiffness_details": {
+      "field": "morning_stiffness_details",
+      "phase": "extended_characterize",
+      "text": "How long does the morning stiffness last? Does it improve with activity?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Stiffness details",
+      "canonical_question_key": "morning_stiffness_details",
+      "parent_field": "morning_stiffness",
       "canonical_concept": "morning_stiffness"
     },
     "functional_impact": {
       "field": "functional_impact",
       "phase": "extended_characterize",
-      "text": "What does it stop you from doing?",
+      "text": "What does the joint pain stop you from doing?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Functional impact",
       "canonical_question_key": "functional_impact",
       "canonical_concept": "functional_impact"
@@ -270,28 +227,36 @@
     "associated_symptoms": {
       "field": "associated_symptoms",
       "phase": "high_priority_followup",
-      "text": "What other symptoms came with the joint pain?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "text": "Have any other symptoms come with the joint pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
       "ui_label": "Associated symptoms",
       "canonical_question_key": "associated_symptoms",
       "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the joint pain?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
+      "parent_field": "associated_symptoms",
+      "canonical_concept": "associated_symptoms_details"
     },
     "fever": {
       "field": "fever",
       "phase": "early_danger_screen",
       "text": "Any fever?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "fever_details",
-      "if_positive_ask": [
-        "fever_details"
-      ],
+      "if_positive_ask": ["fever_details"],
       "ui_label": "Fever",
       "canonical_question_key": "fever",
       "canonical_concept": "fever"
@@ -301,10 +266,10 @@
       "phase": "early_danger_screen",
       "text": "What was the highest temperature?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Fever details",
+      "canonical_question_key": "fever_details",
+      "parent_field": "fever",
       "canonical_concept": "fever"
     },
     "hot_swollen_single_joint": {
@@ -312,16 +277,10 @@
       "phase": "early_danger_screen",
       "text": "Is one joint especially hot, swollen, red, and painful?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "hot_swollen_single_joint_details",
-      "if_positive_ask": [
-        "hot_swollen_single_joint_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["hot_swollen_single_joint_details"],
       "ui_label": "Hot swollen single joint",
       "canonical_question_key": "hot_swollen_single_joint",
       "canonical_concept": "hot_swollen_single_joint"
@@ -331,10 +290,10 @@
       "phase": "early_danger_screen",
       "text": "Which joint? When did it become hot?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Hot joint details",
+      "canonical_question_key": "hot_swollen_single_joint_details",
+      "parent_field": "hot_swollen_single_joint",
       "canonical_concept": "hot_swollen_single_joint"
     },
     "inability_to_bear_weight": {
@@ -342,14 +301,10 @@
       "phase": "early_danger_screen",
       "text": "Are you unable to bear weight or use the joint normally?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "inability_to_bear_weight_details",
-      "if_positive_ask": [
-        "inability_to_bear_weight_details"
-      ],
+      "if_positive_ask": ["inability_to_bear_weight_details"],
       "ui_label": "Unable to bear weight",
       "canonical_question_key": "inability_to_bear_weight",
       "canonical_concept": "inability_to_bear_weight"
@@ -359,10 +314,10 @@
       "phase": "early_danger_screen",
       "text": "Which joint? Can you put any weight on it?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Weight‑bearing details",
+      "canonical_question_key": "inability_to_bear_weight_details",
+      "parent_field": "inability_to_bear_weight",
       "canonical_concept": "inability_to_bear_weight"
     },
     "skin_rash": {
@@ -370,14 +325,10 @@
       "phase": "early_danger_screen",
       "text": "Any skin rash or new skin changes?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "skin_rash_details",
-      "if_positive_ask": [
-        "skin_rash_details"
-      ],
+      "if_positive_ask": ["skin_rash_details"],
       "ui_label": "Skin rash",
       "canonical_question_key": "skin_rash",
       "canonical_concept": "skin_rash"
@@ -387,25 +338,45 @@
       "phase": "early_danger_screen",
       "text": "Where is the rash? What does it look like?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Rash details",
+      "canonical_question_key": "skin_rash_details",
+      "parent_field": "skin_rash",
       "canonical_concept": "skin_rash"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the joint pain or any associated symptom changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – which joints, how severe, or any new symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "parent_field": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
     },
     "eye_symptoms": {
       "field": "eye_symptoms",
       "phase": "critical_followup",
       "text": "Any red eyes, painful eyes, or vision symptoms?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "eye_symptoms_details",
-      "if_positive_ask": [
-        "eye_symptoms_details"
-      ],
+      "if_positive_ask": ["eye_symptoms_details"],
       "ui_label": "Eye symptoms",
       "canonical_question_key": "eye_symptoms",
       "canonical_concept": "eye_symptoms"
@@ -415,10 +386,10 @@
       "phase": "critical_followup",
       "text": "Which eye? Redness, pain, or vision change?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Eye details",
+      "canonical_question_key": "eye_symptoms_details",
+      "parent_field": "eye_symptoms",
       "canonical_concept": "eye_symptoms"
     },
     "recent_infection": {
@@ -426,16 +397,10 @@
       "phase": "critical_followup",
       "text": "Have you had a recent infection, such as diarrhea, sore throat, or a urinary or genital infection?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "recent_infection_details",
-      "if_positive_ask": [
-        "recent_infection_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["recent_infection_details"],
       "ui_label": "Recent infection",
       "canonical_question_key": "recent_infection",
       "canonical_concept": "recent_infection"
@@ -445,10 +410,10 @@
       "phase": "critical_followup",
       "text": "What infection? When did it start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Infection details",
+      "canonical_question_key": "recent_infection_details",
+      "parent_field": "recent_infection",
       "canonical_concept": "recent_infection"
     },
     "immunocompromised_status": {
@@ -456,16 +421,10 @@
       "phase": "critical_followup",
       "text": "Do you have diabetes, a weakened immune system, or are you on steroids or chemotherapy?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "immunocompromised_status_details",
-      "if_positive_ask": [
-        "immunocompromised_status_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["immunocompromised_status_details"],
       "ui_label": "Immunocompromised",
       "canonical_question_key": "immunocompromised_status",
       "canonical_concept": "immunocompromised_status"
@@ -475,10 +434,10 @@
       "phase": "critical_followup",
       "text": "What condition or treatment?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Immunocompromised details",
+      "canonical_question_key": "immunocompromised_status_details",
+      "parent_field": "immunocompromised_status",
       "canonical_concept": "immunocompromised_status"
     },
     "trauma_history": {
@@ -486,14 +445,10 @@
       "phase": "critical_followup",
       "text": "Any recent injury to the joint?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "trauma_history_details",
-      "if_positive_ask": [
-        "trauma_history_details"
-      ],
+      "if_positive_ask": ["trauma_history_details"],
       "ui_label": "Trauma history",
       "canonical_question_key": "trauma_history",
       "canonical_concept": "trauma_history"
@@ -503,10 +458,10 @@
       "phase": "critical_followup",
       "text": "What happened and when?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Trauma details",
+      "canonical_question_key": "trauma_history_details",
+      "parent_field": "trauma_history",
       "canonical_concept": "trauma_history"
     },
     "urethral_or_vaginal_symptoms": {
@@ -515,14 +470,11 @@
       "text": "Any burning when passing urine, genital discharge, or other genital symptoms?",
       "ask_if": "SEXUALLY_ACTIVE",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "urethral_or_vaginal_symptoms_details",
-      "if_positive_ask": [
-        "urethral_or_vaginal_symptoms_details"
-      ],
+      "if_positive_ask": ["urethral_or_vaginal_symptoms_details"],
+      "sensitive_topic": true,
       "ui_label": "Urethral or vaginal symptoms",
       "canonical_question_key": "urethral_or_vaginal_symptoms",
       "canonical_concept": "urethral_or_vaginal_symptoms"
@@ -530,13 +482,13 @@
     "urethral_or_vaginal_symptoms_details": {
       "field": "urethral_or_vaginal_symptoms_details",
       "phase": "high_priority_followup",
-      "text": "Describe the discharge or burning.",
+      "text": "Describe the discharge or burning – colour, consistency, timing?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
       "sensitive_topic": true,
+      "ui_label": "Genital symptoms details",
+      "canonical_question_key": "urethral_or_vaginal_symptoms_details",
+      "parent_field": "urethral_or_vaginal_symptoms",
       "canonical_concept": "urethral_or_vaginal_symptoms"
     },
     "bowel_symptoms": {
@@ -544,14 +496,10 @@
       "phase": "high_priority_followup",
       "text": "Any diarrhea, abdominal pain, or blood in the stool?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "bowel_symptoms_details",
-      "if_positive_ask": [
-        "bowel_symptoms_details"
-      ],
+      "if_positive_ask": ["bowel_symptoms_details"],
       "ui_label": "Bowel symptoms",
       "canonical_question_key": "bowel_symptoms",
       "canonical_concept": "bowel_symptoms"
@@ -561,10 +509,10 @@
       "phase": "high_priority_followup",
       "text": "What symptoms? How often?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Bowel details",
+      "canonical_question_key": "bowel_symptoms_details",
+      "parent_field": "bowel_symptoms",
       "canonical_concept": "bowel_symptoms"
     },
     "psoriasis_history": {
@@ -572,14 +520,10 @@
       "phase": "high_priority_followup",
       "text": "Any history of psoriasis or scaly skin rash?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "psoriasis_history_details",
-      "if_positive_ask": [
-        "psoriasis_history_details"
-      ],
+      "if_positive_ask": ["psoriasis_history_details"],
       "ui_label": "Psoriasis history",
       "canonical_question_key": "psoriasis_history",
       "canonical_concept": "psoriasis_history"
@@ -587,12 +531,12 @@
     "psoriasis_history_details": {
       "field": "psoriasis_history_details",
       "phase": "high_priority_followup",
-      "text": "Where is the psoriasis?",
+      "text": "Where is the psoriasis? When did it start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Psoriasis details",
+      "canonical_question_key": "psoriasis_history_details",
+      "parent_field": "psoriasis_history",
       "canonical_concept": "psoriasis_history"
     },
     "family_history_arthritis": {
@@ -600,14 +544,10 @@
       "phase": "high_priority_followup",
       "text": "Any family history of arthritis, autoimmune disease, or gout?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "family_history_arthritis_details",
-      "if_positive_ask": [
-        "family_history_arthritis_details"
-      ],
+      "if_positive_ask": ["family_history_arthritis_details"],
       "ui_label": "Family history of arthritis",
       "canonical_question_key": "family_history_arthritis",
       "canonical_concept": "family_history_arthritis"
@@ -617,10 +557,10 @@
       "phase": "high_priority_followup",
       "text": "Which relative and what condition?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Family history details",
+      "canonical_question_key": "family_history_arthritis_details",
+      "parent_field": "family_history_arthritis",
       "canonical_concept": "family_history_arthritis"
     },
     "prior_joint_problems": {
@@ -628,14 +568,10 @@
       "phase": "high_priority_followup",
       "text": "Have you had problems in this joint before?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "prior_joint_problems_details",
-      "if_positive_ask": [
-        "prior_joint_problems_details"
-      ],
+      "if_positive_ask": ["prior_joint_problems_details"],
       "ui_label": "Prior joint problems",
       "canonical_question_key": "prior_joint_problems",
       "canonical_concept": "prior_joint_problems"
@@ -645,10 +581,10 @@
       "phase": "high_priority_followup",
       "text": "What was the diagnosis? When?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Prior joint details",
+      "canonical_question_key": "prior_joint_problems_details",
+      "parent_field": "prior_joint_problems",
       "canonical_concept": "prior_joint_problems"
     },
     "uric_acid_risk": {
@@ -656,16 +592,10 @@
       "phase": "high_priority_followup",
       "text": "Any history of gout, kidney stones, high uric acid, heavy alcohol use, or diuretics?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "uric_acid_risk_details",
-      "if_positive_ask": [
-        "uric_acid_risk_details"
-      ],
-      "compound_question": true,
-      "extract_entities_if_positive": true,
+      "if_positive_ask": ["uric_acid_risk_details"],
       "ui_label": "Uric acid risk",
       "canonical_question_key": "uric_acid_risk",
       "canonical_concept": "uric_acid_risk"
@@ -673,12 +603,12 @@
     "uric_acid_risk_details": {
       "field": "uric_acid_risk_details",
       "phase": "high_priority_followup",
-      "text": "What is your uric acid history?",
+      "text": "What is your uric acid history? Any previous attacks?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Uric acid details",
+      "canonical_question_key": "uric_acid_risk_details",
+      "parent_field": "uric_acid_risk",
       "canonical_concept": "uric_acid_risk"
     },
     "new_medication": {
@@ -686,14 +616,10 @@
       "phase": "high_priority_followup",
       "text": "Any new medication recently?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "new_medication_details",
-      "if_positive_ask": [
-        "new_medication_details"
-      ],
+      "if_positive_ask": ["new_medication_details"],
       "ui_label": "New medication",
       "canonical_question_key": "new_medication",
       "canonical_concept": "new_medication"
@@ -703,10 +629,10 @@
       "phase": "high_priority_followup",
       "text": "Which medication and when did you start?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Medication details",
+      "canonical_question_key": "new_medication_details",
+      "parent_field": "new_medication",
       "canonical_concept": "new_medication"
     },
     "weight_loss": {
@@ -714,14 +640,7 @@
       "phase": "high_priority_followup",
       "text": "Any unintentional weight loss?",
       "response_type": "NUMERIC_OR_SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
-      "capture_detail_if_positive": true,
-      "detail_field": "weight_loss_details",
-      "if_positive_ask": [
-        "weight_loss_details"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "ui_label": "Weight loss",
       "canonical_question_key": "weight_loss",
       "canonical_concept": "weight_loss"
@@ -731,10 +650,10 @@
       "phase": "high_priority_followup",
       "text": "How much weight? Over what period?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Weight loss details",
+      "canonical_question_key": "weight_loss_details",
+      "parent_field": "weight_loss",
       "canonical_concept": "weight_loss"
     },
     "bone_pain_at_rest": {
@@ -742,14 +661,10 @@
       "phase": "high_priority_followup",
       "text": "Any deep bone pain even at rest or at night?",
       "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
       "capture_detail_if_positive": true,
       "detail_field": "bone_pain_at_rest_details",
-      "if_positive_ask": [
-        "bone_pain_at_rest_details"
-      ],
+      "if_positive_ask": ["bone_pain_at_rest_details"],
       "ui_label": "Bone pain at rest",
       "canonical_question_key": "bone_pain_at_rest",
       "canonical_concept": "bone_pain_at_rest"
@@ -757,80 +672,34 @@
     "bone_pain_at_rest_details": {
       "field": "bone_pain_at_rest_details",
       "phase": "high_priority_followup",
-      "text": "Where is the bone pain?",
+      "text": "Where is the bone pain? Does it wake you from sleep?",
       "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "ui_label": "Bone pain details",
+      "canonical_question_key": "bone_pain_at_rest_details",
+      "parent_field": "bone_pain_at_rest",
       "canonical_concept": "bone_pain_at_rest"
-    },
-    "swelling_or_redness_details": {
-      "field": "swelling_or_redness_details",
-      "phase": "extended_characterize",
-      "text": "Which joint? How swollen?",
-      "response_type": "SHORT_TEXT",
-      "skip_if": [
-        "FIELD_ALREADY_CAPTURED",
-        "PARENT_NEGATIVE"
-      ],
-      "canonical_concept": "swelling_or_redness"
     }
   },
   "derived_red_flag_patterns": {
-    "septic_arthritis_pattern": [
-      "fever",
-      "hot_swollen_single_joint"
-    ],
-    "reactive_arthritis_pattern": [
-      "recent_infection",
-      "urethral_or_vaginal_symptoms",
-      "eye_symptoms"
-    ],
-    "inflammatory_arthritis_pattern": [
-      "morning_stiffness",
-      "number_of_joints",
-      "skin_rash"
-    ],
-    "crystal_arthropathy_pattern": [
-      "hot_swollen_single_joint",
-      "uric_acid_risk"
-    ],
-    "malignancy_pattern": [
-      "weight_loss",
-      "fever",
-      "bone_pain_at_rest"
-    ]
+    "septic_arthritis_pattern": ["fever", "hot_swollen_single_joint"],
+    "reactive_arthritis_pattern": ["recent_infection", "urethral_or_vaginal_symptoms", "eye_symptoms"],
+    "inflammatory_arthritis_pattern": ["morning_stiffness", "number_of_joints", "skin_rash"],
+    "crystal_arthropathy_pattern": ["hot_swollen_single_joint", "uric_acid_risk"],
+    "malignancy_pattern": ["weight_loss", "fever", "bone_pain_at_rest"]
   },
   "targeted_ros_plan": {
     "primary_system": "musculoskeletal",
-    "high_yield_systems": [
-      "constitutional",
-      "inflammatory",
-      "infectious"
-    ],
-    "cross_system_systems": [
-      "skin",
-      "genitourinary",
-      "gastrointestinal",
-      "trauma",
-      "medication"
-    ],
+    "high_yield_systems": ["constitutional", "inflammatory", "infectious"],
+    "cross_system_systems": ["skin", "genitourinary", "gastrointestinal", "trauma", "medication"],
     "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
   },
   "summary_contract": {
     "missing_clarifications": {
-      "source": [
-        "unanswered_core_questions",
-        "unanswered_critical_followups",
-        "unanswered_high_priority_followups"
-      ]
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
     },
     "flags": {
-      "source": [
-        "derived_red_flag_patterns",
-        "EscalationLevel"
-      ]
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
     }
   },
   "acuity_tier": "medium"

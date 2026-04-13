@@ -196,7 +196,7 @@
     "severity_extreme_details": {
       "field": "severity_extreme_details",
       "phase": "early_danger_screen",
-      "text": "Can you describe the pain and how it affects you?",
+      "text": "Please describe that briefly.",
       "response_type": "SHORT_TEXT",
       "skip_if": [
         "FIELD_ALREADY_CAPTURED",
@@ -204,7 +204,8 @@
       ],
       "ui_label": "Severity extreme details",
       "canonical_question_key": "severity_extreme_details",
-      "canonical_concept": "severity_extreme"
+      "canonical_concept": "severity_extreme",
+      "parent_field": "severity_extreme"
     },
     "sudden_maximal_onset": {
       "field": "sudden_maximal_onset",
@@ -226,7 +227,7 @@
     "sudden_maximal_onset_details": {
       "field": "sudden_maximal_onset_details",
       "phase": "early_danger_screen",
-      "text": "How quickly did it reach its peak?",
+      "text": "Please describe that briefly.",
       "response_type": "SHORT_TEXT",
       "skip_if": [
         "FIELD_ALREADY_CAPTURED",
@@ -234,7 +235,8 @@
       ],
       "ui_label": "Sudden maximal onset details",
       "canonical_question_key": "sudden_maximal_onset_details",
-      "canonical_concept": "sudden_maximal_onset"
+      "canonical_concept": "sudden_maximal_onset",
+      "parent_field": "sudden_maximal_onset"
     },
     "pain_with_collapse_or_syncope": {
       "field": "pain_with_collapse_or_syncope",
@@ -256,7 +258,7 @@
     "pain_with_collapse_or_syncope_details": {
       "field": "pain_with_collapse_or_syncope_details",
       "phase": "early_danger_screen",
-      "text": "How long were you out? Did you injure yourself?",
+      "text": "Please describe that episode briefly, including what happened and how long it lasted.",
       "response_type": "SHORT_TEXT",
       "skip_if": [
         "FIELD_ALREADY_CAPTURED",
@@ -264,7 +266,8 @@
       ],
       "ui_label": "Pain with collapse or syncope details",
       "canonical_question_key": "pain_with_collapse_or_syncope_details",
-      "canonical_concept": "pain_with_collapse_or_syncope"
+      "canonical_concept": "pain_with_collapse_or_syncope",
+      "parent_field": "pain_with_collapse_or_syncope"
     },
     "immunocompromised_status": {
       "field": "immunocompromised_status",
@@ -287,7 +290,7 @@
     "immunocompromised_status_details": {
       "field": "immunocompromised_status_details",
       "phase": "critical_followup",
-      "text": "What condition or treatment?",
+      "text": "Please describe that briefly.",
       "response_type": "SHORT_TEXT",
       "skip_if": [
         "FIELD_ALREADY_CAPTURED",
@@ -295,7 +298,8 @@
       ],
       "ui_label": "Immunocompromised status details",
       "canonical_question_key": "immunocompromised_status_details",
-      "canonical_concept": "immunocompromised_status"
+      "canonical_concept": "immunocompromised_status",
+      "parent_field": "immunocompromised_status"
     },
     "flank_pain_character": {
       "field": "flank_pain_character",
