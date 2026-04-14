@@ -498,97 +498,109 @@ def system_grouping(df, symptom, selected_session, turn_number):
                   continue_session=True)
     return symptom_kg
 
-def symptom_grouping(df, freq_symptom, selected_session, turn_number):
+def symptom_grouping(df, freq_symptom, selected_session, turn_number, question_phase):
     # generate system groupings for tail column data
     # comment out if you want to broaden results to Finding, Intellectual Product, Pathologic Function, etc
+    # TODO: remove this condition for better drill-down
     df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
     # print(df.head())
     symptom_list = df['symptom'].tolist()
+    print(f'Symptom list before removal of {freq_symptom}: {symptom_list}')
     # remove system searched for in UMLS
     if freq_symptom in symptom_list:
         symptom_list.remove(freq_symptom)
-    print(f'UMLS symptoms pulled from {freq_symptom}')
-    # prep list for LLM
-    symptom_string = ', '.join(symptom_list)
-    # edges list (DKG-LLM)
-    edges = [
-        "Causal",
-        "Therapeutic",
-        "Associative",
-        "Contraindicative",
-        "Diagnostic",
-        "Preventive",
-        "Exacerbative",
-        "Ameliorative",
-        "Temporal",
-        "Dosage-Related",
-        "Side Effect",
-        "Interaction",
-        "Epidemiological",
-        "Genetic",
-        "Allergic",
-        "Monitoring",
-        "Supportive",
-        "Concomitant",
-        "Risk-Associated",
-        "Symptom-Symptom",
-        "Procedure-Related",
-        "Outcome-Related",
-        "Age-Related",
-        "Lifestyle-Related",
-        "Biomarker-Related",
-        "Comorbidity-Related"
-    ]
-    edge_string = ', '.join(edges)
-    # llm prompt
-    system_instruction = {
-        "role": "system",
-        "content": (
-            f"Assign a relationship to primary symptom {freq_symptom} using the following list of symptoms:"
-            f"{symptom_list} and its relations using these relationships: {edge_string}"
-            "STRICT RULES: "
-            "The response must be formatted as followed: "
-            "1. The primary symptom must be followed by an :  the relationship : the related symptom "
-            "2. An example would be Itchy scalp : Symptom-Symptom : Pruritus of scalp"
-            "3. Each primary symptom, relationship, and related system must be followed by a newline "
-            "4. Only include this formatted text in the response, do not add number to rows."
-        )
-    }
-    response = ollama.chat(model=MODEL, messages=[system_instruction])
-    response = response['message']['content']
-    print(response)
-    # Parse response into dataframe
-    lines = response.strip().split('\n')
-    data = []
-    for line in lines:
-        print('LLM response for KG:', line)
-        # match = re.match(r"(\d+\.) (\w+) : (\w+)", line)
-        # match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
-        match = re.match(r"([^:]+)\s+:\s+([^:]+)\s+:\s+([^:]+)", line)
-        if match:
-            # formatting symptom - relation - system
-            kg_symptom = match.group(1)
-            relationship = match.group(2)
-            system = match.group(3)
-            data.append({'symptom': kg_symptom, 'system': system, 'relation': relationship})
-    symptom_system = pd.DataFrame(data)
-    print(symptom_system)
+    print(f'{len(symptom_list)} UMLS symptom(s) pulled from {freq_symptom}: {symptom_list}')
+    # TODO: if list is only one item move onto final phase
+    if len(symptom_list) > 1:
+        # prep list for LLM
+        symptom_string = ', '.join(symptom_list)
+        # edges list (DKG-LLM)
+        edges = [
+            "Causal",
+            "Therapeutic",
+            "Associative",
+            "Contraindicative",
+            "Diagnostic",
+            "Preventive",
+            "Exacerbative",
+            "Ameliorative",
+            "Temporal",
+            "Dosage-Related",
+            "Side Effect",
+            "Interaction",
+            "Epidemiological",
+            "Genetic",
+            "Allergic",
+            "Monitoring",
+            "Supportive",
+            "Concomitant",
+            "Risk-Associated",
+            "Symptom-Symptom",
+            "Procedure-Related",
+            "Outcome-Related",
+            "Age-Related",
+            "Lifestyle-Related",
+            "Biomarker-Related",
+            "Comorbidity-Related"
+        ]
+        edge_string = ', '.join(edges)
+        # llm prompt
+        # TODO: check if this is hallucinating nodes when there are no connections to make
+        system_instruction = {
+            "role": "system",
+            "content": (
+                f"Assign a relationship to primary symptom {freq_symptom} using the following list of symptoms:"
+                f"{symptom_string} and its relations using these relationships: {edge_string}"
+                "STRICT RULES: "
+                "The response must be formatted as followed: "
+                "1. The primary symptom must be followed by an :  the relationship : the related symptom "
+                "2. An example would be Itchy scalp : Symptom-Symptom : Pruritus of scalp"
+                "3. Each primary symptom, relationship, and related system must be followed by a newline "
+                "4. Only include this formatted text in the response, do not add number to rows."
+            )
+        }
+        response = ollama.chat(model=MODEL, messages=[system_instruction])
+        response = response['message']['content']
+        # print(response)
+        # Parse response into dataframe
+        lines = response.strip().split('\n')
+        data = []
+        for line in lines:
+            print('LLM response for KG:', line)
+            # match = re.match(r"(\d+\.) (\w+) : (\w+)", line)
+            # match = re.match(r"^\d+\.\s*(.*?)\s+:\s+(.*)$", line)
+            match = re.match(r"([^:]+)\s+:\s+([^:]+)\s+:\s+([^:]+)", line)
+            if match:
+                # formatting symptom - relation - system
+                kg_symptom = match.group(1)
+                relationship = match.group(2)
+                system = match.group(3)
+                data.append({'symptom': kg_symptom, 'system': system, 'relation': relationship})
+        symptom_system = pd.DataFrame(data)
+        print(symptom_system)
 
-    # create a graph out of this with each system as it's own central node
-    symptom_kg_df = symptom_system.copy()
-    symptom_kg_df.columns = ['tail', 'head', 'relation']
-    # symptom_kg_df['relation'] = 'symptom'
-    symptom_kg = convert_df_to_kg(symptom_kg_df)
+        # create a graph out of this with each system as it's own central node
+        symptom_kg_df = symptom_system.copy()
+        symptom_kg_df.columns = ['tail', 'head', 'relation']
+        # symptom_kg_df['relation'] = 'symptom'
+        symptom_kg = convert_df_to_kg(symptom_kg_df)
 
-    # push this to database - include session number and turn number
-    # temporary assignment
-    symptom_system['turn'] = turn_number
-    push_kg_to_db(symptom_system, 
-                  selected_session, 
-                  'SymptomSystemKG', 
-                  overwrite=False,
-                  continue_session=True)
-    return symptom_kg
+        # push this to database - include session number and turn number
+        # temporary assignment
+        symptom_system['turn'] = turn_number
+        push_kg_to_db(symptom_system, 
+                    selected_session, 
+                    'SymptomSystemKG', 
+                    overwrite=False,
+                    continue_session=True)
+    else:
+        # making basic 1 node knowledge graph which relates to itself
+        symptom_kg = pd.DataFrame({'tail': symptom_list,
+                                   'head': symptom_list,
+                                   'relation': ['symptom-symptom']})
+        # move onto final phase of question (diagnosis)
+        question_phase +=1
+    return symptom_kg, question_phase
 
 def form_system_question(session_id, turn_number, symptom):
     """
@@ -763,8 +775,11 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
                             overwrite=False,
                             continue_session=True)
             # generate a question from the list of symptoms in KG
+            # TODO: filtering here often creates random questions unrelated to previous questions
+            # Theory: this is more pronounced when it filters to a system with few nodes
             symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
             symptom_list = ", ".join(symptom_list)
+            print('Phase 3 start, filtered symptom list: ', symptom_list)
             try:
                 system_instruction = {
                     "role": "system",
@@ -805,7 +820,7 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
     # chart is symptom-only, and system field shows related symptoms
     if symptom_phase > 1:
         symptom_list = system_symptom_df['system'].drop_duplicates().tolist()
-    # chart resembles structure from system investigation
+    # chart resembles structure from step 2 system investigation
     else:
         symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
 
@@ -871,6 +886,7 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
     push_ranking_to_db(symptom_rank, 'SymptomRank', session_id)
 
     # pull rank 1 systems for all previous rankings and see if there are 3 reoccuring
+    # TODO: this seems to take one extra turn for some reason
     freq_symptom = check_symptom_rank_1(session_id, symptom_phase)
     # when there are 3 matches:
     if freq_symptom:
@@ -881,10 +897,11 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
         # trigger UMLS query for freq_symptom
         new_symptoms_df = umls_knowledge_graph(freq_symptom, 50)
         # print('New symptoms pulled from UMLS: ', new_symptoms_df)
-        symptom_system_graph = symptom_grouping(new_symptoms_df, 
+        symptom_system_graph, question_phase = symptom_grouping(new_symptoms_df, 
                                             freq_symptom, 
                                             session_id, 
-                                            turn_number + 1)
+                                            turn_number + 1,
+                                            question_phase)
         # # push this kg to the SymptomSystemKG
         # # filter current kg down to system
         # system_symptom_df = get_system_symptom_df(session_id, turn_number)

@@ -233,10 +233,13 @@ if prompt:
         st.session_state.turn_number = turn_number
         st.session_state.question_phase = current_phase
         st.session_state.symptom_phase = symptom_phase
+
+    # -------------------------------------------------------------------------------------
+    # 4: Diagnosis
+    # -------------------------------------------------------------------------------------
     else:
         # likely end conversation here
-        pass
-    
+        response = 'You made it to the end!'
     
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
