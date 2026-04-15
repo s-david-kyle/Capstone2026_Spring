@@ -239,7 +239,26 @@ if prompt:
     # -------------------------------------------------------------------------------------
     else:
         # likely end conversation here
-        response = 'You made it to the end!'
+        response = 'Below is a summary of our conversation. Have a nice day!'
+        clinical_summary = generate_summary(st.session_state.messages)
+        
+        # Store in session state to keep it visible on screen
+        st.session_state.final_summary = clinical_summary
+
+        # final DB updates for session
+        # TODO: use LLM to filter down UMLS terms based on conversation data
+
+        # Session
+        # TODO: session_end does not appear to be using the correct timestamp
+        add_new_session_data(session_id, session_start, datetime.now(),
+                                clinical_summary, st.session_state.symptoms)
+        # Summary
+        add_summary_data(session_id, clinical_summary)
+
+        # SessionMetric
+        add_session_metric_data(session_id)
+
+        st.sidebar.success("Intake Saved Successfully!")
     
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
