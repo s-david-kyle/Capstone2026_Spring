@@ -545,7 +545,7 @@ def symptom_grouping(df, freq_symptom, selected_session, turn_number, question_p
         ]
         edge_string = ', '.join(edges)
         # llm prompt
-        # TODO: check if this is hallucinating nodes when there are no connections to make
+        # this will hallucinate nodes when there are no connections to make
         system_instruction = {
             "role": "system",
             "content": (
@@ -580,6 +580,7 @@ def symptom_grouping(df, freq_symptom, selected_session, turn_number, question_p
         print(symptom_system)
 
         # create a graph out of this with each system as it's own central node
+        # TODO: check symptom_kg_df and symptom_system are being used correctly here
         symptom_kg_df = symptom_system.copy()
         symptom_kg_df.columns = ['tail', 'head', 'relation']
         # symptom_kg_df['relation'] = 'symptom'
@@ -598,6 +599,8 @@ def symptom_grouping(df, freq_symptom, selected_session, turn_number, question_p
         symptom_kg = pd.DataFrame({'tail': symptom_list,
                                    'head': symptom_list,
                                    'relation': ['symptom-symptom']})
+        # TODO: push this dataframe to database (check column names, mimic push above)
+        
         # move onto final phase of question (diagnosis)
         question_phase +=1
     return symptom_kg, question_phase
@@ -609,7 +612,7 @@ def form_system_question(session_id, turn_number, symptom):
     # pull a list of the current systems
     df = get_system_symptom_df(session_id, turn_number)
     systems = df['system'].drop_duplicates().to_list()
-    # TODO: convert list to a string and feed to LLM to form question
+    # convert list to a string and feed to LLM to form question
     systems_str = ", ".join(systems)
     try:
         system_instruction = {
@@ -893,7 +896,6 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
         print(f'Will focus on: {freq_symptom}')
         # modify some phase var to move out of this phase
         symptom_phase += 1
-        # TODO: investigate this phase to make sure it is updating kg correctly
         # trigger UMLS query for freq_symptom
         new_symptoms_df = umls_knowledge_graph(freq_symptom, 50)
         # print('New symptoms pulled from UMLS: ', new_symptoms_df)
@@ -902,19 +904,6 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
                                             session_id, 
                                             turn_number + 1,
                                             question_phase)
-        # # push this kg to the SymptomSystemKG
-        # # filter current kg down to system
-        # system_symptom_df = get_system_symptom_df(session_id, turn_number)
-        # system_symptom_df = system_symptom_df[system_symptom_df['symptom'] == freq_symptom]
-        # # push this kg to the SymptomSystemKG
-        # system_symptom_df['turn'] = turn_number + 1  # needed to place in proper order
-        # push_kg_to_db(system_symptom_df, 
-        #                 session_id, 
-        #                 'SymptomSystemKG', 
-        #                 overwrite=False,
-        #                 continue_session=True)
-        # TODO: run a check to see if there is only one node
-
     else:
         print('Still locating symptom for focus')
 
