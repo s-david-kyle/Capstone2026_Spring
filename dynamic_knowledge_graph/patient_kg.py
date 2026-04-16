@@ -323,4 +323,10 @@ if st.sidebar.button("Clear Chat / New Patient"):
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.rerun()
-    
+
+# Display the avatar in the sidebar
+st.sidebar.image("assets/capsule_idle.gif")
+
+# TODO: implement condition to switch to the spin GIF
+# if st.button("Switch to Spin GIF"):
+#     st.sidebar.image("assets/capsule_spin.gif"
