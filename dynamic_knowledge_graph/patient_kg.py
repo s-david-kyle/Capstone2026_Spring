@@ -42,6 +42,9 @@ if "system_drilldown_start" not in st.session_state:
 if "question_phase" not in st.session_state:
     st.session_state.question_phase = 1
 
+if "symptom_phase" not in st.session_state:
+    st.session_state.symptom_phase = 1
+
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
 # ==========================================
@@ -163,7 +166,7 @@ if prompt:
         try:
             # UMLS KG function call here
             umls_symptoms = umls_knowledge_graph(new_symptom, 50)  # modify number for tests
-            symtom_system_graph = system_grouping(umls_symptoms, 
+            symptom_system_graph = system_grouping(umls_symptoms, 
                                                 new_symptom, 
                                                 session_id, 
                                                 st.session_state.turn_number)
@@ -221,11 +224,41 @@ if prompt:
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # generate new prompt from filtered systems
-        response = drilldown_symptom(prompt, session_id, st.session_state.turn_number)
+        response, turn_number, current_phase, symptom_phase = drilldown_symptom(prompt, 
+                                                                session_id, 
+                                                                st.session_state.turn_number, 
+                                                                st.session_state.question_phase,
+                                                                st.session_state.symptom_phase)
+        # update state turn_number
+        st.session_state.turn_number = turn_number
+        st.session_state.question_phase = current_phase
+        st.session_state.symptom_phase = symptom_phase
+
+    # -------------------------------------------------------------------------------------
+    # 4: Diagnosis
+    # -------------------------------------------------------------------------------------
     else:
         # likely end conversation here
-        pass
-    
+        response = 'Below is a summary of our conversation. Have a nice day!'
+        clinical_summary = generate_summary(st.session_state.messages)
+        
+        # Store in session state to keep it visible on screen
+        st.session_state.final_summary = clinical_summary
+
+        # final DB updates for session
+        # TODO: use LLM to filter down UMLS terms based on conversation data
+
+        # Session
+        # TODO: session_end does not appear to be using the correct timestamp
+        add_new_session_data(session_id, session_start, datetime.now(),
+                                clinical_summary, st.session_state.symptoms)
+        # Summary
+        add_summary_data(session_id, clinical_summary)
+
+        # SessionMetric
+        add_session_metric_data(session_id)
+
+        st.sidebar.success("Intake Saved Successfully!")
     
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
@@ -290,4 +323,10 @@ if st.sidebar.button("Clear Chat / New Patient"):
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.rerun()
-    
+
+# Display the avatar in the sidebar
+st.sidebar.image("assets/capsule_idle.gif")
+
+# TODO: implement condition to switch to the spin GIF
+# if st.button("Switch to Spin GIF"):
+#     st.sidebar.image("assets/capsule_spin.gif"

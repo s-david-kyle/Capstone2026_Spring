@@ -308,7 +308,7 @@ def get_previous_drilldown_messages(session_id):
             AND TimeOfMessage >= '{drilldown_datetime}'
         """
     df = pd.read_sql(sql, conn)
-    print(df)
+    # print(df)
     # TODO: filter to message column and split results into text
     message_string = ""
     for index, row in df.iterrows():
@@ -328,9 +328,27 @@ def check_prev_rank_1(session_id, drilldown_datetime):
     '''
     cursor.execute(sql)
     rank_1_list = [row[0] for row in cursor.fetchall()]
-    print('Rank 1 history:', rank_1_list)
+    print('System rank 1 history:', rank_1_list)
     freq_system = check_repeating_strings(rank_1_list)
     return freq_system
+
+def check_symptom_rank_1(session_id, symptom_phase):
+    conn, cursor = get_connection()
+    # rank, symptom, SessionId, turn_number, timestamp, symptom_phase
+    sql = f'''
+    SELECT symptom
+    FROM SymptomRank 
+    WHERE SessionId = {session_id} 
+        AND symptom_phase = {symptom_phase}
+        AND rank = 1
+    ORDER BY timestamp;
+    '''
+    print(sql)
+    cursor.execute(sql)
+    rank_1_list = [row[0] for row in cursor.fetchall()]
+    print('Symptom rank 1 history:', rank_1_list)
+    freq_symptom = check_repeating_strings(rank_1_list)
+    return freq_symptom
 
 def check_repeating_strings(data_list):
     """Checks if a list contains 3 repeating string values.
@@ -355,6 +373,47 @@ def check_repeating_strings(data_list):
             return item
 
     return None
+
+def check_session_consistency():
+    conn, cursor = get_connection()
+    sql = """
+        SELECT
+            MAX(CASE WHEN table_name = 'SystemRank' THEN max_total END) AS SystemRank_last_session,
+            MAX(CASE WHEN table_name = 'SymptomSystemKG' THEN max_total END) AS SymptomSystemKG_last_session,
+            MAX(CASE WHEN table_name = 'KnowledgeGraphs' THEN max_total END) AS KnowledgeGraphs_last_session,
+            MAX(CASE WHEN table_name = 'SessionMetric' THEN max_total END) AS SessionMetric_last_session,
+            MAX(CASE WHEN table_name = 'Summary' THEN max_total END) AS Summary_last_session,
+            MAX(CASE WHEN table_name = 'Turn' THEN max_total END) AS Turn_last_session,
+            MAX(CASE WHEN table_name = 'Session' THEN max_total END) AS Session_last_session
+        FROM (
+            SELECT
+                'SymptomRank' AS table_name, MAX(SessionId) AS max_total FROM SymptomRank
+            UNION ALL
+            SELECT
+                'SystemRank' AS table_name, MAX(SessionId) AS max_total FROM SystemRank
+            UNION ALL
+            SELECT
+                'SymptomSystemKG' AS table_name, MAX(SessionId) AS max_total FROM SymptomSystemKG
+            UNION ALL
+            SELECT
+                'KnowledgeGraphs' AS table_name, MAX(SessionId) AS max_total FROM KnowledgeGraphs
+            UNION ALL
+            SELECT
+                'SessionMetric' AS table_name, MAX(SessionId) AS max_total FROM SessionMetric
+            UNION ALL
+            SELECT
+                'Summary' AS table_name, MAX(SessionId) AS max_total FROM Summary
+            UNION ALL
+            SELECT
+                'Turn' AS table_name, MAX(SessionId) AS max_total FROM Turn
+            UNION ALL
+            SELECT
+                'Session' AS table_name, MAX(SessionId) AS max_total FROM Session
+        ) AS all_tables;
+        """
+    df = pd.read_sql(sql, conn)
+    df = df.T
+    print(df)
     
 def get_symptom_rankings(session_id, turn_number):
     """
