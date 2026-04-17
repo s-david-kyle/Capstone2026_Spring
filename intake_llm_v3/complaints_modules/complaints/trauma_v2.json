@@ -1,0 +1,650 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "trauma",
+  "display_name": "Trauma",
+  "ui_name": "Trauma",
+  "ui_label": "Trauma",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "trauma_musculoskeletal",
+  "related_systems": {
+    "high_yield": ["neurological", "vascular", "thoracoabdominal"],
+    "selective_cross_system": ["genitourinary", "pregnancy"],
+    "contextual": ["mechanism_safety", "abuse_concern"]
+  },
+  "pivot_triggers": {
+    "weakness": "spinal_injury_pattern",
+    "chest_pain": "thoracoabdominal_injury_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": ["presenting_complaint_narrative", "time_of_injury", "mechanism", "location_of_injury", "pain_severity", "functional_loss"],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 30,
+      "target_question_budget": 35,
+      "max_questions": 40,
+      "early_danger_reserve": 4,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Trauma requires thorough neurological, vascular, and thoracoabdominal screening. Increased budget to ensure danger follow-ups and modules are completed."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 4,
+      "secondary_question_budget_override_if_red_flag": 7,
+      "priority_question_ids_if_secondary": ["time_of_injury", "mechanism", "location_of_injury", "pain_severity"],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "trauma_musculoskeletal"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
+    "default_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["time_of_injury", "mechanism", "location_of_injury", "pain_severity", "functional_loss"],
+      "early_danger_screen": ["loss_of_consciousness", "neck_or_back_pain", "headache_or_vomiting", "weakness_or_numbness"],
+      "extended_characterize": ["bleeding", "swelling_or_deformity"],
+      "critical_followup": ["chest_pain_or_shortness_of_breath", "abdominal_pain", "major_bleeding", "distal_color_coldness_or_pulselessness"],
+      "high_priority_followup": ["associated_symptoms", "limb_swelling", "inability_to_bear_weight", "urinary_or_bowel_change", "anticoagulant_use", "weapon_or_high_energy_mechanism", "prior_injury_same_site", "assault_or_safeguarding_concern", "tetanus_immunization_status"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["time_of_injury", "mechanism", "location_of_injury", "pain_severity", "functional_loss"],
+      "early_danger_screen": ["loss_of_consciousness", "neck_or_back_pain", "headache_or_vomiting", "recent_change_in_pattern"],
+      "extended_characterize": ["bleeding", "swelling_or_deformity"],
+      "critical_followup": ["chest_pain_or_shortness_of_breath", "abdominal_pain", "major_bleeding", "distal_color_coldness_or_pulselessness"],
+      "high_priority_followup": ["associated_symptoms", "limb_swelling", "inability_to_bear_weight", "urinary_or_bowel_change", "anticoagulant_use", "weapon_or_high_energy_mechanism", "prior_injury_same_site", "assault_or_safeguarding_concern", "tetanus_immunization_status", "weakness_or_numbness"],
+      "context_and_history": []
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "pain_severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what happened and what brought you in today.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "time_of_injury": {
+      "field": "time_of_injury",
+      "phase": "core_characterize",
+      "text": "When did the injury happen?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Time of injury",
+      "canonical_question_key": "time_of_injury",
+      "canonical_concept": "time_of_injury"
+    },
+    "mechanism": {
+      "field": "mechanism",
+      "phase": "core_characterize",
+      "text": "How did it happen — fall, road traffic, sports, assault, twisting, crush, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Mechanism",
+      "canonical_question_key": "mechanism",
+      "canonical_concept": "mechanism"
+    },
+    "location_of_injury": {
+      "field": "location_of_injury",
+      "phase": "core_characterize",
+      "text": "Where on the body were you injured?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Location of injury",
+      "canonical_question_key": "location_of_injury",
+      "canonical_concept": "location_of_injury"
+    },
+    "pain_severity": {
+      "field": "pain_severity",
+      "phase": "core_characterize",
+      "text": "How severe is the pain from 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Pain severity",
+      "canonical_question_key": "pain_severity",
+      "canonical_concept": "pain_severity"
+    },
+    "functional_loss": {
+      "field": "functional_loss",
+      "phase": "core_characterize",
+      "text": "What can you not do now that you could do before the injury?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Functional loss",
+      "canonical_question_key": "functional_loss",
+      "canonical_concept": "functional_loss"
+    },
+    "bleeding": {
+      "field": "bleeding",
+      "phase": "extended_characterize",
+      "text": "Was there bleeding, and is it still bleeding?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "bleeding_details",
+      "if_positive_ask": ["bleeding_details"],
+      "ui_label": "Bleeding",
+      "canonical_question_key": "bleeding",
+      "canonical_concept": "bleeding"
+    },
+    "bleeding_details": {
+      "field": "bleeding_details",
+      "phase": "extended_characterize",
+      "text": "How much bleeding? Have you been able to stop it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "bleeding",
+      "ui_label": "Bleeding details",
+      "canonical_question_key": "bleeding_details",
+      "canonical_concept": "bleeding"
+    },
+    "swelling_or_deformity": {
+      "field": "swelling_or_deformity",
+      "phase": "extended_characterize",
+      "text": "Is there swelling, visible deformity, or a lump where you were injured?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "swelling_or_deformity_details",
+      "if_positive_ask": ["swelling_or_deformity_details"],
+      "ui_label": "Swelling or deformity",
+      "canonical_question_key": "swelling_or_deformity",
+      "canonical_concept": "swelling_or_deformity"
+    },
+    "swelling_or_deformity_details": {
+      "field": "swelling_or_deformity_details",
+      "phase": "extended_characterize",
+      "text": "What does it look like?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "swelling_or_deformity",
+      "ui_label": "Deformity details",
+      "canonical_question_key": "swelling_or_deformity_details",
+      "canonical_concept": "swelling_or_deformity"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "high_priority_followup",
+      "text": "Have any other symptoms come with the injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the injury – pain, swelling, numbness, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
+      "canonical_concept": "associated_symptoms"
+    },
+    "loss_of_consciousness": {
+      "field": "loss_of_consciousness",
+      "phase": "early_danger_screen",
+      "text": "Did you black out or lose consciousness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "loss_of_consciousness_details",
+      "if_positive_ask": ["loss_of_consciousness_details"],
+      "ui_label": "Loss of Consciousness",
+      "canonical_question_key": "loss_of_consciousness",
+      "canonical_concept": "loss_of_consciousness"
+    },
+    "loss_of_consciousness_details": {
+      "field": "loss_of_consciousness_details",
+      "phase": "early_danger_screen",
+      "text": "How long were you out? Did you have any warning?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "loss_of_consciousness",
+      "ui_label": "LOC details",
+      "canonical_question_key": "loss_of_consciousness_details",
+      "canonical_concept": "loss_of_consciousness"
+    },
+    "neck_or_back_pain": {
+      "field": "neck_or_back_pain",
+      "phase": "early_danger_screen",
+      "text": "Any neck pain or back pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "neck_or_back_pain_details",
+      "if_positive_ask": ["neck_or_back_pain_details"],
+      "ui_label": "Neck or back pain",
+      "canonical_question_key": "neck_or_back_pain",
+      "canonical_concept": "neck_or_back_pain"
+    },
+    "neck_or_back_pain_details": {
+      "field": "neck_or_back_pain_details",
+      "phase": "early_danger_screen",
+      "text": "Where exactly? Does it radiate?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "neck_or_back_pain",
+      "ui_label": "Neck/back pain details",
+      "canonical_question_key": "neck_or_back_pain_details",
+      "canonical_concept": "neck_or_back_pain"
+    },
+    "headache_or_vomiting": {
+      "field": "headache_or_vomiting",
+      "phase": "early_danger_screen",
+      "text": "Any headache, repeated vomiting, or confusion since the injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "headache_or_vomiting_details",
+      "if_positive_ask": ["headache_or_vomiting_details"],
+      "ui_label": "Headache or vomiting",
+      "canonical_question_key": "headache_or_vomiting",
+      "canonical_concept": "headache_or_vomiting"
+    },
+    "headache_or_vomiting_details": {
+      "field": "headache_or_vomiting_details",
+      "phase": "early_danger_screen",
+      "text": "How many times have you vomited? Where is the headache?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "headache_or_vomiting",
+      "ui_label": "Headache/vomiting details",
+      "canonical_question_key": "headache_or_vomiting_details",
+      "canonical_concept": "headache_or_vomiting"
+    },
+    "weakness_or_numbness": {
+      "field": "weakness_or_numbness",
+      "phase": "early_danger_screen",
+      "text": "Any weakness, numbness, or tingling?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "weakness_or_numbness_details",
+      "if_positive_ask": ["weakness_or_numbness_details"],
+      "ui_label": "Weakness or numbness",
+      "canonical_question_key": "weakness_or_numbness",
+      "canonical_concept": "weakness_or_numbness"
+    },
+    "weakness_or_numbness_details": {
+      "field": "weakness_or_numbness_details",
+      "phase": "early_danger_screen",
+      "text": "Which part of the body? Is it constant or comes and goes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "weakness_or_numbness",
+      "ui_label": "Weakness details",
+      "canonical_question_key": "weakness_or_numbness_details",
+      "canonical_concept": "weakness_or_numbness"
+    },
+    "chest_pain_or_shortness_of_breath": {
+      "field": "chest_pain_or_shortness_of_breath",
+      "phase": "critical_followup",
+      "text": "Any chest pain or shortness of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "chest_pain_or_shortness_of_breath_details",
+      "if_positive_ask": ["chest_pain_or_shortness_of_breath_details"],
+      "ui_label": "Chest pain or shortness of breath",
+      "canonical_question_key": "chest_pain_or_shortness_of_breath",
+      "canonical_concept": "chest_pain_or_shortness_of_breath"
+    },
+    "chest_pain_or_shortness_of_breath_details": {
+      "field": "chest_pain_or_shortness_of_breath_details",
+      "phase": "critical_followup",
+      "text": "Describe the chest pain or breathlessness.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "chest_pain_or_shortness_of_breath",
+      "ui_label": "Chest/breath details",
+      "canonical_question_key": "chest_pain_or_shortness_of_breath_details",
+      "canonical_concept": "chest_pain_or_shortness_of_breath"
+    },
+    "abdominal_pain": {
+      "field": "abdominal_pain",
+      "phase": "critical_followup",
+      "text": "Any abdominal pain or belly swelling?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "abdominal_pain_details",
+      "if_positive_ask": ["abdominal_pain_details"],
+      "ui_label": "Abdominal Pain",
+      "canonical_question_key": "abdominal_pain",
+      "canonical_concept": "abdominal_pain"
+    },
+    "abdominal_pain_details": {
+      "field": "abdominal_pain_details",
+      "phase": "critical_followup",
+      "text": "Where exactly? How severe?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "abdominal_pain",
+      "ui_label": "Abdominal pain details",
+      "canonical_question_key": "abdominal_pain_details",
+      "canonical_concept": "abdominal_pain"
+    },
+    "major_bleeding": {
+      "field": "major_bleeding",
+      "phase": "critical_followup",
+      "text": "Was there heavy bleeding or are you soaking dressings?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "major_bleeding_details",
+      "if_positive_ask": ["major_bleeding_details"],
+      "ui_label": "Major bleeding",
+      "canonical_question_key": "major_bleeding",
+      "canonical_concept": "major_bleeding"
+    },
+    "major_bleeding_details": {
+      "field": "major_bleeding_details",
+      "phase": "critical_followup",
+      "text": "How much blood? Are you feeling dizzy?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "major_bleeding",
+      "ui_label": "Major bleeding details",
+      "canonical_question_key": "major_bleeding_details",
+      "canonical_concept": "major_bleeding"
+    },
+    "distal_color_coldness_or_pulselessness": {
+      "field": "distal_color_coldness_or_pulselessness",
+      "phase": "critical_followup",
+      "text": "Is the hand or foot beyond the injury cold, pale, blue, or without a pulse?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "distal_color_coldness_or_pulselessness_details",
+      "if_positive_ask": ["distal_color_coldness_or_pulselessness_details"],
+      "ui_label": "Distal color coldness or pulselessness",
+      "canonical_question_key": "distal_color_coldness_or_pulselessness",
+      "canonical_concept": "distal_color_coldness_or_pulselessness"
+    },
+    "distal_color_coldness_or_pulselessness_details": {
+      "field": "distal_color_coldness_or_pulselessness_details",
+      "phase": "critical_followup",
+      "text": "Which limb? When did you notice?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "distal_color_coldness_or_pulselessness",
+      "ui_label": "Vascular compromise details",
+      "canonical_question_key": "distal_color_coldness_or_pulselessness_details",
+      "canonical_concept": "distal_color_coldness_or_pulselessness"
+    },
+    "limb_swelling": {
+      "field": "limb_swelling",
+      "phase": "high_priority_followup",
+      "text": "Is the limb swelling rapidly?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "limb_swelling_details",
+      "if_positive_ask": ["limb_swelling_details"],
+      "ui_label": "Limb swelling",
+      "canonical_question_key": "limb_swelling",
+      "canonical_concept": "limb_swelling"
+    },
+    "limb_swelling_details": {
+      "field": "limb_swelling_details",
+      "phase": "high_priority_followup",
+      "text": "How much swelling? How quickly did it appear?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "limb_swelling",
+      "ui_label": "Limb swelling details",
+      "canonical_question_key": "limb_swelling_details",
+      "canonical_concept": "limb_swelling"
+    },
+    "inability_to_bear_weight": {
+      "field": "inability_to_bear_weight",
+      "phase": "high_priority_followup",
+      "text": "Can you stand or bear weight on the injured limb?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "inability_to_bear_weight_details",
+      "if_positive_ask": ["inability_to_bear_weight_details"],
+      "ui_label": "Inability to bear weight",
+      "canonical_question_key": "inability_to_bear_weight",
+      "canonical_concept": "inability_to_bear_weight"
+    },
+    "inability_to_bear_weight_details": {
+      "field": "inability_to_bear_weight_details",
+      "phase": "high_priority_followup",
+      "text": "Can you put any weight on it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "inability_to_bear_weight",
+      "ui_label": "Weight‑bearing details",
+      "canonical_question_key": "inability_to_bear_weight_details",
+      "canonical_concept": "inability_to_bear_weight"
+    },
+    "urinary_or_bowel_change": {
+      "field": "urinary_or_bowel_change",
+      "phase": "high_priority_followup",
+      "text": "Any trouble passing urine or loss of bowel or bladder control?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "urinary_or_bowel_change_details",
+      "if_positive_ask": ["urinary_or_bowel_change_details"],
+      "ui_label": "Urinary or bowel change",
+      "canonical_question_key": "urinary_or_bowel_change",
+      "canonical_concept": "urinary_or_bowel_change"
+    },
+    "urinary_or_bowel_change_details": {
+      "field": "urinary_or_bowel_change_details",
+      "phase": "high_priority_followup",
+      "text": "When did you last pass urine? Are you able to go when you feel the urge?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "urinary_or_bowel_change",
+      "ui_label": "Bladder/bowel details",
+      "canonical_question_key": "urinary_or_bowel_change_details",
+      "canonical_concept": "urinary_or_bowel_change"
+    },
+    "anticoagulant_use": {
+      "field": "anticoagulant_use",
+      "phase": "high_priority_followup",
+      "text": "Do you take blood thinners?",
+      "ask_if": "ALWAYS",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "anticoagulant_use_details",
+      "if_positive_ask": ["anticoagulant_use_details"],
+      "ui_label": "Anticoagulant use",
+      "canonical_question_key": "anticoagulant_use",
+      "canonical_concept": "anticoagulant_use"
+    },
+    "anticoagulant_use_details": {
+      "field": "anticoagulant_use_details",
+      "phase": "high_priority_followup",
+      "text": "Which medication and dose?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "anticoagulant_use",
+      "ui_label": "Anticoagulant details",
+      "canonical_question_key": "anticoagulant_use_details",
+      "canonical_concept": "anticoagulant_use"
+    },
+    "weapon_or_high_energy_mechanism": {
+      "field": "weapon_or_high_energy_mechanism",
+      "phase": "high_priority_followup",
+      "text": "Was there high speed, ejection, major fall, weapon, or crush injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "weapon_or_high_energy_mechanism_details",
+      "if_positive_ask": ["weapon_or_high_energy_mechanism_details"],
+      "ui_label": "Weapon or high energy mechanism",
+      "canonical_question_key": "weapon_or_high_energy_mechanism",
+      "canonical_concept": "weapon_or_high_energy_mechanism"
+    },
+    "weapon_or_high_energy_mechanism_details": {
+      "field": "weapon_or_high_energy_mechanism_details",
+      "phase": "high_priority_followup",
+      "text": "What happened?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "weapon_or_high_energy_mechanism",
+      "ui_label": "High energy details",
+      "canonical_question_key": "weapon_or_high_energy_mechanism_details",
+      "canonical_concept": "weapon_or_high_energy_mechanism"
+    },
+    "prior_injury_same_site": {
+      "field": "prior_injury_same_site",
+      "phase": "high_priority_followup",
+      "text": "Have you injured this area before?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "prior_injury_same_site_details",
+      "if_positive_ask": ["prior_injury_same_site_details"],
+      "ui_label": "Prior injury same site",
+      "canonical_question_key": "prior_injury_same_site",
+      "canonical_concept": "prior_injury_same_site"
+    },
+    "prior_injury_same_site_details": {
+      "field": "prior_injury_same_site_details",
+      "phase": "high_priority_followup",
+      "text": "When? What was the injury?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "prior_injury_same_site",
+      "ui_label": "Prior injury details",
+      "canonical_question_key": "prior_injury_same_site_details",
+      "canonical_concept": "prior_injury_same_site"
+    },
+    "assault_or_safeguarding_concern": {
+      "field": "assault_or_safeguarding_concern",
+      "phase": "high_priority_followup",
+      "text": "I want to make sure you are safe. Did someone hurt you, or is there any safety concern at home or elsewhere?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "assault_or_safeguarding_concern_details",
+      "if_positive_ask": ["assault_or_safeguarding_concern_details"],
+      "sensitive_topic": true,
+      "ui_label": "Assault or safeguarding concern",
+      "canonical_question_key": "assault_or_safeguarding_concern",
+      "canonical_concept": "assault_or_safeguarding_concern"
+    },
+    "assault_or_safeguarding_concern_details": {
+      "field": "assault_or_safeguarding_concern_details",
+      "phase": "high_priority_followup",
+      "text": "Do you feel safe to go home? Do you want to speak to someone?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "sensitive_topic": true,
+      "parent_field": "assault_or_safeguarding_concern",
+      "ui_label": "Safeguarding details",
+      "canonical_question_key": "assault_or_safeguarding_concern_details",
+      "canonical_concept": "assault_or_safeguarding_concern"
+    },
+    "tetanus_immunization_status": {
+      "field": "tetanus_immunization_status",
+      "phase": "high_priority_followup",
+      "text": "When was your last tetanus vaccine, if you know?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Tetanus immunization status",
+      "canonical_question_key": "tetanus_immunization_status",
+      "canonical_concept": "tetanus_immunization_status"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pain or any associated symptom changed noticeably since the injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – pain severity, swelling, or new symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "head_injury_pattern": ["loss_of_consciousness", "headache_or_vomiting"],
+    "spinal_injury_pattern": ["neck_or_back_pain", "weakness_or_numbness", "urinary_or_bowel_change"],
+    "vascular_compromise_pattern": ["distal_color_coldness_or_pulselessness"],
+    "thoracoabdominal_injury_pattern": ["chest_pain_or_shortness_of_breath", "abdominal_pain"],
+    "major_hemorrhage_pattern": ["major_bleeding"],
+    "high_energy_trauma_pattern": ["weapon_or_high_energy_mechanism"]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "trauma_musculoskeletal",
+    "high_yield_systems": ["neurological", "vascular", "thoracoabdominal"],
+    "cross_system_systems": ["genitourinary", "pregnancy", "mechanism_safety", "abuse_concern"],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
+    },
+    "flags": {
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
+    }
+  },
+  "acuity_tier": "high"
+}

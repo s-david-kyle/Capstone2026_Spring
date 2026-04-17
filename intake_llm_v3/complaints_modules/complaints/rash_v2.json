@@ -1,0 +1,779 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "rash",
+  "display_name": "Rash",
+  "ui_name": "Rash",
+  "ui_label": "Rash",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "skin",
+  "related_systems": {
+    "high_yield": ["constitutional_infectious", "allergic_drug", "mucosal"],
+    "selective_cross_system": ["joint_vasculitic", "respiratory_anaphylaxis", "hematologic"],
+    "contextual": ["travel_contact_exposure", "immunocompromise"]
+  },
+  "pivot_triggers": {
+    "fever": "purpuric_sepsis_pattern",
+    "shortness_of_breath": "anaphylaxis_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": ["presenting_complaint_narrative", "onset", "duration", "distribution", "appearance"],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 25,
+      "target_question_budget": 28,
+      "max_questions": 32,
+      "early_danger_reserve": 3,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Rash requires thorough anaphylaxis, infection, and drug reaction screening. Increased budget to ensure danger follow-ups and modules are completed."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 4,
+      "secondary_question_budget_override_if_red_flag": 7,
+      "priority_question_ids_if_secondary": ["onset", "duration", "distribution", "appearance"],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "skin"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": ["opening", "core_characterize", "early_danger_screen", "extended_characterize", "critical_followup", "high_priority_followup", "context_and_history"],
+    "default_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "distribution", "appearance"],
+      "early_danger_screen": ["mucosal_involvement", "facial_or_tongue_swelling", "shortness_of_breath", "fever"],
+      "extended_characterize": ["spread", "itch_or_pain", "blanching", "severity", "triggers"],
+      "critical_followup": ["purpura_nonblanching", "skin_sloughing_or_blistering", "severe_pain_out_of_proportion", "confusion_or_hypotension"],
+      "high_priority_followup": ["associated_symptoms", "new_medication", "recent_infection", "joint_pain", "eye_symptoms", "genital_symptoms", "travel_history", "sick_contact_exposure", "new_pet_or_plant_exposure", "chemical_exposure", "tick_or_insect_bite", "weight_loss", "lymph_node_swelling"],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": ["presenting_complaint_narrative"],
+      "core_characterize": ["onset", "duration", "distribution", "appearance"],
+      "early_danger_screen": ["mucosal_involvement", "recent_change_in_pattern"],
+      "extended_characterize": ["spread", "itch_or_pain", "blanching", "severity", "triggers"],
+      "critical_followup": ["purpura_nonblanching", "skin_sloughing_or_blistering", "severe_pain_out_of_proportion", "confusion_or_hypotension"],
+      "high_priority_followup": ["associated_symptoms", "new_medication", "recent_infection", "joint_pain", "eye_symptoms", "genital_symptoms", "travel_history", "sick_contact_exposure", "new_pet_or_plant_exposure", "chemical_exposure", "tick_or_insect_bite", "weight_loss", "lymph_node_swelling", "facial_or_tongue_swelling", "shortness_of_breath", "fever"],
+      "context_and_history": []
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            { "op": "duration_gte", "field_ref": "duration", "value": 4, "unit": "weeks" },
+            { "op": "field_below", "field_ref": "severity", "value": 6 }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did the rash first appear? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Onset",
+      "canonical_question_key": "onset",
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How long has it been there? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Duration",
+      "canonical_question_key": "duration",
+      "canonical_concept": "duration"
+    },
+    "distribution": {
+      "field": "distribution",
+      "phase": "core_characterize",
+      "text": "Where did the rash start and where is it now?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Distribution",
+      "canonical_question_key": "distribution",
+      "canonical_concept": "distribution"
+    },
+    "spread": {
+      "field": "spread",
+      "phase": "extended_characterize",
+      "text": "Has the rash spread to other areas?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "spread_details",
+      "if_positive_ask": ["spread_details"],
+      "ui_label": "Spread",
+      "canonical_question_key": "spread",
+      "canonical_concept": "spread"
+    },
+    "spread_details": {
+      "field": "spread_details",
+      "phase": "extended_characterize",
+      "text": "Where has it spread to? How quickly?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "spread",
+      "ui_label": "Spread details",
+      "canonical_question_key": "spread_details",
+      "canonical_concept": "spread"
+    },
+    "appearance": {
+      "field": "appearance",
+      "phase": "core_characterize",
+      "text": "How does the rash look—flat, raised, blistering, peeling, purple, ring-like, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Appearance",
+      "canonical_question_key": "appearance",
+      "canonical_concept": "appearance"
+    },
+    "itch_or_pain": {
+      "field": "itch_or_pain",
+      "phase": "extended_characterize",
+      "text": "Is the rash itchy, painful, or both?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "itch_or_pain_details",
+      "if_positive_ask": ["itch_or_pain_details"],
+      "ui_label": "Itch or pain",
+      "canonical_question_key": "itch_or_pain",
+      "canonical_concept": "itch_or_pain"
+    },
+    "itch_or_pain_details": {
+      "field": "itch_or_pain_details",
+      "phase": "extended_characterize",
+      "text": "How severe is the itch or pain? Does anything make it better or worse?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "itch_or_pain",
+      "ui_label": "Itch or pain details",
+      "canonical_question_key": "itch_or_pain_details",
+      "canonical_concept": "itch_or_pain"
+    },
+    "blanching": {
+      "field": "blanching",
+      "phase": "extended_characterize",
+      "text": "If you press on the rash, does it fade or stay purple/red?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Blanching",
+      "canonical_question_key": "blanching",
+      "canonical_concept": "blanching"
+    },
+    "severity": {
+      "field": "severity",
+      "phase": "extended_characterize",
+      "text": "How severe or extensive is the rash on a scale of 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Severity",
+      "canonical_question_key": "severity",
+      "canonical_concept": "severity"
+    },
+    "triggers": {
+      "field": "triggers",
+      "phase": "extended_characterize",
+      "text": "Did anything seem to trigger the rash—medicine, food, soap, plant, heat, or infection?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "ui_label": "Triggers",
+      "canonical_question_key": "triggers",
+      "canonical_concept": "triggers"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "high_priority_followup",
+      "text": "Have any other symptoms come with the rash?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": ["associated_symptoms_details"],
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the rash – fever, joint pain, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
+      "canonical_concept": "associated_symptoms"
+    },
+    "mucosal_involvement": {
+      "field": "mucosal_involvement",
+      "phase": "early_danger_screen",
+      "text": "Has the rash involved your mouth, eyes, or other mucosal areas?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "mucosal_involvement_details",
+      "if_positive_ask": ["mucosal_involvement_details"],
+      "ui_label": "Mucosal involvement",
+      "canonical_question_key": "mucosal_involvement",
+      "canonical_concept": "mucosal_involvement"
+    },
+    "mucosal_involvement_details": {
+      "field": "mucosal_involvement_details",
+      "phase": "early_danger_screen",
+      "text": "Where exactly – mouth, eyes, nose, or genital area?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "mucosal_involvement",
+      "ui_label": "Mucosal involvement details",
+      "canonical_question_key": "mucosal_involvement_details",
+      "canonical_concept": "mucosal_involvement"
+    },
+    "facial_or_tongue_swelling": {
+      "field": "facial_or_tongue_swelling",
+      "phase": "early_danger_screen",
+      "text": "Have you had facial, lip, or tongue swelling?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "facial_or_tongue_swelling_details",
+      "if_positive_ask": ["facial_or_tongue_swelling_details"],
+      "ui_label": "Facial or tongue swelling",
+      "canonical_question_key": "facial_or_tongue_swelling",
+      "canonical_concept": "facial_or_tongue_swelling"
+    },
+    "facial_or_tongue_swelling_details": {
+      "field": "facial_or_tongue_swelling_details",
+      "phase": "early_danger_screen",
+      "text": "Which areas? Did it come on suddenly?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "facial_or_tongue_swelling",
+      "ui_label": "Facial swelling details",
+      "canonical_question_key": "facial_or_tongue_swelling_details",
+      "canonical_concept": "facial_or_tongue_swelling"
+    },
+    "shortness_of_breath": {
+      "field": "shortness_of_breath",
+      "phase": "early_danger_screen",
+      "text": "Any wheeze, throat tightness, or shortness of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "shortness_of_breath_details",
+      "if_positive_ask": ["shortness_of_breath_details"],
+      "ui_label": "Shortness of breath",
+      "canonical_question_key": "shortness_of_breath",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "shortness_of_breath_details": {
+      "field": "shortness_of_breath_details",
+      "phase": "early_danger_screen",
+      "text": "Is the shortness of breath at rest or with activity? Any wheezing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "shortness_of_breath",
+      "ui_label": "Shortness of breath details",
+      "canonical_question_key": "shortness_of_breath_details",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "fever": {
+      "field": "fever",
+      "phase": "early_danger_screen",
+      "text": "Any fever or chills?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "fever_details",
+      "if_positive_ask": ["fever_details"],
+      "ui_label": "Fever",
+      "canonical_question_key": "fever",
+      "canonical_concept": "fever_present"
+    },
+    "fever_details": {
+      "field": "fever_details",
+      "phase": "early_danger_screen",
+      "text": "What was the highest temperature?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "fever",
+      "ui_label": "Fever details",
+      "canonical_question_key": "fever_details",
+      "canonical_concept": "fever_present"
+    },
+    "purpura_nonblanching": {
+      "field": "purpura_nonblanching",
+      "phase": "critical_followup",
+      "text": "Are there purple spots that do not fade with pressure?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "purpura_nonblanching_details",
+      "if_positive_ask": ["purpura_nonblanching_details"],
+      "ui_label": "Purpura nonblanching",
+      "canonical_question_key": "purpura_nonblanching",
+      "canonical_concept": "purpura_nonblanching"
+    },
+    "purpura_nonblanching_details": {
+      "field": "purpura_nonblanching_details",
+      "phase": "critical_followup",
+      "text": "Where are the spots? When did they appear?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "purpura_nonblanching",
+      "ui_label": "Purpura details",
+      "canonical_question_key": "purpura_nonblanching_details",
+      "canonical_concept": "purpura_nonblanching"
+    },
+    "skin_sloughing_or_blistering": {
+      "field": "skin_sloughing_or_blistering",
+      "phase": "critical_followup",
+      "text": "Any blistering or peeling of the skin?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "skin_sloughing_or_blistering_details",
+      "if_positive_ask": ["skin_sloughing_or_blistering_details"],
+      "ui_label": "Skin sloughing or blistering",
+      "canonical_question_key": "skin_sloughing_or_blistering",
+      "canonical_concept": "skin_sloughing_or_blistering"
+    },
+    "skin_sloughing_or_blistering_details": {
+      "field": "skin_sloughing_or_blistering_details",
+      "phase": "critical_followup",
+      "text": "Where is it peeling or blistering? How large an area?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "skin_sloughing_or_blistering",
+      "ui_label": "Skin sloughing details",
+      "canonical_question_key": "skin_sloughing_or_blistering_details",
+      "canonical_concept": "skin_sloughing_or_blistering"
+    },
+    "severe_pain_out_of_proportion": {
+      "field": "severe_pain_out_of_proportion",
+      "phase": "critical_followup",
+      "text": "Is the pain much worse than the rash looks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "severe_pain_out_of_proportion_details",
+      "if_positive_ask": ["severe_pain_out_of_proportion_details"],
+      "ui_label": "Severe pain out of proportion",
+      "canonical_question_key": "severe_pain_out_of_proportion",
+      "canonical_concept": "severe_pain_out_of_proportion"
+    },
+    "severe_pain_out_of_proportion_details": {
+      "field": "severe_pain_out_of_proportion_details",
+      "phase": "critical_followup",
+      "text": "Describe the pain – where and how severe on 0-10?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "severe_pain_out_of_proportion",
+      "ui_label": "Pain out of proportion details",
+      "canonical_question_key": "severe_pain_out_of_proportion_details",
+      "canonical_concept": "severe_pain_out_of_proportion"
+    },
+    "confusion_or_hypotension": {
+      "field": "confusion_or_hypotension",
+      "phase": "critical_followup",
+      "text": "Any fainting, confusion, or feeling like you might collapse?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "confusion_or_hypotension_details",
+      "if_positive_ask": ["confusion_or_hypotension_details"],
+      "ui_label": "Confusion or hypotension",
+      "canonical_question_key": "confusion_or_hypotension",
+      "canonical_concept": "confusion_or_hypotension"
+    },
+    "confusion_or_hypotension_details": {
+      "field": "confusion_or_hypotension_details",
+      "phase": "critical_followup",
+      "text": "How confused or dizzy? When did it start?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "confusion_or_hypotension",
+      "ui_label": "Confusion details",
+      "canonical_question_key": "confusion_or_hypotension_details",
+      "canonical_concept": "confusion_or_hypotension"
+    },
+    "new_medication": {
+      "field": "new_medication",
+      "phase": "high_priority_followup",
+      "text": "Did the rash start after a new medicine or antibiotic?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "new_medication_details",
+      "if_positive_ask": ["new_medication_details"],
+      "ui_label": "New medication",
+      "canonical_question_key": "new_medication",
+      "canonical_concept": "new_medication"
+    },
+    "new_medication_details": {
+      "field": "new_medication_details",
+      "phase": "high_priority_followup",
+      "text": "Which medication and when did you start it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "new_medication",
+      "ui_label": "New medication details",
+      "canonical_question_key": "new_medication_details",
+      "canonical_concept": "new_medication"
+    },
+    "recent_infection": {
+      "field": "recent_infection",
+      "phase": "high_priority_followup",
+      "text": "Any recent cold, sore throat, diarrhea, or other infection?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_infection_details",
+      "if_positive_ask": ["recent_infection_details"],
+      "ui_label": "Recent infection",
+      "canonical_question_key": "recent_infection",
+      "canonical_concept": "recent_infection"
+    },
+    "recent_infection_details": {
+      "field": "recent_infection_details",
+      "phase": "high_priority_followup",
+      "text": "What infection? When did it start?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_infection",
+      "ui_label": "Infection details",
+      "canonical_question_key": "recent_infection_details",
+      "canonical_concept": "recent_infection"
+    },
+    "joint_pain": {
+      "field": "joint_pain",
+      "phase": "high_priority_followup",
+      "text": "Any joint pain or swelling?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "joint_pain_details",
+      "if_positive_ask": ["joint_pain_details"],
+      "ui_label": "Joint pain",
+      "canonical_question_key": "joint_pain",
+      "canonical_concept": "joint_pain"
+    },
+    "joint_pain_details": {
+      "field": "joint_pain_details",
+      "phase": "high_priority_followup",
+      "text": "Which joints? Any swelling or redness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "joint_pain",
+      "ui_label": "Joint pain details",
+      "canonical_question_key": "joint_pain_details",
+      "canonical_concept": "joint_pain"
+    },
+    "eye_symptoms": {
+      "field": "eye_symptoms",
+      "phase": "high_priority_followup",
+      "text": "Any red eyes, light sensitivity, or eye pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "eye_symptoms_details",
+      "if_positive_ask": ["eye_symptoms_details"],
+      "ui_label": "Eye symptoms",
+      "canonical_question_key": "eye_symptoms",
+      "canonical_concept": "eye_symptoms"
+    },
+    "eye_symptoms_details": {
+      "field": "eye_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "Which eye? Redness, pain, or discharge?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "eye_symptoms",
+      "ui_label": "Eye symptoms details",
+      "canonical_question_key": "eye_symptoms_details",
+      "canonical_concept": "eye_symptoms"
+    },
+    "genital_symptoms": {
+      "field": "genital_symptoms",
+      "phase": "high_priority_followup",
+      "text": "Any genital sores or burning?",
+      "ask_if": "MUCOSAL_INVOLVEMENT_POSITIVE",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "genital_symptoms_details",
+      "if_positive_ask": ["genital_symptoms_details"],
+      "sensitive_topic": true,
+      "ui_label": "Genital symptoms",
+      "canonical_question_key": "genital_symptoms",
+      "canonical_concept": "genital_symptoms"
+    },
+    "genital_symptoms_details": {
+      "field": "genital_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What are the symptoms? When did they start?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "sensitive_topic": true,
+      "parent_field": "genital_symptoms",
+      "ui_label": "Genital symptoms details",
+      "canonical_question_key": "genital_symptoms_details",
+      "canonical_concept": "genital_symptoms"
+    },
+    "travel_history": {
+      "field": "travel_history",
+      "phase": "high_priority_followup",
+      "text": "Any recent travel?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "travel_history_details",
+      "if_positive_ask": ["travel_history_details"],
+      "ui_label": "Travel history",
+      "canonical_question_key": "travel_history",
+      "canonical_concept": "travel_history"
+    },
+    "travel_history_details": {
+      "field": "travel_history_details",
+      "phase": "high_priority_followup",
+      "text": "Where and when?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "travel_history",
+      "ui_label": "Travel history details",
+      "canonical_question_key": "travel_history_details",
+      "canonical_concept": "travel_history"
+    },
+    "sick_contact_exposure": {
+      "field": "sick_contact_exposure",
+      "phase": "high_priority_followup",
+      "text": "Any sick contact or close contact with someone unwell?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "sick_contact_exposure_details",
+      "if_positive_ask": ["sick_contact_exposure_details"],
+      "ui_label": "Sick contact",
+      "canonical_question_key": "sick_contact_exposure",
+      "canonical_concept": "sick_contact_exposure"
+    },
+    "sick_contact_exposure_details": {
+      "field": "sick_contact_exposure_details",
+      "phase": "high_priority_followup",
+      "text": "Who and what symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "sick_contact_exposure",
+      "ui_label": "Sick contact details",
+      "canonical_question_key": "sick_contact_exposure_details",
+      "canonical_concept": "sick_contact_exposure"
+    },
+    "new_pet_or_plant_exposure": {
+      "field": "new_pet_or_plant_exposure",
+      "phase": "high_priority_followup",
+      "text": "Any new pet, plant, or outdoor exposure that may be relevant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "new_pet_or_plant_exposure_details",
+      "if_positive_ask": ["new_pet_or_plant_exposure_details"],
+      "ui_label": "New pet or plant exposure",
+      "canonical_question_key": "new_pet_or_plant_exposure",
+      "canonical_concept": "new_pet_or_plant_exposure"
+    },
+    "new_pet_or_plant_exposure_details": {
+      "field": "new_pet_or_plant_exposure_details",
+      "phase": "high_priority_followup",
+      "text": "What pet or plant? When was the exposure?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "new_pet_or_plant_exposure",
+      "ui_label": "Pet or plant details",
+      "canonical_question_key": "new_pet_or_plant_exposure_details",
+      "canonical_concept": "new_pet_or_plant_exposure"
+    },
+    "chemical_exposure": {
+      "field": "chemical_exposure",
+      "phase": "high_priority_followup",
+      "text": "Any chemical or irritant exposure that may be relevant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "chemical_exposure_details",
+      "if_positive_ask": ["chemical_exposure_details"],
+      "ui_label": "Chemical exposure",
+      "canonical_question_key": "chemical_exposure",
+      "canonical_concept": "chemical_exposure"
+    },
+    "chemical_exposure_details": {
+      "field": "chemical_exposure_details",
+      "phase": "high_priority_followup",
+      "text": "What chemical? When were you exposed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "chemical_exposure",
+      "ui_label": "Chemical exposure details",
+      "canonical_question_key": "chemical_exposure_details",
+      "canonical_concept": "chemical_exposure"
+    },
+    "tick_or_insect_bite": {
+      "field": "tick_or_insect_bite",
+      "phase": "high_priority_followup",
+      "text": "Any tick bite, insect bite, or outdoor exposure?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "tick_or_insect_bite_details",
+      "if_positive_ask": ["tick_or_insect_bite_details"],
+      "ui_label": "Tick or insect bite",
+      "canonical_question_key": "tick_or_insect_bite",
+      "canonical_concept": "tick_or_insect_bite"
+    },
+    "tick_or_insect_bite_details": {
+      "field": "tick_or_insect_bite_details",
+      "phase": "high_priority_followup",
+      "text": "Where was the bite? When did it happen?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "tick_or_insect_bite",
+      "ui_label": "Tick bite details",
+      "canonical_question_key": "tick_or_insect_bite_details",
+      "canonical_concept": "tick_or_insect_bite"
+    },
+    "weight_loss": {
+      "field": "weight_loss",
+      "phase": "high_priority_followup",
+      "text": "Any unintentional weight loss or night sweats?",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "weight_loss_details",
+      "if_positive_ask": ["weight_loss_details"],
+      "ui_label": "Weight loss",
+      "canonical_question_key": "weight_loss",
+      "canonical_concept": "weight_loss"
+    },
+    "weight_loss_details": {
+      "field": "weight_loss_details",
+      "phase": "high_priority_followup",
+      "text": "How much weight? Over what period?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "weight_loss",
+      "ui_label": "Weight loss details",
+      "canonical_question_key": "weight_loss_details",
+      "canonical_concept": "weight_loss"
+    },
+    "lymph_node_swelling": {
+      "field": "lymph_node_swelling",
+      "phase": "high_priority_followup",
+      "text": "Any swollen glands or lumps?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "capture_detail_if_positive": true,
+      "detail_field": "lymph_node_swelling_details",
+      "if_positive_ask": ["lymph_node_swelling_details"],
+      "ui_label": "Lymph node swelling",
+      "canonical_question_key": "lymph_node_swelling",
+      "canonical_concept": "lymph_node_swelling"
+    },
+    "lymph_node_swelling_details": {
+      "field": "lymph_node_swelling_details",
+      "phase": "high_priority_followup",
+      "text": "Where are they? Are they tender?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "lymph_node_swelling",
+      "ui_label": "Lymph node details",
+      "canonical_question_key": "lymph_node_swelling_details",
+      "canonical_concept": "lymph_node_swelling"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the rash or any associated symptom changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "DURATION_BELOW_4_WEEKS"],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": ["recent_change_in_pattern_details"],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed – appearance, distribution, or itchiness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED", "PARENT_NEGATIVE"],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "anaphylaxis_pattern": ["facial_or_tongue_swelling", "shortness_of_breath"],
+    "purpuric_sepsis_pattern": ["purpura_nonblanching", "fever"],
+    "severe_cutaneous_adverse_reaction_pattern": ["mucosal_involvement", "skin_sloughing_or_blistering", "new_medication"],
+    "necrotizing_soft_tissue_pattern": ["severe_pain_out_of_proportion", "fever"],
+    "systemic_inflammatory_pattern": ["fever", "joint_pain", "lymph_node_swelling", "weight_loss"]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "skin",
+    "high_yield_systems": ["constitutional_infectious", "allergic_drug", "mucosal"],
+    "cross_system_systems": ["joint_vasculitic", "respiratory_anaphylaxis", "hematologic", "travel_contact_exposure", "immunocompromise"],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": ["unanswered_core_questions", "unanswered_critical_followups", "unanswered_high_priority_followups"]
+    },
+    "flags": {
+      "source": ["derived_red_flag_patterns", "EscalationLevel"]
+    }
+  },
+  "acuity_tier": "medium"
+}

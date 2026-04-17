@@ -1,0 +1,35 @@
+{
+  "module_name": "pmh_psh_module",
+  "version": "1.0.0",
+  "description": "Reusable PMH/PSH module applied once per session after complaint clerking, ROS, and any activated conditional modules. It should not repeat information already captured earlier.",
+  "ui_render_rule": "Use ui_label or text in the UI. Never show raw backend field ids.",
+  "session_cap_questions": 5,
+  "session_non_repeat_required": true,
+  "load_once_per_session": true,
+  "questions": [
+    {
+      "field": "PastMedicalHistory",
+      "ui_label": "Past medical history",
+      "phase": "context_and_history",
+      "text": "Before we finish, what past medical conditions do you have that may be relevant to this problem and that we have not already covered?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "compound_question": true,
+      "extract_entities_if_positive": true
+    },
+    {
+      "field": "PastSurgicalHistory",
+      "ui_label": "Past surgical history",
+      "phase": "context_and_history",
+      "text": "Have you had any operations or procedures that may be relevant to this problem and that we have not already covered?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": ["FIELD_ALREADY_CAPTURED"],
+      "compound_question": true,
+      "extract_entities_if_positive": true
+    }
+  ],
+  "field_order": [
+    "PastMedicalHistory",
+    "PastSurgicalHistory"
+  ]
+}
