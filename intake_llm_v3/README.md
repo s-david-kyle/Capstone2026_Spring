@@ -1,61 +1,78 @@
-# Clinical Intake System
+# Running the Clinical Intake System (intake_llm_v3)
 
-A deterministic, complaint-driven clerking app that uses complaint JSON contracts, shared skip/ask rules, SQLite persistence, a Streamlit UI, and Ollama for HPI refinement.
+## Prerequisites
 
-## What was corrected
+- Python 3.10+
+- An `api_keys.py` file in the `intake_llm_v3/` root (ask a teammate — do not commit this file)
 
-- Normalized all uploaded filenames into a runnable package layout.
-- Restored a real Streamlit UI (the uploaded `streamlit_app.py` contained summary-engine code instead of UI code).
-- Fixed package imports by placing API, DB, engine, and UI files under `app/...`.
-- Added deterministic phase orchestration: complaint flow -> ROS -> history modules -> summary.
-- Added SQLite initialization and encounter/turn/summary persistence.
-- Added Ollama summary call with safe fallback to the template HPI.
-- Added doctor-edit workflow and transcript download.
-- Preserved the uploaded complaint JSON contracts and module content.
+## First-time setup
 
-## Project layout
-
-- `app/api/main.py` - FastAPI backend
-- `app/ui/streamlit_app.py` - Streamlit frontend
-- `app/engine/intake_engine.py` - complaint scheduler
-- `app/engine/ros_runner.py` - ROS scheduler
-- `app/engine/module_runner.py` - reusable history modules
-- `app/engine/summary_engine.py` - template and Ollama summary generation
-- `app/db/db_manager.py` - SQLite persistence
-- `complaints_modules/complaints/*.json` - complaint contracts
-- `complaints_modules/modules/*.json` - shared history modules
-- `complaints_modules/shared_v2.json` - shared runtime rules
-- `complaints_modules/ros_question_bank.json` - ROS bank
-- `complaints_modules/index_v2.json` - complaint registry
-
-## Run locally
+Open a terminal and navigate to the `intake_llm_v3` folder:
 
 ```bash
-python -m venv venv
-source venv/bin/activate
+cd intake_llm_v3
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
+```
+
+Initialize the database (only needed once):
+
+```bash
 python init_db.py
-ollama serve
-ollama pull llama3.1
+```
+
+---
+
+## Running the app
+
+You need **two terminals** running at the same time.
+
+### Terminal 1 — FastAPI backend
+
+```bash
+cd intake_llm_v3
 uvicorn app.api.main:app --reload --port 8000
 ```
 
-In another terminal:
-
-```bash
-source venv/bin/activate
-streamlit run app/ui/streamlit_app.py --server.port 8501
+You should see:
+```
+Application startup complete.
 ```
 
-Or run both with:
+Leave this running.
+
+### Terminal 2 — Streamlit frontend
 
 ```bash
-./run.sh
+cd intake_llm_v3
+streamlit run app/ui/streamlit_app.py --server.port 8502
 ```
 
-## Notes
+Then open your browser to:
 
-- The runtime honors the complaint-owned schedules and budgets from the uploaded contracts.
-- ROS is intentionally lightweight and deduplicated against already captured concepts.
-- The API stores encounter state, turns, summaries, and metrics in SQLite.
-- The doctor can edit the final summary and save it back to the database.
+```
+http://localhost:8502
+```
+
+---
+
+## Stopping the app
+
+- In Terminal 1: `Ctrl+C`
+- In Terminal 2: `Ctrl+C`
+
+---
+
+## Troubleshooting
+
+**"No module named 'fastapi'"** — run `pip install -r requirements.txt`
+
+**"Cannot reach API at localhost:8000"** — the backend isn't running. Start Terminal 1 first.
+
+**"Port 8502 is not available"** — try `--server.port 8503` or any other free port.
+
+**"cannot import name from secrets"** — you have a leftover `secrets.py` file. Delete it and make sure `api_keys.py` is in the `intake_llm_v3/` root.
