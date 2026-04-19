@@ -91,6 +91,11 @@ def api_get(path: str):
     return resp.json()
 
 
+@st.cache_data(ttl=300)
+def get_complaints():
+    return api_get("/complaints")
+
+
 def api_post(path: str, payload: dict):
     resp = requests.post(f"{API_BASE}{path}", json=payload, timeout=90)
     resp.raise_for_status()
@@ -125,7 +130,8 @@ def init_state():
 def reset_session_state():
     for k in [
         "session_id", "current_question", "phase", "progress", "complaint_name", "patient_age",
-        "patient_sex", "summary_payload", "doctor_summary", "chat_history", "live_metrics", "secondary_selected"
+        "patient_sex", "summary_payload", "doctor_summary", "chat_history", "live_metrics",
+        "secondary_selected", "cached_metrics"
     ]:
         if k in st.session_state:
             del st.session_state[k]
@@ -206,10 +212,16 @@ def append_system_question(q: Dict[str, Any] | None):
 
 
 def load_metrics_from_api():
+    """Only call once after session completes — store result in session_state."""
     if st.session_state.session_id is None:
         return None
+    if st.session_state.get("cached_metrics") is not None:
+        return st.session_state["cached_metrics"]
     try:
-        return api_get(f"/sessions/{st.session_state.session_id}/metrics")
+        metrics = api_get(f"/sessions/{st.session_state.session_id}/metrics")
+        if metrics:
+            st.session_state["cached_metrics"] = metrics
+        return metrics
     except Exception:
         return None
 
@@ -312,12 +324,15 @@ def main():
     )
 
     try:
-        complaints = api_get("/complaints")
+        complaints = get_complaints()
     except Exception:
         st.error(f"API not reachable at {API_BASE}. Start the backend first.")
         st.stop()
 
-    saved_metrics = load_metrics_from_api() if st.session_state.session_id else None
+    # Only fetch saved metrics after session is fully complete
+    saved_metrics = None
+    if st.session_state.get("summary_payload"):
+        saved_metrics = load_metrics_from_api()
     update_live_metrics()
     render_metrics_row(saved_metrics)
     st.write("")
@@ -429,11 +444,9 @@ def main():
                             complete_session()
                             st.rerun()
                 st.write("")
-                st.markdown('<div class="card">', unsafe_allow_html=True)
-                st.markdown("**Current extracted state**")
-                session = api_get(f"/sessions/{st.session_state.session_id}")
-                st.json(session.get("state", {}), expanded=False)
-                st.markdown('</div>', unsafe_allow_html=True)
+                with st.expander("Current extracted state", expanded=False):
+                    session = api_get(f"/sessions/{st.session_state.session_id}")
+                    st.json(session.get("state", {}), expanded=False)
 
     with tab_transcript:
         if st.session_state.session_id is None:
@@ -479,7 +492,8 @@ def main():
             st.markdown('<div class="card">', unsafe_allow_html=True)
             st.markdown('<div class="section-title">Metric calculators</div>', unsafe_allow_html=True)
             st.write("Live metrics are calculated from the active conversation state. Saved metrics are written to SQLite when the session is completed.")
-            st.json({"live_metrics": st.session_state.live_metrics, "saved_metrics": saved_metrics or {}}, expanded=True)
+            final_metrics = load_metrics_from_api() if st.session_state.get("summary_payload") else {}
+            st.json({"live_metrics": st.session_state.live_metrics, "saved_metrics": final_metrics or {}}, expanded=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
 
