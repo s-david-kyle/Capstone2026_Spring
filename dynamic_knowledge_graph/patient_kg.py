@@ -100,6 +100,8 @@ if not st.session_state.patient_name:
             st.rerun()
         else:
             st.error("Please enter a name to continue.")
+    if st.button("Upload Medical Documentation"):
+        pass
     st.stop() # This prevents the rest of the code from running until registered
 
 # Display patient info in the sidebar once registered
