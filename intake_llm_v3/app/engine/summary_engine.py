@@ -1,11 +1,12 @@
-"""Template and Ollama-backed summary generation."""
+"""Template and Anthropic Claude-backed summary generation."""
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime
 from typing import Any, Dict, List
 
-import requests
+import anthropic
 
 ROS_DISPLAY = [
     "Constitutional", "Cardiovascular", "Respiratory", "Gastrointestinal",
@@ -14,6 +15,7 @@ ROS_DISPLAY = [
 ]
 
 NEGATIVE_WORDS = {"no", "denied", "none", "negative", "false", "nil", "nothing", "never", "not at all"}
+
 
 def _build_hpi(state: Dict[str, Any], complaint_name: str) -> str:
     parts: List[str] = []
@@ -53,6 +55,7 @@ def _build_hpi(state: Dict[str, Any], complaint_name: str) -> str:
             parts.append(f"{label}: {val}.")
     return " ".join(parts)
 
+
 def generate_template_summary(engine, ros_answers=None) -> Dict[str, Any]:
     s = engine.state
     cn = engine.complaint.get("display_name", "Unknown")
@@ -83,7 +86,6 @@ def generate_template_summary(engine, ros_answers=None) -> Dict[str, Any]:
 
     ros_summary = {sys: "Not assessed" for sys in ROS_DISPLAY}
     for key, value in (ros_answers or {}).items():
-        # Map underlying system name to display system if possible
         display = key.replace("_", " ").title()
         ros_summary[display] = value
 
@@ -109,27 +111,35 @@ def generate_template_summary(engine, ros_answers=None) -> Dict[str, Any]:
         "generated_at": datetime.utcnow().isoformat(),
     }
 
-def ai_summarize(extracted_state: Dict[str, Any], template_summary: Dict[str, Any], model: str = "llama3.1") -> str:
+
+def ai_summarize(extracted_state: Dict[str, Any], template_summary: Dict[str, Any]) -> str:
+    """Generate a fluent HPI paragraph using Claude Sonnet via the Anthropic API."""
+    from api_keys import ANTHROPIC_API_KEY
+
     prompt = (
-        "You are a clinical documentation assistant. Write a concise, factual HPI paragraph. "
-        "Do not invent findings. If information is missing, do not fill it in.\n\n"
+        "You are a clinical documentation assistant. Write a concise, factual HPI paragraph "
+        "suitable for a clinician to review and sign. Do not invent findings. "
+        "If information is missing, do not fill it in.\n\n"
         f"Chief Complaint: {template_summary.get('chief_complaint', 'Unknown')}\n\n"
-        f"Extracted data: {json.dumps({k:v for k,v in extracted_state.items() if v and v != 'not_assessed'}, indent=2)}\n\n"
+        f"Extracted data: {json.dumps({k: v for k, v in extracted_state.items() if v and v != 'not_assessed'}, indent=2)}\n\n"
         f"Pertinent Positives: {'; '.join(template_summary.get('pertinent_positives', []))}\n"
         f"Pertinent Negatives: {', '.join(template_summary.get('pertinent_negatives', []))}\n"
         f"Red Flags: {'; '.join(template_summary.get('flags', ['None']))}\n\n"
-        "Write only the HPI paragraph."
+        "Write only the HPI paragraph. Be concise and use clinical language."
     )
+
     try:
-        resp = requests.post(
-            "http://localhost:11434/api/generate",
-            json={"model": model, "prompt": prompt, "stream": False, "options": {"temperature": 0.2, "num_predict": 350}},
-            timeout=45,
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        message = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=512,
+            messages=[{"role": "user", "content": prompt}],
         )
-        resp.raise_for_status()
-        return resp.json().get("response", "").strip() or template_summary.get("hpi", "")
-    except Exception:
+        return message.content[0].text.strip() or template_summary.get("hpi", "")
+    except Exception as e:
+        print(f"AI summarizer error: {e}")
         return template_summary.get("hpi", "AI summarizer unavailable.")
+
 
 def format_summary_text(summary: Dict[str, Any]) -> str:
     lines = [
@@ -160,6 +170,7 @@ def format_summary_text(summary: Dict[str, Any]) -> str:
         f"Escalation Level: {summary['escalation_level']}",
     ]
     return "\n".join(lines)
+
 
 def format_transcript(turns: List[Dict[str, Any]], complaint_name: str = "", age: int = 0, sex: str = "") -> str:
     header = [

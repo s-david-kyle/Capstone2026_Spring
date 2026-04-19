@@ -307,7 +307,7 @@ def render_metrics_row(saved_metrics: Dict[str, Any] | None = None):
 def main():
     init_state()
     st.markdown(
-        '<div class="hero"><div style="font-size:30px;font-weight:900">⚕️ Clinical Intake</div><div style="opacity:.92;margin-top:6px">Deterministic complaint-led clerking with ROS, modules, Ollama summary, doctor review, and database metrics.</div></div>',
+        '<div class="hero"><div style="font-size:30px;font-weight:900">⚕️ Clinical Intake</div><div style="opacity:.92;margin-top:6px">Deterministic complaint-led clerking with ROS, modules, AI Summary, doctor review, and database metrics.</div></div>',
         unsafe_allow_html=True,
     )
 
@@ -446,7 +446,7 @@ def main():
 
     with tab_summary:
         if not st.session_state.summary_payload:
-            st.info("Complete the session to generate the template summary and Ollama summary.")
+            st.info("Complete the session to generate the template summary and AI Summary.")
         else:
             payload = st.session_state.summary_payload
             col1, col2 = st.columns(2)
@@ -457,7 +457,7 @@ def main():
                 st.markdown('</div>', unsafe_allow_html=True)
             with col2:
                 st.markdown('<div class="card">', unsafe_allow_html=True)
-                st.subheader("Ollama summary")
+                st.subheader("AI Summary")
                 st.text_area("AI HPI", payload.get("ai_summary", ""), height=180)
                 st.subheader("Doctor edit")
                 default_summary = payload.get("ai_summary") or payload.get("pre_summary", "")
