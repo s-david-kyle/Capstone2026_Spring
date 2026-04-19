@@ -150,10 +150,11 @@ def llm_single_symptom_check(prompt):
             "content": (
                 "You are a clinical intake bot. "
                 "STRICT RULES: "
-                "1. Come up with a single keyword to represent the medical symptom in this statement and no additional information. "
-                "2. Avoid vague non-descriptive words like 'pain'. "
-                "3. No pleasantries or small talk. "
-                "4. Be direct and precise."
+                # "1. Come up with a single keyword to represent the medical symptom in this statement and no additional information. "
+                "1. Come up with one to three words to represent the medical symptom in this statement and no additional information. "
+                # "2. Avoid vague non-descriptive words like 'pain'. "
+                # "2. Format the response in this format: ['keyword 1', 'keyword 2', 'keyword 3']"
+                "2. Do not use any punctuation."
             )
         }
         user_message = {"role": "user", "content": prompt}

@@ -122,12 +122,14 @@ def umls_knowledge_graph(symptom, num_results):
             symptom_names.append(result['name'])
             semantic_types.append(result['semanticTypes'][0])
         # put in dataframe
+        print('UMLS data extracted into name/semanticTypes dataframe:')
         df = pd.DataFrame({'symptom': symptom_names, 'semantic_type': semantic_types})
-        # umls_json = [{'Symptom': symptom_names[i], 'SemanticType': semantic_types[i]} for i in range(len(symptom_names))]
+        print(df)
     except:
+        print('UMLS data not parsed into dataframe')
         df = pd.DataFrame({'symptom': [None], 'semantic_type': [None]})
-    print(f'New UMLS knowledge graph will have {len(df)} symptoms')
-    print(df)
+    # print(f'New UMLS knowledge graph will have {len(df)} symptoms')
+    # print(df)
     return df
 
 def symptom_drill_down(df, primary_symptom, include_other_types=False):
