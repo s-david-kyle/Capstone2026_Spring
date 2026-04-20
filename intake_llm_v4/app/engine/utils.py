@@ -71,6 +71,10 @@ def parse_duration_str(dur_str: Any) -> float:
 def _resolve_ref(ref: Any, state: Dict[str, Any], patient: Dict[str, Any], question: Optional[Dict[str, Any]] = None) -> Any:
     if not isinstance(ref, str):
         return ref
+    # Handle $state. prefix for linkers
+    if ref.startswith("$state."):
+        key = ref[len("$state."):]
+        return state.get(key)
     if ref.startswith("$question.") and question:
         key = ref.split(".", 1)[1]
         return question.get(key)
@@ -115,7 +119,9 @@ def evaluate_condition(cond: Any, state: Dict[str, Any], patient: Dict[str, Any]
         return _resolve_ref(cond.get("field_ref"), state, patient, question) != cond.get("value")
 
     if op in ("field_gte", "field_above", "field_below", "field_exists_and_below"):
-        value = _to_number(state.get(_resolve_ref(cond.get("field_ref"), state, patient, question)))
+        # _resolve_ref returns the value directly
+        val = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        value = _to_number(val)
         threshold = _to_number(cond.get("value", cond.get("threshold")))
         if value is None or threshold is None:
             return False
@@ -126,40 +132,65 @@ def evaluate_condition(cond: Any, state: Dict[str, Any], patient: Dict[str, Any]
         return value < threshold
 
     if op == "field_exists_and_not_null":
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        # Extract key from field_ref, handling $state. prefix
+        ref = cond.get("field_ref")
+        if isinstance(ref, str) and ref.startswith("$state."):
+            key = ref[len("$state."):]
+        else:
+            key = ref
         if key in state:
             val = state.get(key)
             return val is not None and str(val).strip() != ""
         return False
 
+    if op == "field_not_exists_or_null":
+        ref = cond.get("field_ref")
+        if isinstance(ref, str) and ref.startswith("$state."):
+            key = ref[len("$state."):]
+        else:
+            key = ref
+        if key not in state:
+            return True
+        val = state.get(key)
+        return val is None or str(val).strip() == ""
+
     if op == "field_contains":
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
-        return str(cond.get("value", "")).lower() in str(state.get(key, "")).lower()
+        val = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        return str(cond.get("value", "")).lower() in str(val).lower()
+
+    if op == "field_text_contains":
+        val = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        return str(cond.get("value", "")).lower() in str(val).lower()
 
     if op == "field_text_contains_any":
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
-        val = str(state.get(key, "")).lower()
-        return any(str(v).lower() in val for v in cond.get("value", []))
+        val = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        val_str = str(val).lower()
+        return any(str(v).lower() in val_str for v in cond.get("value", []))
 
     if op == "duration_gte":
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
-        return parse_duration_str(state.get(key, "")) >= float(cond.get("value", 0))
+        val = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        return parse_duration_str(val) >= float(cond.get("value", 0))
 
     if op == "duration_below_threshold":
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        val = _resolve_ref(cond.get("field_ref"), state, patient, question)
         threshold = cond.get("threshold_value", cond.get("value", 0))
-        return parse_duration_str(state.get(key, "")) < float(threshold)
+        return parse_duration_str(val) < float(threshold)
 
     if op == "field_in_known_diagnoses":
-        hay = str(state.get("PastMedicalHistory", "")).lower()
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
-        return str(key).lower() in hay
+        hay = str(state.get("past_medical_history", "")).lower()
+        term = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        return str(term).lower() in hay
 
     if op == "clinician_exclusion_flag_set":
         return False
 
     if op == "field_in_shared_session_state":
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        # Key extraction, not value
+        ref = cond.get("field_ref")
+        if isinstance(ref, str) and ref.startswith("$state."):
+            key = ref[len("$state."):]
+        else:
+            key = ref
         return key in state
 
     if op == "escalation_level_gte":
@@ -177,8 +208,8 @@ def evaluate_condition(cond: Any, state: Dict[str, Any], patient: Dict[str, Any]
         return False
 
     if op == "entity_extracted_positive":
-        key = _resolve_ref(cond.get("field_ref"), state, patient, question)
-        return is_positive_answer(state.get(key))
+        val = _resolve_ref(cond.get("field_ref"), state, patient, question)
+        return is_positive_answer(val)
 
     if op == "parent_field_equals":
         parent_key = None
@@ -203,10 +234,6 @@ def evaluate_condition(cond: Any, state: Dict[str, Any], patient: Dict[str, Any]
         operator = cond["operator"]
         value = cond.get("value")
 
-        # Patient-context keys (sex, age) are stored in the `patient` dict, not
-        # in `state`. The engine passes patient = {"age": 35, "sex": "female"},
-        # but shared gates reference "PatientSex" / "PatientAge". Normalize both
-        # directions and look in patient first, then state.
         patient_key_aliases = {
             "PatientSex": "sex",
             "patient_sex": "sex",
@@ -253,4 +280,6 @@ def evaluate_condition(cond: Any, state: Dict[str, Any], patient: Dict[str, Any]
                 return float(cur) <= float(value)
             except (TypeError, ValueError):
                 return False
-    return True
+
+    # Unknown ops default to False (safe fallback)
+    return False

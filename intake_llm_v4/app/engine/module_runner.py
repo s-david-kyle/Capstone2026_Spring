@@ -45,16 +45,12 @@ class ModuleRunner:
         return [x for x in names if x.endswith("_module.json")]
 
     def _evaluate_activation_rules(self, mod: Dict[str, Any]) -> bool:
-        """Return True if the module's activation_rules all evaluate to true."""
         rules = mod.get("activation_rules", [])
         if not rules:
-            # No activation rules → always load (subject to conditional_modules list)
             return True
-        # Rules are a list of strings that correspond to entries in ask_if_registry
         for rule_name in rules:
             reg = self.ask_if_registry.get(rule_name)
             if reg is None:
-                # Unknown rule → skip module
                 return False
             if not evaluate_condition(reg.get("logic"), self.state, self.patient):
                 return False
@@ -69,9 +65,6 @@ class ModuleRunner:
             with open(path, "r", encoding="utf-8") as f:
                 mod = json.load(f)
 
-            # Conditional modules (gynecologic, immunization) are only loaded if:
-            # - They appear in the index's conditional_modules list for this complaint, AND
-            # - Their own activation_rules evaluate to true.
             if mod_name in ("gynecologic_history_module", "immunization_history_module"):
                 if mod_name not in self.conditional_modules:
                     continue
@@ -86,30 +79,34 @@ class ModuleRunner:
                 mod.get("session_cap_questions", 10)
             )
 
+    def _concept_already_covered(self, canonical_concept: str) -> bool:
+        if not canonical_concept:
+            return False
+        return canonical_concept in self._answered_concepts
+
     def _should_skip(self, q: Dict[str, Any], mod_name: str) -> bool:
         if self._module_budget_remaining.get(mod_name, 10) <= 0:
             return True
 
         field = q.get("field")
-        # v1.0.0 dedup: skip if field already captured
         if self.state.get(field) not in (None, ""):
             return True
 
-        for rule in q.get("skip_if", []):
-            if rule == "FIELD_ALREADY_CAPTURED" and self.state.get(field) not in (
-                None,
-                "",
-            ):
-                return True
-            if rule == "PARENT_NEGATIVE":
-                pf = q.get("parent_field", field.replace("_details", ""))
-                pa = self.state.get(pf)
-                if pa is None or is_negative_answer(str(pa)):
+        # Exempt detail rows from concept-covered check
+        if not q.get("parent_field") and self._concept_already_covered(q.get("canonical_concept", "")):
+            return True
+
+        for rule in (q.get("skip_if") or []) + (q.get("skip_conditions") or []):
+            if isinstance(rule, str):
+                if rule == "FIELD_ALREADY_CAPTURED" and self.state.get(field) not in (None, "",):
                     return True
+                if rule == "PARENT_NEGATIVE":
+                    pf = q.get("parent_field", field.replace("_details", ""))
+                    pa = self.state.get(pf)
+                    if pa is None or is_negative_answer(str(pa)):
+                        return True
             reg = self.skip_if_registry.get(rule)
-            if reg and evaluate_condition(
-                reg.get("logic"), self.state, self.patient, q
-            ):
+            if reg and evaluate_condition(reg.get("logic"), self.state, self.patient, q):
                 return True
 
         ask_if = q.get("ask_if")
@@ -156,9 +153,7 @@ class ModuleRunner:
 
     def record_answer(self, question: Dict[str, Any], answer: Any) -> None:
         self.state[question["field"]] = answer
-        self._answered_concepts.add(
-            question.get("canonical_concept") or question["field"]
-        )
+        self._answered_concepts.add(question.get("canonical_concept") or question["field"])
         self._answered_concepts.add(question["field"])
         if (
             question.get("detail_field")
@@ -168,19 +163,13 @@ class ModuleRunner:
                 self.state[question["detail_field"]] = answer
         mod_name = ""
         if self._current_module_idx < len(self._loaded_modules):
-            mod_name = self._loaded_modules[self._current_module_idx].get(
-                "module_name", ""
-            )
+            mod_name = self._loaded_modules[self._current_module_idx].get("module_name", "")
         if mod_name:
             self._module_budget_remaining[mod_name] = max(
                 0, self._module_budget_remaining.get(mod_name, 1) - 1
             )
 
-    # ------------------------------------------------------------------
-    # Public helper methods for main.py
-    # ------------------------------------------------------------------
     def get_question_text(self, field: str) -> Optional[str]:
-        """Return the question text for a given field, or None if not found."""
         for mod in self._loaded_modules:
             for q in mod.get("questions", []):
                 if q.get("field") == field:
@@ -188,7 +177,6 @@ class ModuleRunner:
         return None
 
     def get_question_definition(self, field: str) -> Optional[Dict[str, Any]]:
-        """Return the full question definition for a given field, or None if not found."""
         for mod in self._loaded_modules:
             for q in mod.get("questions", []):
                 if q.get("field") == field:

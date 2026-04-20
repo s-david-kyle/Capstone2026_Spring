@@ -34,7 +34,7 @@ MODULES_DIR = os.path.join(ROOT, "complaints_modules")
 INDEX_PATH = os.path.join(ROOT, "complaints_modules", "index_v2.json")
 SHARED = load_shared()
 
-app = FastAPI(title="Clinical Intake API", version="3.0.0")
+app = FastAPI(title="Clinical Intake API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 init_db()
 
@@ -404,3 +404,71 @@ def get_session_metrics(sid: int):
     _session_or_404(sid)
     metrics = get_metrics(sid)
     return metrics or {}
+
+
+@app.post("/sessions/{sid}/abandon")
+def abandon_session(sid: int):
+    sess = _session_or_404(sid)
+    update_encounter_status(sid, "abandoned", ended_at=datetime.utcnow().isoformat())
+    if sid in _sessions:
+        del _sessions[sid]
+    return {"status": "abandoned"}
+
+
+@app.post("/sessions/{sid}/force_complete")
+def force_complete_session(sid: int):
+    sess = _session_or_404(sid)
+    engine = sess["engine"]
+    engine.completed = True
+    summary = generate_template_summary(engine)
+    summary["patient_age"] = sess["patient_age"]
+    summary["patient_sex"] = sess["patient_sex"]
+    pre = format_summary_text(summary)
+    ai = ai_summarize(engine.state, summary)
+    save_summary(sid, pre_summary=pre, ai_summary=ai)
+
+    required_fields = {
+        engine.questions.get(qid, {}).get("field", qid)
+        for ids in engine.current_profile_data.values()
+        for qid in ids
+    }
+    total = max(len(required_fields), 1)
+    filled = sum(
+        1 for f in required_fields
+        if engine.state.get(f) not in (None, "", "not_assessed")
+    )
+    all_turns = get_turns(sid)
+    patient_turns = sum(1 for t in all_turns if t.get("speaker") == "patient")
+    system_turns = sum(1 for t in all_turns if t.get("speaker") == "system")
+    save_metrics(sid, {
+        "patient_turn_count": patient_turns,
+        "system_turn_count": system_turns,
+        "required_fields_total": total,
+        "required_fields_filled": filled,
+        "completion_rate": round(filled / total, 3),
+        "missing_fields_count": len(summary.get("missing_clarifications", [])),
+        "missing_fields": json.dumps(summary.get("missing_clarifications", [])),
+        "summary_length": len(pre),
+        "forced_completion": 1,
+    })
+
+    update_encounter_status(sid, "completed", ended_at=datetime.utcnow().isoformat())
+    update_encounter_state(
+        sid,
+        engine.state,
+        summary.get("pertinent_positives", []),
+        summary.get("pertinent_negatives", []),
+        engine.escalation_level,
+    )
+
+    if sid in _sessions:
+        del _sessions[sid]
+
+    return {
+        "template_summary": summary,
+        "pre_summary": pre,
+        "ai_summary": ai,
+        "extracted_state": engine.state,
+        "progress": engine.get_progress(),
+        "phase": "completed",
+    }
