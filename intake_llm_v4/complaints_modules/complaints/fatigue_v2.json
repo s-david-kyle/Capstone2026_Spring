@@ -1,0 +1,982 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "fatigue",
+  "display_name": "Fatigue",
+  "ui_name": "Fatigue",
+  "ui_label": "Fatigue",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "constitutional_hematologic",
+  "related_systems": {
+    "high_yield": [
+      "gastrointestinal",
+      "endocrine",
+      "psychiatric"
+    ],
+    "selective_cross_system": [
+      "respiratory",
+      "renal",
+      "infectious"
+    ],
+    "contextual": [
+      "medication_substance",
+      "nutritional",
+      "social"
+    ]
+  },
+  "pivot_triggers": {
+    "weight_loss": "malignancy_pattern",
+    "shortness_of_breath": "acute_cardiac_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "onset",
+      "duration",
+      "severity",
+      "functional_impact"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 25,
+      "target_question_budget": 28,
+      "max_questions": 32,
+      "early_danger_reserve": 3,
+      "ros_reserve": 2,
+      "context_history_reserve": 2,
+      "rationale": "Fatigue has a broad differential; increased budget to allow adequate malignancy, GI bleeding, and haemodynamic screening."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 4,
+      "secondary_question_budget_override_if_red_flag": 6,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "severity",
+        "functional_impact"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 2,
+      "max_ros_questions": 3,
+      "pathological_system_first": true,
+      "pathological_system": "constitutional_hematologic"
+    },
+    "context_mode": {
+      "target_context_questions": 2,
+      "max_context_questions": 3
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "functional_impact"
+      ],
+      "early_danger_screen": [
+        "breathlessness_at_rest",
+        "palpitations",
+        "syncope_or_near_syncope",
+        "bowel_pattern_change"
+      ],
+      "extended_characterize": [
+        "sleep_quality",
+        "loss_of_appetite"
+      ],
+      "critical_followup": [
+        "weight_loss",
+        "fever",
+        "rigors",
+        "night_sweats",
+        "lymph_node_swelling"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "dysphagia",
+        "polyuria_polydipsia",
+        "cold_intolerance",
+        "low_mood_anhedonia",
+        "poor_diet_or_nutrition",
+        "menstrual_history",
+        "prior_anaemia",
+        "rectal_bleeding",
+        "osa_screen"
+      ],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "functional_impact"
+      ],
+      "early_danger_screen": [
+        "breathlessness_at_rest",
+        "palpitations",
+        "recent_change_in_pattern"
+      ],
+      "extended_characterize": [
+        "sleep_quality",
+        "loss_of_appetite"
+      ],
+      "critical_followup": [
+        "weight_loss",
+        "fever",
+        "rigors",
+        "night_sweats",
+        "lymph_node_swelling"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "dysphagia",
+        "polyuria_polydipsia",
+        "cold_intolerance",
+        "low_mood_anhedonia",
+        "poor_diet_or_nutrition",
+        "menstrual_history",
+        "prior_anaemia",
+        "rectal_bleeding",
+        "osa_screen",
+        "syncope_or_near_syncope",
+        "bowel_pattern_change"
+      ],
+      "context_and_history": []
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            {
+              "op": "duration_gte",
+              "field_ref": "duration",
+              "value": 4,
+              "unit": "weeks"
+            },
+            {
+              "op": "field_below",
+              "field_ref": "severity",
+              "value": 6
+            }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did you first notice the fatigue or anaemia symptoms? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Onset",
+      "canonical_question_key": "onset",
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How long has it been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Duration",
+      "canonical_question_key": "duration",
+      "canonical_concept": "duration"
+    },
+    "severity": {
+      "field": "severity",
+      "phase": "core_characterize",
+      "text": "How severe is the tiredness on a scale of 0 to 10? Does it stop you doing normal activities?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Severity",
+      "canonical_question_key": "severity",
+      "canonical_concept": "severity"
+    },
+    "functional_impact": {
+      "field": "functional_impact",
+      "phase": "core_characterize",
+      "text": "What can you no longer do because of it\u2014work, exercise, housework?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Functional impact",
+      "canonical_question_key": "functional_impact",
+      "canonical_concept": "functional_impact"
+    },
+    "sleep_quality": {
+      "field": "sleep_quality",
+      "phase": "extended_characterize",
+      "text": "Are you sleeping well? Do you feel rested after sleep?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "sleep_quality_details",
+      "if_positive_ask": [
+        "sleep_quality_details"
+      ],
+      "ui_label": "Sleep quality",
+      "canonical_question_key": "sleep_quality",
+      "canonical_concept": "sleep_quality"
+    },
+    "sleep_quality_details": {
+      "field": "sleep_quality_details",
+      "phase": "extended_characterize",
+      "text": "Do you have trouble falling asleep, staying asleep, or waking too early?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "sleep_quality",
+      "ui_label": "Sleep quality details",
+      "canonical_question_key": "sleep_quality_details",
+      "canonical_concept": "sleep_quality"
+    },
+    "weight_change": {
+      "field": "weight_change",
+      "phase": "extended_characterize",
+      "text": "Have you noticed any unintentional weight gain?",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Weight change (gain only)",
+      "canonical_question_key": "weight_change",
+      "canonical_concept": "weight_change"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "high_priority_followup",
+      "text": "Have any other symptoms come with the tiredness or loss of energy?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": [
+        "associated_symptoms_details"
+      ],
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the fatigue?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
+      "canonical_concept": "associated_symptoms"
+    },
+    "breathlessness_at_rest": {
+      "field": "breathlessness_at_rest",
+      "phase": "early_danger_screen",
+      "text": "Any shortness of breath even at rest or with minimal activity?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "breathlessness_at_rest_details",
+      "if_positive_ask": [
+        "breathlessness_at_rest_details"
+      ],
+      "ui_label": "Breathlessness at rest",
+      "canonical_question_key": "breathlessness_at_rest",
+      "canonical_concept": "breathlessness_at_rest"
+    },
+    "breathlessness_at_rest_details": {
+      "field": "breathlessness_at_rest_details",
+      "phase": "early_danger_screen",
+      "text": "How many steps or minutes of walking bring it on?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "breathlessness_at_rest",
+      "ui_label": "Breathlessness details",
+      "canonical_question_key": "breathlessness_at_rest_details",
+      "canonical_concept": "breathlessness_at_rest"
+    },
+    "palpitations": {
+      "field": "palpitations",
+      "phase": "early_danger_screen",
+      "text": "Any racing or irregular heartbeat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "palpitations_details",
+      "if_positive_ask": [
+        "palpitations_details"
+      ],
+      "ui_label": "Palpitations",
+      "canonical_question_key": "palpitations",
+      "canonical_concept": "palpitations"
+    },
+    "palpitations_details": {
+      "field": "palpitations_details",
+      "phase": "early_danger_screen",
+      "text": "Fast, irregular, or pounding? How long do they last?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "palpitations",
+      "ui_label": "Palpitations details",
+      "canonical_question_key": "palpitations_details",
+      "canonical_concept": "palpitations"
+    },
+    "syncope_or_near_syncope": {
+      "field": "syncope_or_near_syncope",
+      "phase": "early_danger_screen",
+      "text": "Any fainting or near-fainting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "syncope_or_near_syncope_details",
+      "if_positive_ask": [
+        "syncope_or_near_syncope_details"
+      ],
+      "ui_label": "Syncope or near syncope",
+      "canonical_question_key": "syncope_or_near_syncope",
+      "canonical_concept": "syncope_or_near_syncope"
+    },
+    "syncope_or_near_syncope_details": {
+      "field": "syncope_or_near_syncope_details",
+      "phase": "early_danger_screen",
+      "text": "How long were you out? Did you have any warning?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "syncope_or_near_syncope",
+      "ui_label": "Syncope details",
+      "canonical_question_key": "syncope_or_near_syncope_details",
+      "canonical_concept": "syncope_or_near_syncope"
+    },
+    "weight_loss": {
+      "field": "weight_loss",
+      "phase": "critical_followup",
+      "text": "Any significant unintentional weight loss?",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Weight loss",
+      "canonical_question_key": "weight_loss",
+      "canonical_concept": "weight_loss"
+    },
+    "lymph_node_swelling": {
+      "field": "lymph_node_swelling",
+      "phase": "critical_followup",
+      "text": "Any swollen glands in the neck, armpit, or groin?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "lymph_node_swelling_details",
+      "if_positive_ask": [
+        "lymph_node_swelling_details"
+      ],
+      "ui_label": "Lymph node swelling",
+      "canonical_question_key": "lymph_node_swelling",
+      "canonical_concept": "lymph_node_swelling"
+    },
+    "lymph_node_swelling_details": {
+      "field": "lymph_node_swelling_details",
+      "phase": "critical_followup",
+      "text": "Where are they? Are they tender?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "lymph_node_swelling",
+      "ui_label": "Lymph node details",
+      "canonical_question_key": "lymph_node_swelling_details",
+      "canonical_concept": "lymph_node_swelling"
+    },
+    "dysphagia": {
+      "field": "dysphagia",
+      "phase": "high_priority_followup",
+      "text": "Any trouble swallowing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "dysphagia_details",
+      "if_positive_ask": [
+        "dysphagia_details"
+      ],
+      "ui_label": "Dysphagia",
+      "canonical_question_key": "dysphagia",
+      "canonical_concept": "dysphagia"
+    },
+    "dysphagia_details": {
+      "field": "dysphagia_details",
+      "phase": "high_priority_followup",
+      "text": "Solids, liquids, or both? Any pain?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "dysphagia",
+      "ui_label": "Dysphagia details",
+      "canonical_question_key": "dysphagia_details",
+      "canonical_concept": "dysphagia"
+    },
+    "polyuria_polydipsia": {
+      "field": "polyuria_polydipsia",
+      "phase": "high_priority_followup",
+      "text": "Any excessive thirst or passing large amounts of urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "polyuria_polydipsia_details",
+      "if_positive_ask": [
+        "polyuria_polydipsia_details"
+      ],
+      "ui_label": "Polyuria polydipsia",
+      "canonical_question_key": "polyuria_polydipsia",
+      "canonical_concept": "polyuria_polydipsia"
+    },
+    "polyuria_polydipsia_details": {
+      "field": "polyuria_polydipsia_details",
+      "phase": "high_priority_followup",
+      "text": "How many times do you urinate per day? How much do you drink?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "polyuria_polydipsia",
+      "ui_label": "Polyuria details",
+      "canonical_question_key": "polyuria_polydipsia_details",
+      "canonical_concept": "polyuria_polydipsia"
+    },
+    "cold_intolerance": {
+      "field": "cold_intolerance",
+      "phase": "high_priority_followup",
+      "text": "Feeling unusually cold, constipated, or with dry skin and hair?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "cold_intolerance_details",
+      "if_positive_ask": [
+        "cold_intolerance_details"
+      ],
+      "ui_label": "Cold intolerance",
+      "canonical_question_key": "cold_intolerance",
+      "canonical_concept": "cold_intolerance"
+    },
+    "cold_intolerance_details": {
+      "field": "cold_intolerance_details",
+      "phase": "high_priority_followup",
+      "text": "When did this start? Any weight gain?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "cold_intolerance",
+      "ui_label": "Cold intolerance details",
+      "canonical_question_key": "cold_intolerance_details",
+      "canonical_concept": "cold_intolerance"
+    },
+    "low_mood_anhedonia": {
+      "field": "low_mood_anhedonia",
+      "phase": "high_priority_followup",
+      "text": "Any low mood, loss of interest, or feeling depressed?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "low_mood_anhedonia_details",
+      "if_positive_ask": [
+        "low_mood_anhedonia_details"
+      ],
+      "ui_label": "Low mood anhedonia",
+      "canonical_question_key": "low_mood_anhedonia",
+      "canonical_concept": "low_mood_anhedonia"
+    },
+    "low_mood_anhedonia_details": {
+      "field": "low_mood_anhedonia_details",
+      "phase": "high_priority_followup",
+      "text": "How long have you felt this way? Is it affecting your daily life?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "low_mood_anhedonia",
+      "ui_label": "Low mood details",
+      "canonical_question_key": "low_mood_anhedonia_details",
+      "canonical_concept": "low_mood_anhedonia"
+    },
+    "poor_diet_or_nutrition": {
+      "field": "poor_diet_or_nutrition",
+      "phase": "high_priority_followup",
+      "text": "How is your diet? Any restricted eating, food avoidance, or poor access to food?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Poor diet or nutrition",
+      "canonical_question_key": "poor_diet_or_nutrition",
+      "canonical_concept": "poor_diet_or_nutrition"
+    },
+    "menstrual_history": {
+      "field": "menstrual_history",
+      "phase": "high_priority_followup",
+      "text": "For female patients\u2014how heavy are your periods? Any change in cycle?",
+      "ask_if": "SEX_FEMALE",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "sensitive_topic": true,
+      "ui_label": "Menstrual history",
+      "canonical_question_key": "menstrual_history",
+      "canonical_concept": "menstrual_history"
+    },
+    "prior_anaemia": {
+      "field": "prior_anaemia",
+      "phase": "high_priority_followup",
+      "text": "Have you been told you have anaemia before? What type?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "prior_anaemia_details",
+      "if_positive_ask": [
+        "prior_anaemia_details"
+      ],
+      "ui_label": "Prior anaemia",
+      "canonical_question_key": "prior_anaemia",
+      "canonical_concept": "prior_anaemia"
+    },
+    "prior_anaemia_details": {
+      "field": "prior_anaemia_details",
+      "phase": "high_priority_followup",
+      "text": "What type? When was it diagnosed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "prior_anaemia",
+      "ui_label": "Anaemia details",
+      "canonical_question_key": "prior_anaemia_details",
+      "canonical_concept": "prior_anaemia"
+    },
+    "rectal_bleeding": {
+      "field": "rectal_bleeding",
+      "phase": "high_priority_followup",
+      "text": "Any blood noticed when wiping or in the toilet bowl?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "rectal_bleeding_details",
+      "if_positive_ask": [
+        "rectal_bleeding_details"
+      ],
+      "ui_label": "Rectal bleeding",
+      "canonical_question_key": "rectal_bleeding",
+      "canonical_concept": "rectal_bleeding"
+    },
+    "rectal_bleeding_details": {
+      "field": "rectal_bleeding_details",
+      "phase": "high_priority_followup",
+      "text": "Is it bright red or dark? On the paper or in the bowl?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "rectal_bleeding",
+      "ui_label": "Rectal bleeding details",
+      "canonical_question_key": "rectal_bleeding_details",
+      "canonical_concept": "rectal_bleeding"
+    },
+    "osa_screen": {
+      "field": "osa_screen",
+      "phase": "high_priority_followup",
+      "text": "Do you snore loudly, has anyone noticed you stop breathing in your sleep, or do you feel excessively sleepy during the day despite enough hours in bed?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "DURATION_BELOW_4_WEEKS"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "osa_screen_details",
+      "if_positive_ask": [
+        "osa_screen_details"
+      ],
+      "ui_label": "Obstructive sleep apnoea screen",
+      "canonical_question_key": "osa_screen",
+      "canonical_concept": "osa_screen"
+    },
+    "osa_screen_details": {
+      "field": "osa_screen_details",
+      "phase": "high_priority_followup",
+      "text": "Does anyone watch you sleep? Have you ever been told you stop breathing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "osa_screen",
+      "ui_label": "OSA details",
+      "canonical_question_key": "osa_screen_details",
+      "canonical_concept": "osa_screen"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the fatigue or any associated symptom changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "DURATION_BELOW_4_WEEKS"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": [
+        "recent_change_in_pattern_details"
+      ],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed \u2013 severity, daily pattern, or any new symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "fever": {
+      "field": "fever",
+      "phase": "critical_followup",
+      "text": "Any fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [],
+      "required": true,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "fever_details",
+      "if_positive_ask": [
+        "fever_details"
+      ],
+      "ui_label": "Fever",
+      "canonical_question_key": "fever",
+      "canonical_concept": "fever",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ]
+    },
+    "fever_details": {
+      "field": "fever_details",
+      "phase": "critical_followup",
+      "text": "Tell me more about the fever \u2014 when it started, how bad, what makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Fever \u2014 details",
+      "canonical_question_key": "fever_details",
+      "parent_field": "fever",
+      "canonical_concept": "fever"
+    },
+    "night_sweats": {
+      "field": "night_sweats",
+      "phase": "critical_followup",
+      "text": "Any drenching night sweats?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [],
+      "required": true,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "night_sweats_details",
+      "if_positive_ask": [
+        "night_sweats_details"
+      ],
+      "ui_label": "Night sweats",
+      "canonical_question_key": "night_sweats",
+      "canonical_concept": "night_sweats",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ]
+    },
+    "night_sweats_details": {
+      "field": "night_sweats_details",
+      "phase": "critical_followup",
+      "text": "Tell me more about the night sweats \u2014 when it started, how bad, what makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Night sweats \u2014 details",
+      "canonical_question_key": "night_sweats_details",
+      "parent_field": "night_sweats",
+      "canonical_concept": "night_sweats"
+    },
+    "rigors": {
+      "field": "rigors",
+      "phase": "critical_followup",
+      "text": "Any shaking chills or rigors?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [],
+      "required": true,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "rigors_details",
+      "if_positive_ask": [
+        "rigors_details"
+      ],
+      "ui_label": "Rigors",
+      "canonical_question_key": "rigors",
+      "canonical_concept": "rigors",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ]
+    },
+    "rigors_details": {
+      "field": "rigors_details",
+      "phase": "critical_followup",
+      "text": "Tell me more about the rigors \u2014 when it started, how bad, what makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Rigors \u2014 details",
+      "canonical_question_key": "rigors_details",
+      "parent_field": "rigors",
+      "canonical_concept": "rigors"
+    },
+    "loss_of_appetite": {
+      "field": "loss_of_appetite",
+      "phase": "extended_characterize",
+      "text": "Has your appetite changed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Appetite change",
+      "canonical_question_key": "loss_of_appetite",
+      "canonical_concept": "loss_of_appetite"
+    },
+    "bowel_pattern_change": {
+      "field": "bowel_pattern_change",
+      "phase": "early_danger_screen",
+      "text": "Have your bowel movements changed recently \u2014 going more or less often than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "bowel_pattern_change_details",
+      "if_positive_ask": [
+        "bowel_pattern_change_details"
+      ],
+      "ui_label": "Change in bowel habit",
+      "canonical_question_key": "bowel_pattern_change",
+      "canonical_concept": "bowel_pattern_change",
+      "clinical_priority": "medium"
+    },
+    "bowel_pattern_change_details": {
+      "field": "bowel_pattern_change_details",
+      "phase": "early_danger_screen",
+      "text": "Tell me more \u2014 when, how long, how bad, anything that makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Change in bowel habit \u2014 details",
+      "canonical_question_key": "bowel_pattern_change_details",
+      "parent_field": "bowel_pattern_change",
+      "canonical_concept": "bowel_pattern_change"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "malignancy_pattern": [
+      "weight_loss",
+      "fever",
+      "rigors",
+      "night_sweats",
+      "lymph_node_swelling"
+    ],
+    "gi_bleeding_pattern": [
+      "bowel_pattern_change",
+      "rectal_bleeding"
+    ],
+    "haemodynamic_compromise_pattern": [
+      "breathlessness_at_rest",
+      "palpitations",
+      "syncope_or_near_syncope"
+    ],
+    "endocrine_pattern": [
+      "cold_intolerance",
+      "polyuria_polydipsia",
+      "low_mood_anhedonia"
+    ],
+    "nutritional_deficiency_pattern": [
+      "poor_diet_or_nutrition",
+      "dysphagia",
+      "prior_anaemia"
+    ]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "constitutional_hematologic",
+    "high_yield_systems": [
+      "gastrointestinal",
+      "endocrine",
+      "psychiatric"
+    ],
+    "cross_system_systems": [
+      "respiratory",
+      "renal",
+      "infectious",
+      "medication_substance",
+      "nutritional",
+      "social"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "medium"
+}

@@ -1,0 +1,1124 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "loose_stool",
+  "display_name": "Loose Stool",
+  "ui_name": "Loose Stool",
+  "ui_label": "Loose Stool",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "gastrointestinal",
+  "related_systems": {
+    "high_yield": [
+      "constitutional_dehydration",
+      "infectious_exposure",
+      "abdominal"
+    ],
+    "selective_cross_system": [
+      "genitourinary",
+      "hematologic_inflammatory",
+      "endocrine"
+    ],
+    "contextual": [
+      "travel_food_antibiotics",
+      "immunocompromise"
+    ]
+  },
+  "pivot_triggers": {
+    "vomiting": "acute_abdomen_pattern",
+    "fever": "dysentery_pattern",
+    "weakness": "dehydration_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "onset",
+      "duration",
+      "severity",
+      "frequency",
+      "consistency"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 25,
+      "target_question_budget": 28,
+      "max_questions": 32,
+      "early_danger_reserve": 3,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Loose stool requires thorough dehydration, infectious, and inflammatory screening. Increased budget to ensure danger follow-ups and modules are completed."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 4,
+      "secondary_question_budget_override_if_red_flag": 7,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "frequency",
+        "consistency"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "gastrointestinal"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "frequency",
+        "volume",
+        "consistency",
+        "color",
+        "blood_or_mucus"
+      ],
+      "early_danger_screen": [
+        "severe_dehydration",
+        "blood_in_stool",
+        "severe_abdominal_pain"
+      ],
+      "extended_characterize": [
+        "abdominal_pain",
+        "abdominal_pain_details",
+        "cramping_quality",
+        "tenesmus_or_urgency",
+        "nocturnal_symptoms"
+      ],
+      "critical_followup": [
+        "persistent_vomiting",
+        "very_low_urine_output",
+        "immunocompromised_state"
+      ],
+      "high_priority_followup": [
+        "fluid_intake_today",
+        "recent_antibiotics",
+        "food_exposure",
+        "travel_history",
+        "daycare_exposure",
+        "household_illness",
+        "weight_loss",
+        "joint_pain",
+        "rash",
+        "mouth_ulcers",
+        "flank_pain"
+      ],
+      "context_and_history": []
+    },
+    "chronic_low_severity_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity",
+        "frequency",
+        "volume",
+        "consistency",
+        "color",
+        "blood_or_mucus"
+      ],
+      "early_danger_screen": [
+        "severe_dehydration",
+        "blood_in_stool",
+        "recent_change_in_pattern"
+      ],
+      "extended_characterize": [
+        "abdominal_pain",
+        "abdominal_pain_details",
+        "cramping_quality",
+        "tenesmus_or_urgency",
+        "nocturnal_symptoms"
+      ],
+      "critical_followup": [
+        "persistent_vomiting",
+        "very_low_urine_output",
+        "immunocompromised_state"
+      ],
+      "high_priority_followup": [
+        "fluid_intake_today",
+        "recent_antibiotics",
+        "food_exposure",
+        "travel_history",
+        "daycare_exposure",
+        "household_illness",
+        "weight_loss",
+        "joint_pain",
+        "rash",
+        "mouth_ulcers",
+        "flank_pain",
+        "severe_abdominal_pain"
+      ],
+      "context_and_history": []
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            {
+              "op": "duration_gte",
+              "field_ref": "duration",
+              "value": 4,
+              "unit": "weeks"
+            },
+            {
+              "op": "field_below",
+              "field_ref": "severity",
+              "value": 6
+            }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did it start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Onset",
+      "canonical_question_key": "onset",
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How long has it been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Duration",
+      "canonical_question_key": "duration",
+      "canonical_concept": "duration"
+    },
+    "severity": {
+      "field": "severity",
+      "phase": "core_characterize",
+      "text": "How severe is the diarrhoea on a scale of 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Severity",
+      "canonical_question_key": "severity",
+      "canonical_concept": "severity"
+    },
+    "frequency": {
+      "field": "frequency",
+      "phase": "core_characterize",
+      "text": "How many loose stools have you had? If it has been going on a full day or more, roughly how many a day?",
+      "response_type": "COUNT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Frequency",
+      "canonical_question_key": "frequency",
+      "canonical_concept": "frequency"
+    },
+    "volume": {
+      "field": "volume",
+      "phase": "core_characterize",
+      "text": "Are they small frequent amounts or large volume?",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Volume",
+      "canonical_question_key": "volume",
+      "canonical_concept": "volume"
+    },
+    "consistency": {
+      "field": "consistency",
+      "phase": "core_characterize",
+      "text": "Are the stools watery, loose but formed, or something else?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "consistency_details",
+      "if_positive_ask": [
+        "consistency_details"
+      ],
+      "ui_label": "Consistency",
+      "canonical_question_key": "consistency",
+      "canonical_concept": "consistency"
+    },
+    "consistency_details": {
+      "field": "consistency_details",
+      "phase": "core_characterize",
+      "text": "Please describe the consistency \u2013 watery, loose but formed, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "consistency",
+      "ui_label": "Consistency details",
+      "canonical_question_key": "consistency_details",
+      "canonical_concept": "consistency"
+    },
+    "color": {
+      "field": "color",
+      "phase": "core_characterize",
+      "text": "What color is the stool?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Color",
+      "canonical_question_key": "color",
+      "canonical_concept": "color"
+    },
+    "blood_or_mucus": {
+      "field": "blood_or_mucus",
+      "phase": "core_characterize",
+      "text": "Have you noticed blood or mucus in the stool?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "blood_or_mucus_details",
+      "if_positive_ask": [
+        "blood_or_mucus_details"
+      ],
+      "ui_label": "Blood or mucus",
+      "canonical_question_key": "blood_or_mucus",
+      "canonical_concept": "blood_or_mucus"
+    },
+    "blood_or_mucus_details": {
+      "field": "blood_or_mucus_details",
+      "phase": "core_characterize",
+      "text": "Is it blood, mucus, or both? What colour is the blood?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "blood_or_mucus",
+      "ui_label": "Blood or mucus details",
+      "canonical_question_key": "blood_or_mucus_details",
+      "canonical_concept": "blood_or_mucus"
+    },
+    "tenesmus_or_urgency": {
+      "field": "tenesmus_or_urgency",
+      "phase": "extended_characterize",
+      "text": "Do you feel an urgent need to go, or like you still need to pass stool after going?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "tenesmus_or_urgency_details",
+      "if_positive_ask": [
+        "tenesmus_or_urgency_details"
+      ],
+      "ui_label": "Tenesmus or urgency",
+      "canonical_question_key": "tenesmus_or_urgency",
+      "canonical_concept": "tenesmus_or_urgency"
+    },
+    "tenesmus_or_urgency_details": {
+      "field": "tenesmus_or_urgency_details",
+      "phase": "extended_characterize",
+      "text": "Does it happen after every bowel movement?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "tenesmus_or_urgency",
+      "ui_label": "Tenesmus details",
+      "canonical_question_key": "tenesmus_or_urgency_details",
+      "canonical_concept": "tenesmus_or_urgency"
+    },
+    "nocturnal_symptoms": {
+      "field": "nocturnal_symptoms",
+      "phase": "extended_characterize",
+      "text": "If you have slept since this started, has the diarrhoea woken you from sleep or happened overnight?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "nocturnal_symptoms_details",
+      "if_positive_ask": [
+        "nocturnal_symptoms_details"
+      ],
+      "ui_label": "Nocturnal symptoms",
+      "canonical_question_key": "nocturnal_symptoms",
+      "canonical_concept": "nocturnal_symptoms"
+    },
+    "nocturnal_symptoms_details": {
+      "field": "nocturnal_symptoms_details",
+      "phase": "extended_characterize",
+      "text": "How many times has it woken you?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "nocturnal_symptoms",
+      "ui_label": "Nocturnal symptoms details",
+      "canonical_question_key": "nocturnal_symptoms_details",
+      "canonical_concept": "nocturnal_symptoms"
+    },
+    "fluid_intake_today": {
+      "field": "fluid_intake_today",
+      "phase": "high_priority_followup",
+      "text": "Have you been able to drink enough fluids today?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "fluid_intake_today_details",
+      "if_positive_ask": [
+        "fluid_intake_today_details"
+      ],
+      "ui_label": "Fluid intake today",
+      "canonical_question_key": "fluid_intake_today",
+      "canonical_concept": "fluid_intake_today"
+    },
+    "fluid_intake_today_details": {
+      "field": "fluid_intake_today_details",
+      "phase": "high_priority_followup",
+      "text": "How much have you been able to drink? Are you keeping it down?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "fluid_intake_today",
+      "ui_label": "Fluid intake details",
+      "canonical_question_key": "fluid_intake_today_details",
+      "canonical_concept": "fluid_intake_today"
+    },
+    "severe_dehydration": {
+      "field": "severe_dehydration",
+      "phase": "early_danger_screen",
+      "text": "Are you very thirsty, dizzy, or unable to keep up with fluids?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "severe_dehydration_details",
+      "if_positive_ask": [
+        "severe_dehydration_details"
+      ],
+      "ui_label": "Severe dehydration",
+      "canonical_question_key": "severe_dehydration",
+      "canonical_concept": "severe_dehydration"
+    },
+    "severe_dehydration_details": {
+      "field": "severe_dehydration_details",
+      "phase": "early_danger_screen",
+      "text": "How long have you felt this way? Can you stand without dizziness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "severe_dehydration",
+      "ui_label": "Severe dehydration details",
+      "canonical_question_key": "severe_dehydration_details",
+      "canonical_concept": "severe_dehydration"
+    },
+    "blood_in_stool": {
+      "field": "blood_in_stool",
+      "phase": "early_danger_screen",
+      "text": "If blood is present in the stool, is it bright red or black tarry coloured?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "blood_in_stool_details",
+      "if_positive_ask": [
+        "blood_in_stool_details"
+      ],
+      "ui_label": "Blood in stool",
+      "canonical_question_key": "blood_in_stool",
+      "canonical_concept": "blood_in_stool"
+    },
+    "blood_in_stool_details": {
+      "field": "blood_in_stool_details",
+      "phase": "early_danger_screen",
+      "text": "Is it bright red, dark, or mixed into the stool? How much?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "blood_in_stool",
+      "ui_label": "Blood in stool details",
+      "canonical_question_key": "blood_in_stool_details",
+      "canonical_concept": "blood_in_stool"
+    },
+    "severe_abdominal_pain": {
+      "field": "severe_abdominal_pain",
+      "phase": "early_danger_screen",
+      "text": "Any severe constant abdominal pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "severe_abdominal_pain_details",
+      "if_positive_ask": [
+        "severe_abdominal_pain_details"
+      ],
+      "ui_label": "Severe abdominal pain",
+      "canonical_question_key": "severe_abdominal_pain",
+      "canonical_concept": "severe_abdominal_pain"
+    },
+    "severe_abdominal_pain_details": {
+      "field": "severe_abdominal_pain_details",
+      "phase": "early_danger_screen",
+      "text": "Where exactly? How severe on 0-10?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "severe_abdominal_pain",
+      "ui_label": "Severe abdominal pain details",
+      "canonical_question_key": "severe_abdominal_pain_details",
+      "canonical_concept": "severe_abdominal_pain"
+    },
+    "persistent_vomiting": {
+      "field": "persistent_vomiting",
+      "phase": "critical_followup",
+      "text": "Are you vomiting repeatedly as well?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "persistent_vomiting_details",
+      "if_positive_ask": [
+        "persistent_vomiting_details"
+      ],
+      "ui_label": "Persistent vomiting",
+      "canonical_question_key": "persistent_vomiting",
+      "canonical_concept": "persistent_vomiting"
+    },
+    "persistent_vomiting_details": {
+      "field": "persistent_vomiting_details",
+      "phase": "critical_followup",
+      "text": "How many times? Can you keep any fluids down?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "persistent_vomiting",
+      "ui_label": "Persistent vomiting details",
+      "canonical_question_key": "persistent_vomiting_details",
+      "canonical_concept": "persistent_vomiting"
+    },
+    "very_low_urine_output": {
+      "field": "very_low_urine_output",
+      "phase": "critical_followup",
+      "text": "Have you been passing much less urine than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "very_low_urine_output_details",
+      "if_positive_ask": [
+        "very_low_urine_output_details"
+      ],
+      "ui_label": "Very low urine output",
+      "canonical_question_key": "very_low_urine_output",
+      "canonical_concept": "very_low_urine_output"
+    },
+    "very_low_urine_output_details": {
+      "field": "very_low_urine_output_details",
+      "phase": "critical_followup",
+      "text": "How many times have you urinated today? Is the amount much less?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "very_low_urine_output",
+      "ui_label": "Low urine output details",
+      "canonical_question_key": "very_low_urine_output_details",
+      "canonical_concept": "very_low_urine_output"
+    },
+    "immunocompromised_status_details": {
+      "field": "immunocompromised_status_details",
+      "phase": "critical_followup",
+      "text": "What condition or treatment?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "immunocompromised_state",
+      "ui_label": "Immunocompromised details",
+      "canonical_question_key": "immunocompromised_status_details",
+      "canonical_concept": "immunocompromised_state"
+    },
+    "recent_antibiotics": {
+      "field": "recent_antibiotics",
+      "phase": "high_priority_followup",
+      "text": "Have you taken any antibiotics in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_antibiotics_details",
+      "if_positive_ask": [
+        "recent_antibiotics_details"
+      ],
+      "ui_label": "Recent antibiotics",
+      "canonical_question_key": "recent_antibiotics",
+      "canonical_concept": "recent_antibiotics"
+    },
+    "recent_antibiotics_details": {
+      "field": "recent_antibiotics_details",
+      "phase": "high_priority_followup",
+      "text": "Which antibiotic and when?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_antibiotics",
+      "ui_label": "Antibiotic details",
+      "canonical_question_key": "recent_antibiotics_details",
+      "canonical_concept": "recent_antibiotics"
+    },
+    "food_exposure": {
+      "field": "food_exposure",
+      "phase": "high_priority_followup",
+      "text": "Did the diarrhoea start after eating out, unusual food, or food others also ate?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "food_exposure_details",
+      "if_positive_ask": [
+        "food_exposure_details"
+      ],
+      "ui_label": "Food exposure",
+      "canonical_question_key": "food_exposure",
+      "canonical_concept": "food_exposure"
+    },
+    "food_exposure_details": {
+      "field": "food_exposure_details",
+      "phase": "high_priority_followup",
+      "text": "What food and when?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "food_exposure",
+      "ui_label": "Food exposure details",
+      "canonical_question_key": "food_exposure_details",
+      "canonical_concept": "food_exposure"
+    },
+    "travel_history": {
+      "field": "travel_history",
+      "phase": "high_priority_followup",
+      "text": "Any recent travel?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "travel_history_details",
+      "if_positive_ask": [
+        "travel_history_details"
+      ],
+      "ui_label": "Travel history",
+      "canonical_question_key": "travel_history",
+      "canonical_concept": "travel_history"
+    },
+    "travel_history_details": {
+      "field": "travel_history_details",
+      "phase": "high_priority_followup",
+      "text": "Where and when?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "travel_history",
+      "ui_label": "Travel history details",
+      "canonical_question_key": "travel_history_details",
+      "canonical_concept": "travel_history"
+    },
+    "daycare_exposure": {
+      "field": "daycare_exposure",
+      "phase": "high_priority_followup",
+      "text": "Any daycare, childcare, or similar exposure where others have been sick?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "daycare_exposure_details",
+      "if_positive_ask": [
+        "daycare_exposure_details"
+      ],
+      "ui_label": "Daycare exposure",
+      "canonical_question_key": "daycare_exposure",
+      "canonical_concept": "daycare_exposure"
+    },
+    "daycare_exposure_details": {
+      "field": "daycare_exposure_details",
+      "phase": "high_priority_followup",
+      "text": "Which facility? Any known illness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "daycare_exposure",
+      "ui_label": "Daycare exposure details",
+      "canonical_question_key": "daycare_exposure_details",
+      "canonical_concept": "daycare_exposure"
+    },
+    "household_illness": {
+      "field": "household_illness",
+      "phase": "high_priority_followup",
+      "text": "Has anyone at home or close to you had similar symptoms?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "household_illness_details",
+      "if_positive_ask": [
+        "household_illness_details"
+      ],
+      "ui_label": "Household illness",
+      "canonical_question_key": "household_illness",
+      "canonical_concept": "household_illness"
+    },
+    "household_illness_details": {
+      "field": "household_illness_details",
+      "phase": "high_priority_followup",
+      "text": "Who and what symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "household_illness",
+      "ui_label": "Household illness details",
+      "canonical_question_key": "household_illness_details",
+      "canonical_concept": "household_illness"
+    },
+    "weight_loss": {
+      "field": "weight_loss",
+      "phase": "high_priority_followup",
+      "text": "Have you been losing weight unintentionally?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "weight_loss_details",
+      "if_positive_ask": [
+        "weight_loss_details"
+      ],
+      "ui_label": "Weight loss",
+      "canonical_question_key": "weight_loss",
+      "canonical_concept": "weight_loss"
+    },
+    "weight_loss_details": {
+      "field": "weight_loss_details",
+      "phase": "high_priority_followup",
+      "text": "How much weight? Over what period?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "weight_loss",
+      "ui_label": "Weight loss details",
+      "canonical_question_key": "weight_loss_details",
+      "canonical_concept": "weight_loss"
+    },
+    "joint_pain": {
+      "field": "joint_pain",
+      "phase": "high_priority_followup",
+      "text": "Any joint pain or swelling?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "joint_pain_details",
+      "if_positive_ask": [
+        "joint_pain_details"
+      ],
+      "ui_label": "Joint pain",
+      "canonical_question_key": "joint_pain",
+      "canonical_concept": "joint_pain"
+    },
+    "joint_pain_details": {
+      "field": "joint_pain_details",
+      "phase": "high_priority_followup",
+      "text": "Which joints? Any swelling or redness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "joint_pain",
+      "ui_label": "Joint pain details",
+      "canonical_question_key": "joint_pain_details",
+      "canonical_concept": "joint_pain"
+    },
+    "rash": {
+      "field": "rash",
+      "phase": "high_priority_followup",
+      "text": "Any rash or skin changes?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "rash_details",
+      "if_positive_ask": [
+        "rash_details"
+      ],
+      "ui_label": "Rash",
+      "canonical_question_key": "rash",
+      "canonical_concept": "rash"
+    },
+    "rash_details": {
+      "field": "rash_details",
+      "phase": "high_priority_followup",
+      "text": "What does the rash look like? Where is it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "rash",
+      "ui_label": "Rash details",
+      "canonical_question_key": "rash_details",
+      "canonical_concept": "rash"
+    },
+    "mouth_ulcers": {
+      "field": "mouth_ulcers",
+      "phase": "high_priority_followup",
+      "text": "Any mouth ulcers?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "mouth_ulcers_details",
+      "if_positive_ask": [
+        "mouth_ulcers_details"
+      ],
+      "ui_label": "Mouth ulcers",
+      "canonical_question_key": "mouth_ulcers",
+      "canonical_concept": "mouth_ulcers"
+    },
+    "mouth_ulcers_details": {
+      "field": "mouth_ulcers_details",
+      "phase": "high_priority_followup",
+      "text": "Where in the mouth? How many?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "mouth_ulcers",
+      "ui_label": "Mouth ulcers details",
+      "canonical_question_key": "mouth_ulcers_details",
+      "canonical_concept": "mouth_ulcers"
+    },
+    "flank_pain": {
+      "field": "flank_pain",
+      "phase": "high_priority_followup",
+      "text": "Any pain in the side or back or urinary symptoms?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "flank_pain_details",
+      "if_positive_ask": [
+        "flank_pain_details"
+      ],
+      "ui_label": "Flank pain",
+      "canonical_question_key": "flank_pain",
+      "canonical_concept": "flank_pain"
+    },
+    "flank_pain_details": {
+      "field": "flank_pain_details",
+      "phase": "high_priority_followup",
+      "text": "Which side? Constant or colicky?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "flank_pain",
+      "ui_label": "Flank pain details",
+      "canonical_question_key": "flank_pain_details",
+      "canonical_concept": "flank_pain"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pattern of diarrhoea changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "DURATION_BELOW_4_WEEKS"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": [
+        "recent_change_in_pattern_details"
+      ],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed \u2013 frequency, consistency, or associated symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "immunocompromised_state": {
+      "field": "immunocompromised_state",
+      "phase": "critical_followup",
+      "text": "Do you have a weakened immune system, active cancer, or are you on medicines that suppress the immune system such as steroids or chemotherapy?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "immunocompromised_status_details",
+      "if_positive_ask": [
+        "immunocompromised_status_details"
+      ],
+      "ui_label": "Immunocompromised state",
+      "canonical_question_key": "immunocompromised_state",
+      "canonical_concept": "immunocompromised_state"
+    },
+    "cramping_quality": {
+      "field": "cramping_quality",
+      "phase": "extended_characterize",
+      "text": "Does the pain come in waves or feel like cramps?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "cramping_quality_details",
+      "if_positive_ask": [
+        "cramping_quality_details"
+      ],
+      "ui_label": "Cramping quality",
+      "canonical_question_key": "cramping_quality",
+      "canonical_concept": "cramping_quality",
+      "clinical_priority": "low",
+      "ask_if": {
+        "op": "field_equals",
+        "field_ref": "$state.abdominal_pain",
+        "value": "yes"
+      }
+    },
+    "cramping_quality_details": {
+      "field": "cramping_quality_details",
+      "phase": "extended_characterize",
+      "text": "Tell me more \u2014 when, how long, how bad, anything that makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Cramping quality \u2014 details",
+      "canonical_question_key": "cramping_quality_details",
+      "parent_field": "cramping_quality",
+      "canonical_concept": "cramping_quality"
+    },
+    "abdominal_pain": {
+      "field": "abdominal_pain",
+      "phase": "critical_followup",
+      "text": "Any abdominal pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "abdominal_pain_details",
+      "if_positive_ask": [
+        "abdominal_pain_details"
+      ],
+      "ui_label": "Abdominal pain",
+      "canonical_question_key": "abdominal_pain",
+      "canonical_concept": "abdominal_pain",
+      "clinical_priority": "medium"
+    },
+    "abdominal_pain_details": {
+      "field": "abdominal_pain_details",
+      "phase": "critical_followup",
+      "text": "Tell me more about the abdominal pain \u2014 where, when, how bad.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Abdominal pain \u2014 details",
+      "canonical_question_key": "abdominal_pain_details",
+      "parent_field": "abdominal_pain",
+      "canonical_concept": "abdominal_pain"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "dysentery_pattern": [
+      "blood_in_stool"
+    ],
+    "dehydration_pattern": [
+      "severe_dehydration",
+      "very_low_urine_output"
+    ],
+    "acute_abdomen_pattern": [
+      "severe_abdominal_pain",
+      "persistent_vomiting"
+    ],
+    "gi_bleeding_pattern": [
+      "blood_in_stool"
+    ],
+    "inflammatory_bowel_pattern": [
+      "weight_loss",
+      "nocturnal_symptoms",
+      "blood_in_stool",
+      "joint_pain",
+      "mouth_ulcers"
+    ],
+    "high_risk_host_pattern": [
+      "immunocompromised_state"
+    ]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "gastrointestinal",
+    "high_yield_systems": [
+      "constitutional_dehydration",
+      "infectious_exposure",
+      "abdominal"
+    ],
+    "cross_system_systems": [
+      "genitourinary",
+      "hematologic_inflammatory",
+      "endocrine",
+      "travel_food_antibiotics",
+      "immunocompromise"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "medium"
+}

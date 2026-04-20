@@ -1,0 +1,1287 @@
+{
+  "version": "1.0.0",
+  "complaint_id": "cough",
+  "display_name": "Cough",
+  "ui_name": "Cough",
+  "ui_label": "Cough",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "respiratory",
+  "related_systems": {
+    "high_yield": [
+      "constitutional",
+      "airway",
+      "cardiovascular"
+    ],
+    "selective_cross_system": [
+      "ent_upper_airway",
+      "gastroesophageal"
+    ],
+    "contextual": [
+      "smoking_exposure",
+      "travel_tb_risk"
+    ]
+  },
+  "pivot_triggers": {
+    "fever": "pneumonia_or_sepsis_pattern",
+    "shortness_of_breath": "respiratory_distress_pattern",
+    "weight_loss": "malignancy_or_tb_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "onset",
+      "duration",
+      "frequency",
+      "dry_or_productive"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order unless an explicit alternate profile is selected."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 25,
+      "target_question_budget": 30,
+      "max_questions": 34,
+      "early_danger_reserve": 4,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Cough requires thorough respiratory, cardiac, and infectious screening. Increased budget to ensure danger follow-ups and modules are completed."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 4,
+      "secondary_question_budget_override_if_red_flag": 7,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "frequency",
+        "dry_or_productive"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "respiratory"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity"
+      ],
+      "early_danger_screen": [
+        "hemoptysis",
+        "shortness_of_breath",
+        "chest_pain",
+        "chest_pain_details",
+        "pleuritic_quality",
+        "recent_change_in_pattern"
+      ],
+      "extended_characterize": [
+        "frequency",
+        "timing_pattern",
+        "triggers",
+        "dry_or_productive",
+        "sputum_character"
+      ],
+      "critical_followup": [
+        "confusion_or_hypoxia",
+        "stridor",
+        "immunocompromised_state"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "weight_loss",
+        "wheeze",
+        "night_cough",
+        "tussive_trigger",
+        "tb_exposure",
+        "travel_history",
+        "heartburn",
+        "aspiration_or_choking_after_lying_or_eating",
+        "allergic_triggers",
+        "recent_viral_illness",
+        "pe_leg_swelling",
+        "prior_clot_history",
+        "recent_immobility_or_travel"
+      ],
+      "context_and_history": [
+        "occupational_exposure",
+        "household_illness"
+      ]
+    },
+    "chronic_low_severity_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "onset",
+        "duration",
+        "severity"
+      ],
+      "early_danger_screen": [
+        "hemoptysis",
+        "shortness_of_breath",
+        "chest_pain",
+        "chest_pain_details",
+        "pleuritic_quality",
+        "recent_change_in_pattern"
+      ],
+      "extended_characterize": [
+        "frequency",
+        "timing_pattern",
+        "triggers",
+        "dry_or_productive",
+        "sputum_character"
+      ],
+      "critical_followup": [
+        "confusion_or_hypoxia",
+        "stridor",
+        "immunocompromised_state"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "weight_loss",
+        "wheeze",
+        "night_cough",
+        "tussive_trigger",
+        "tb_exposure",
+        "travel_history",
+        "heartburn",
+        "aspiration_or_choking_after_lying_or_eating",
+        "allergic_triggers",
+        "recent_viral_illness",
+        "pe_leg_swelling",
+        "prior_clot_history",
+        "recent_immobility_or_travel"
+      ],
+      "context_and_history": [
+        "occupational_exposure",
+        "household_illness"
+      ]
+    },
+    "profile_switch_rules": [
+      {
+        "rule_id": "chronic_low_severity",
+        "trigger": {
+          "op": "all",
+          "conditions": [
+            {
+              "op": "duration_gte",
+              "field_ref": "duration",
+              "value": 4,
+              "unit": "weeks"
+            },
+            {
+              "op": "field_below",
+              "field_ref": "severity",
+              "value": 6
+            }
+          ]
+        },
+        "action": "use chronic_low_severity_profile"
+      },
+      {
+        "rule_id": "stay_on_default",
+        "trigger": "No alternate complaint-specific profile is active",
+        "action": "use default_profile"
+      }
+    ]
+  },
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative"
+    },
+    "onset": {
+      "field": "onset",
+      "phase": "core_characterize",
+      "text": "When did the cough start? If you can, tell me whether that was minutes, hours, days, weeks, months, or years ago.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Onset",
+      "canonical_question_key": "onset",
+      "canonical_concept": "onset"
+    },
+    "duration": {
+      "field": "duration",
+      "phase": "core_characterize",
+      "text": "How long has it been going on? If you can, tell me in minutes, hours, days, weeks, months, or years.",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Duration",
+      "canonical_question_key": "duration",
+      "canonical_concept": "duration"
+    },
+    "frequency": {
+      "field": "frequency",
+      "phase": "extended_characterize",
+      "text": "How often are you coughing?",
+      "response_type": "COUNT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Frequency",
+      "canonical_question_key": "frequency",
+      "canonical_concept": "frequency"
+    },
+    "timing_pattern": {
+      "field": "timing_pattern",
+      "phase": "extended_characterize",
+      "text": "Is the cough worse at night, in the morning, or at certain times of day?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "TIMING_ALREADY_RESOLVED"
+      ],
+      "ui_label": "Timing pattern",
+      "canonical_question_key": "timing_pattern",
+      "canonical_concept": "timing_pattern"
+    },
+    "triggers": {
+      "field": "triggers",
+      "phase": "extended_characterize",
+      "text": "Is there anything that triggers the cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "triggers_details",
+      "if_positive_ask": [
+        "triggers_details"
+      ],
+      "ui_label": "Triggers",
+      "canonical_question_key": "triggers",
+      "canonical_concept": "triggers"
+    },
+    "triggers_details": {
+      "field": "triggers_details",
+      "phase": "extended_characterize",
+      "text": "What triggers it \u2013 cold air, dust, exercise, lying down, or talking?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "triggers",
+      "ui_label": "Triggers details",
+      "canonical_question_key": "triggers_details",
+      "canonical_concept": "triggers"
+    },
+    "dry_or_productive": {
+      "field": "dry_or_productive",
+      "phase": "extended_characterize",
+      "text": "Are you bringing anything up with the cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "dry_or_productive_details",
+      "if_positive_ask": [
+        "dry_or_productive_details"
+      ],
+      "ui_label": "Dry or productive",
+      "canonical_question_key": "dry_or_productive",
+      "canonical_concept": "dry_or_productive"
+    },
+    "dry_or_productive_details": {
+      "field": "dry_or_productive_details",
+      "phase": "extended_characterize",
+      "text": "Is it dry, or are you bringing up phlegm?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "dry_or_productive",
+      "ui_label": "Cough type details",
+      "canonical_question_key": "dry_or_productive_details",
+      "canonical_concept": "dry_or_productive"
+    },
+    "sputum_character": {
+      "field": "sputum_character",
+      "phase": "extended_characterize",
+      "text": "If you are bringing up sputum, what colour and how much?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Sputum character",
+      "canonical_question_key": "sputum_character",
+      "canonical_concept": "sputum_character"
+    },
+    "severity": {
+      "field": "severity",
+      "phase": "core_characterize",
+      "text": "How troublesome is the cough on a scale of 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Severity",
+      "canonical_question_key": "severity",
+      "canonical_concept": "severity"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "high_priority_followup",
+      "text": "Have any other symptoms come with the cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": [
+        "associated_symptoms_details"
+      ],
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "high_priority_followup",
+      "text": "What other symptoms have come with the cough?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
+      "canonical_concept": "associated_symptoms"
+    },
+    "hemoptysis": {
+      "field": "hemoptysis",
+      "phase": "early_danger_screen",
+      "text": "Any blood in the sputum?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "hemoptysis_details",
+      "if_positive_ask": [
+        "hemoptysis_details"
+      ],
+      "ui_label": "Hemoptysis",
+      "canonical_question_key": "hemoptysis",
+      "canonical_concept": "hemoptysis"
+    },
+    "hemoptysis_details": {
+      "field": "hemoptysis_details",
+      "phase": "early_danger_screen",
+      "text": "How much blood? Is it streaks or clots?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "hemoptysis",
+      "ui_label": "Hemoptysis details",
+      "canonical_question_key": "hemoptysis_details",
+      "canonical_concept": "hemoptysis"
+    },
+    "shortness_of_breath": {
+      "field": "shortness_of_breath",
+      "phase": "early_danger_screen",
+      "text": "Any shortness of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "shortness_of_breath_details",
+      "if_positive_ask": [
+        "shortness_of_breath_details"
+      ],
+      "ui_label": "Shortness of breath",
+      "canonical_question_key": "shortness_of_breath",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "shortness_of_breath_details": {
+      "field": "shortness_of_breath_details",
+      "phase": "early_danger_screen",
+      "text": "Is it at rest, on exertion, or lying flat? How severe?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "shortness_of_breath",
+      "ui_label": "Shortness of breath details",
+      "canonical_question_key": "shortness_of_breath_details",
+      "canonical_concept": "shortness_of_breath"
+    },
+    "confusion_or_hypoxia": {
+      "field": "confusion_or_hypoxia",
+      "phase": "critical_followup",
+      "text": "Any confusion, blue lips, or feeling severely unwell?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "confusion_or_hypoxia_details",
+      "if_positive_ask": [
+        "confusion_or_hypoxia_details"
+      ],
+      "ui_label": "Confusion or hypoxia",
+      "canonical_question_key": "confusion_or_hypoxia",
+      "canonical_concept": "confusion_or_hypoxia"
+    },
+    "confusion_or_hypoxia_details": {
+      "field": "confusion_or_hypoxia_details",
+      "phase": "critical_followup",
+      "text": "When did this start? How confused or short of breath?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "confusion_or_hypoxia",
+      "ui_label": "Confusion details",
+      "canonical_question_key": "confusion_or_hypoxia_details",
+      "canonical_concept": "confusion_or_hypoxia"
+    },
+    "stridor": {
+      "field": "stridor",
+      "phase": "critical_followup",
+      "text": "Any noisy breathing or throat tightness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "stridor_details",
+      "if_positive_ask": [
+        "stridor_details"
+      ],
+      "ui_label": "Stridor",
+      "canonical_question_key": "stridor",
+      "canonical_concept": "stridor"
+    },
+    "stridor_details": {
+      "field": "stridor_details",
+      "phase": "critical_followup",
+      "text": "Is the noise when breathing in or out?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "stridor",
+      "ui_label": "Stridor details",
+      "canonical_question_key": "stridor_details",
+      "canonical_concept": "stridor"
+    },
+    "weight_loss": {
+      "field": "weight_loss",
+      "phase": "high_priority_followup",
+      "text": "Any unintentional weight loss?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "DURATION_BELOW_2_WEEKS"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "weight_loss_details",
+      "if_positive_ask": [
+        "weight_loss_details"
+      ],
+      "ui_label": "Weight loss",
+      "canonical_question_key": "weight_loss",
+      "canonical_concept": "weight_loss"
+    },
+    "weight_loss_details": {
+      "field": "weight_loss_details",
+      "phase": "high_priority_followup",
+      "text": "How much weight have you lost? Over what period?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "weight_loss",
+      "ui_label": "Weight loss details",
+      "canonical_question_key": "weight_loss_details",
+      "canonical_concept": "weight_loss"
+    },
+    "immunocompromised_status_details": {
+      "field": "immunocompromised_status_details",
+      "phase": "critical_followup",
+      "text": "What condition or treatment?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "immunocompromised_state",
+      "ui_label": "Immunocompromised details",
+      "canonical_question_key": "immunocompromised_status_details",
+      "canonical_concept": "immunocompromised_state"
+    },
+    "wheeze": {
+      "field": "wheeze",
+      "phase": "high_priority_followup",
+      "text": "Any wheeze or whistling sound from the chest?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "wheeze_details",
+      "if_positive_ask": [
+        "wheeze_details"
+      ],
+      "ui_label": "Wheeze",
+      "canonical_question_key": "wheeze",
+      "canonical_concept": "wheeze"
+    },
+    "wheeze_details": {
+      "field": "wheeze_details",
+      "phase": "high_priority_followup",
+      "text": "Is the wheeze worse at night or with exercise?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "wheeze",
+      "ui_label": "Wheeze details",
+      "canonical_question_key": "wheeze_details",
+      "canonical_concept": "wheeze"
+    },
+    "night_cough": {
+      "field": "night_cough",
+      "phase": "high_priority_followup",
+      "text": "Does the cough wake you from sleep?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "night_cough_details",
+      "if_positive_ask": [
+        "night_cough_details"
+      ],
+      "ui_label": "Night cough",
+      "canonical_question_key": "night_cough",
+      "canonical_concept": "night_cough"
+    },
+    "night_cough_details": {
+      "field": "night_cough_details",
+      "phase": "high_priority_followup",
+      "text": "How many times per night? Does it disturb your sleep?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "night_cough",
+      "ui_label": "Night cough details",
+      "canonical_question_key": "night_cough_details",
+      "canonical_concept": "night_cough"
+    },
+    "tb_exposure": {
+      "field": "tb_exposure",
+      "phase": "high_priority_followup",
+      "text": "Any close contact with TB or known tuberculosis exposure?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "tb_exposure_details",
+      "if_positive_ask": [
+        "tb_exposure_details"
+      ],
+      "ui_label": "TB exposure",
+      "canonical_question_key": "tb_exposure",
+      "canonical_concept": "tb_exposure"
+    },
+    "tb_exposure_details": {
+      "field": "tb_exposure_details",
+      "phase": "high_priority_followup",
+      "text": "Who had TB? When was the exposure?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "tb_exposure",
+      "ui_label": "TB exposure details",
+      "canonical_question_key": "tb_exposure_details",
+      "canonical_concept": "tb_exposure"
+    },
+    "travel_history": {
+      "field": "travel_history",
+      "phase": "high_priority_followup",
+      "text": "Any recent travel, especially to areas where TB is common?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "travel_history_details",
+      "if_positive_ask": [
+        "travel_history_details"
+      ],
+      "ui_label": "Travel history",
+      "canonical_question_key": "travel_history",
+      "canonical_concept": "travel_history"
+    },
+    "travel_history_details": {
+      "field": "travel_history_details",
+      "phase": "high_priority_followup",
+      "text": "Where and when?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "travel_history",
+      "ui_label": "Travel history details",
+      "canonical_question_key": "travel_history_details",
+      "canonical_concept": "travel_history"
+    },
+    "heartburn": {
+      "field": "heartburn",
+      "phase": "high_priority_followup",
+      "text": "Any heartburn or sour taste?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "heartburn_details",
+      "if_positive_ask": [
+        "heartburn_details"
+      ],
+      "ui_label": "Heartburn",
+      "canonical_question_key": "heartburn",
+      "canonical_concept": "heartburn"
+    },
+    "heartburn_details": {
+      "field": "heartburn_details",
+      "phase": "high_priority_followup",
+      "text": "Does it happen after eating or when lying down?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "heartburn",
+      "ui_label": "Heartburn details",
+      "canonical_question_key": "heartburn_details",
+      "canonical_concept": "heartburn"
+    },
+    "aspiration_or_choking_after_lying_or_eating": {
+      "field": "aspiration_or_choking_after_lying_or_eating",
+      "phase": "high_priority_followup",
+      "text": "Any choking, aspiration, or cough after lying down or after eating?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "aspiration_or_choking_after_lying_or_eating_details",
+      "if_positive_ask": [
+        "aspiration_or_choking_after_lying_or_eating_details"
+      ],
+      "ui_label": "Aspiration or choking",
+      "canonical_question_key": "aspiration_or_choking_after_lying_or_eating",
+      "canonical_concept": "aspiration_or_choking_after_lying_or_eating"
+    },
+    "aspiration_or_choking_after_lying_or_eating_details": {
+      "field": "aspiration_or_choking_after_lying_or_eating_details",
+      "phase": "high_priority_followup",
+      "text": "When does it happen? How often?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "aspiration_or_choking_after_lying_or_eating",
+      "ui_label": "Aspiration details",
+      "canonical_question_key": "aspiration_or_choking_after_lying_or_eating_details",
+      "canonical_concept": "aspiration_or_choking_after_lying_or_eating"
+    },
+    "allergic_triggers": {
+      "field": "allergic_triggers",
+      "phase": "high_priority_followup",
+      "text": "Any trigger like pollen, pets, dust, or cold air?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "allergic_triggers_details",
+      "if_positive_ask": [
+        "allergic_triggers_details"
+      ],
+      "ui_label": "Allergic triggers",
+      "canonical_question_key": "allergic_triggers",
+      "canonical_concept": "allergic_triggers"
+    },
+    "allergic_triggers_details": {
+      "field": "allergic_triggers_details",
+      "phase": "high_priority_followup",
+      "text": "What triggers it? How soon after exposure?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "allergic_triggers",
+      "ui_label": "Allergic triggers details",
+      "canonical_question_key": "allergic_triggers_details",
+      "canonical_concept": "allergic_triggers"
+    },
+    "recent_viral_illness": {
+      "field": "recent_viral_illness",
+      "phase": "high_priority_followup",
+      "text": "Did the cough start with a cold or flu-like illness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_viral_illness_details",
+      "if_positive_ask": [
+        "recent_viral_illness_details"
+      ],
+      "ui_label": "Recent viral illness",
+      "canonical_question_key": "recent_viral_illness",
+      "canonical_concept": "recent_viral_illness"
+    },
+    "recent_viral_illness_details": {
+      "field": "recent_viral_illness_details",
+      "phase": "high_priority_followup",
+      "text": "What illness? When did it start?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_viral_illness",
+      "ui_label": "Viral illness details",
+      "canonical_question_key": "recent_viral_illness_details",
+      "canonical_concept": "recent_viral_illness"
+    },
+    "pe_leg_swelling": {
+      "field": "pe_leg_swelling",
+      "phase": "high_priority_followup",
+      "text": "Any one-sided leg swelling or calf pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "pe_leg_swelling_details",
+      "if_positive_ask": [
+        "pe_leg_swelling_details"
+      ],
+      "ui_label": "One-sided leg swelling",
+      "canonical_question_key": "pe_leg_swelling",
+      "canonical_concept": "pe_leg_swelling"
+    },
+    "pe_leg_swelling_details": {
+      "field": "pe_leg_swelling_details",
+      "phase": "high_priority_followup",
+      "text": "Which leg? Is it red, warm, or tender?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "pe_leg_swelling",
+      "ui_label": "Leg swelling details",
+      "canonical_question_key": "pe_leg_swelling_details",
+      "canonical_concept": "pe_leg_swelling"
+    },
+    "prior_clot_history": {
+      "field": "prior_clot_history",
+      "phase": "high_priority_followup",
+      "text": "Any past DVT, PE, or clotting disorder?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "prior_clot_history_details",
+      "if_positive_ask": [
+        "prior_clot_history_details"
+      ],
+      "ui_label": "Prior clot history",
+      "canonical_question_key": "prior_clot_history",
+      "canonical_concept": "prior_clot_history"
+    },
+    "prior_clot_history_details": {
+      "field": "prior_clot_history_details",
+      "phase": "high_priority_followup",
+      "text": "When? Were you treated with blood thinners?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "prior_clot_history",
+      "ui_label": "Clot history details",
+      "canonical_question_key": "prior_clot_history_details",
+      "canonical_concept": "prior_clot_history"
+    },
+    "occupational_exposure": {
+      "field": "occupational_exposure",
+      "phase": "context_and_history",
+      "text": "Any dust, fumes, chemicals, or other occupational exposure that could be relevant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "occupational_exposure_details",
+      "if_positive_ask": [
+        "occupational_exposure_details"
+      ],
+      "ui_label": "Occupational exposure",
+      "canonical_question_key": "occupational_exposure",
+      "canonical_concept": "occupational_exposure"
+    },
+    "occupational_exposure_details": {
+      "field": "occupational_exposure_details",
+      "phase": "context_and_history",
+      "text": "What substances? How long have you been exposed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "occupational_exposure",
+      "ui_label": "Occupational exposure details",
+      "canonical_question_key": "occupational_exposure_details",
+      "canonical_concept": "occupational_exposure"
+    },
+    "household_illness": {
+      "field": "household_illness",
+      "phase": "context_and_history",
+      "text": "Has anyone at home or close to you had a similar illness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "household_illness_details",
+      "if_positive_ask": [
+        "household_illness_details"
+      ],
+      "ui_label": "Household illness",
+      "canonical_question_key": "household_illness",
+      "canonical_concept": "household_illness"
+    },
+    "household_illness_details": {
+      "field": "household_illness_details",
+      "phase": "context_and_history",
+      "text": "Who and what symptoms?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "household_illness",
+      "ui_label": "Household illness details",
+      "canonical_question_key": "household_illness_details",
+      "canonical_concept": "household_illness"
+    },
+    "recent_immobility_or_travel": {
+      "field": "recent_immobility_or_travel",
+      "phase": "high_priority_followup",
+      "text": "Any recent surgery, bed rest, long-distance travel, or other period of immobility?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_immobility_or_travel_details",
+      "if_positive_ask": [
+        "recent_immobility_or_travel_details"
+      ],
+      "ui_label": "Recent immobility or travel",
+      "canonical_question_key": "recent_immobility_or_travel",
+      "canonical_concept": "recent_immobility_or_travel"
+    },
+    "recent_immobility_or_travel_details": {
+      "field": "recent_immobility_or_travel_details",
+      "phase": "high_priority_followup",
+      "text": "What type of surgery/travel? How long ago?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_immobility_or_travel",
+      "ui_label": "Immobility details",
+      "canonical_question_key": "recent_immobility_or_travel_details",
+      "canonical_concept": "recent_immobility_or_travel"
+    },
+    "recent_change_in_pattern": {
+      "field": "recent_change_in_pattern",
+      "phase": "early_danger_screen",
+      "text": "Has the pattern of cough changed noticeably in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "DURATION_BELOW_4_WEEKS"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_change_in_pattern_details",
+      "if_positive_ask": [
+        "recent_change_in_pattern_details"
+      ],
+      "ui_label": "Recent change in pattern",
+      "canonical_question_key": "recent_change_in_pattern",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "recent_change_in_pattern_details": {
+      "field": "recent_change_in_pattern_details",
+      "phase": "early_danger_screen",
+      "text": "What has changed \u2013 frequency, severity, or sputum production?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "recent_change_in_pattern",
+      "ui_label": "Change details",
+      "canonical_question_key": "recent_change_in_pattern_details",
+      "canonical_concept": "recent_change_in_pattern"
+    },
+    "immunocompromised_state": {
+      "field": "immunocompromised_state",
+      "phase": "critical_followup",
+      "text": "Do you have a weakened immune system, active cancer, or are you on medicines that suppress the immune system such as steroids or chemotherapy?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "immunocompromised_status_details",
+      "if_positive_ask": [
+        "immunocompromised_status_details"
+      ],
+      "ui_label": "Immunocompromised state",
+      "canonical_question_key": "immunocompromised_state",
+      "canonical_concept": "immunocompromised_state"
+    },
+    "pleuritic_quality": {
+      "field": "pleuritic_quality",
+      "phase": "early_danger_screen",
+      "text": "Is the pain worse when you breathe in deeply or cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "pleuritic_quality_details",
+      "if_positive_ask": [
+        "pleuritic_quality_details"
+      ],
+      "ui_label": "Pleuritic quality",
+      "canonical_question_key": "pleuritic_quality",
+      "canonical_concept": "pleuritic_quality",
+      "clinical_priority": "medium",
+      "ask_if": {
+        "op": "field_equals",
+        "field_ref": "$state.chest_pain",
+        "value": "yes"
+      }
+    },
+    "pleuritic_quality_details": {
+      "field": "pleuritic_quality_details",
+      "phase": "early_danger_screen",
+      "text": "Tell me more \u2014 when, how long, how bad, anything that makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Pleuritic quality \u2014 details",
+      "canonical_question_key": "pleuritic_quality_details",
+      "parent_field": "pleuritic_quality",
+      "canonical_concept": "pleuritic_quality"
+    },
+    "tussive_trigger": {
+      "field": "tussive_trigger",
+      "phase": "high_priority_followup",
+      "text": "Does it come on when you cough, or right after coughing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "tussive_trigger_details",
+      "if_positive_ask": [
+        "tussive_trigger_details"
+      ],
+      "ui_label": "Triggered by cough",
+      "canonical_question_key": "tussive_trigger",
+      "canonical_concept": "tussive_trigger",
+      "clinical_priority": "low",
+      "ask_if": {
+        "op": "field_equals",
+        "field_ref": "$state.cough",
+        "value": "yes"
+      }
+    },
+    "tussive_trigger_details": {
+      "field": "tussive_trigger_details",
+      "phase": "high_priority_followup",
+      "text": "Tell me more \u2014 when, how long, how bad, anything that makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Triggered by cough \u2014 details",
+      "canonical_question_key": "tussive_trigger_details",
+      "parent_field": "tussive_trigger",
+      "canonical_concept": "tussive_trigger"
+    },
+    "smoking_current": {
+      "field": "smoking_current",
+      "phase": "context_and_history",
+      "text": "Do you currently smoke, vape, or use any tobacco?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "smoking_current_details",
+      "if_positive_ask": [
+        "smoking_current_details"
+      ],
+      "ui_label": "Current smoking",
+      "canonical_question_key": "smoking_current",
+      "canonical_concept": "smoking_current",
+      "clinical_priority": "low"
+    },
+    "smoking_current_details": {
+      "field": "smoking_current_details",
+      "phase": "context_and_history",
+      "text": "Tell me more \u2014 when, how long, how bad, anything that makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Current smoking \u2014 details",
+      "canonical_question_key": "smoking_current_details",
+      "parent_field": "smoking_current",
+      "canonical_concept": "smoking_current"
+    },
+    "smoking_past": {
+      "field": "smoking_past",
+      "phase": "context_and_history",
+      "text": "Have you smoked regularly in the past?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "smoking_past_details",
+      "if_positive_ask": [
+        "smoking_past_details"
+      ],
+      "ui_label": "Past smoking",
+      "canonical_question_key": "smoking_past",
+      "canonical_concept": "smoking_past",
+      "clinical_priority": "low",
+      "ask_if": {
+        "op": "field_equals",
+        "field_ref": "$state.smoking_current",
+        "value": "no"
+      }
+    },
+    "smoking_past_details": {
+      "field": "smoking_past_details",
+      "phase": "context_and_history",
+      "text": "Tell me more \u2014 when, how long, how bad, anything that makes it better or worse.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Past smoking \u2014 details",
+      "canonical_question_key": "smoking_past_details",
+      "parent_field": "smoking_past",
+      "canonical_concept": "smoking_past"
+    },
+    "chest_pain": {
+      "field": "chest_pain",
+      "phase": "critical_followup",
+      "text": "Any chest pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "options": [
+        "yes",
+        "no"
+      ],
+      "skip_conditions": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "required": false,
+      "extraction_strategy": "EXTRACT_BOOLEAN_WITH_DETAIL_FROM_RESPONSE",
+      "capture_detail_if_positive": true,
+      "detail_field": "chest_pain_details",
+      "if_positive_ask": [
+        "chest_pain_details"
+      ],
+      "ui_label": "Chest pain",
+      "canonical_question_key": "chest_pain",
+      "canonical_concept": "chest_pain",
+      "clinical_priority": "high"
+    },
+    "chest_pain_details": {
+      "field": "chest_pain_details",
+      "phase": "critical_followup",
+      "text": "Tell me more about the chest pain \u2014 where, when, how bad.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Chest pain \u2014 details",
+      "canonical_question_key": "chest_pain_details",
+      "parent_field": "chest_pain",
+      "canonical_concept": "chest_pain"
+    }
+  },
+  "derived_red_flag_patterns": {
+    "hemoptysis_pattern": [
+      "hemoptysis"
+    ],
+    "pneumonia_or_sepsis_pattern": [
+      "shortness_of_breath",
+      "pleuritic_quality"
+    ],
+    "airway_threat_pattern": [
+      "stridor",
+      "shortness_of_breath"
+    ],
+    "malignancy_or_tb_pattern": [
+      "weight_loss",
+      "tb_exposure",
+      "travel_history",
+      "hemoptysis"
+    ],
+    "high_risk_host_pattern": [
+      "immunocompromised_state"
+    ]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "respiratory",
+    "high_yield_systems": [
+      "constitutional",
+      "airway",
+      "cardiovascular"
+    ],
+    "cross_system_systems": [
+      "ent_upper_airway",
+      "gastroesophageal",
+      "smoking_exposure",
+      "travel_tb_risk"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "medium"
+}
