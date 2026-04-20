@@ -154,7 +154,8 @@ def render_widget(q: dict):
     label = q.get("text") or q.get("ui_label") or q["field"]
 
     if rt == "BOOLEAN_WITH_OPTIONAL_DETAILS":
-        yn = st.radio(label, ["", "Yes", "No"], horizontal=True, key=f"{key}_bool")
+
+        yn = st.radio(label, ["Yes", "No"], index=None, horizontal=True, key=f"{key}_bool")
         details = st.text_input("Add detail if relevant", key=f"{key}_details")
         if yn == "Yes" and details.strip():
             return details.strip()
@@ -182,7 +183,7 @@ def render_widget(q: dict):
     if rt == "COUNT_OR_SHORT_TEXT":
         return st.text_input(label, key=key, placeholder="Count or brief text")
     if rt == "NARRATIVE_FREE_TEXT":
-        return st.text_area(label, key=key, height=120)
+        return st.text_input(label, key=key, placeholder="Type your answer and press Enter...")
     return st.text_input(label, key=key)
 
 
@@ -329,7 +330,7 @@ def main():
         st.error(f"API not reachable at {API_BASE}. Start the backend first.")
         st.stop()
 
-    # Only fetch saved metrics after session is fully complete
+
     saved_metrics = None
     if st.session_state.get("summary_payload"):
         saved_metrics = load_metrics_from_api()
@@ -340,6 +341,18 @@ def main():
     tab_intake, tab_transcript, tab_summary, tab_metrics = st.tabs(["Intake", "Transcript", "Summary", "Metrics"])
 
     with st.sidebar:
+
+        try:
+
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            image_path = os.path.join(current_dir, "idle state 2.0.jpg")
+            
+
+            st.image(image_path, width="stretch")
+        except Exception:
+            st.warning("Avatar image not found. Check file path.")
+        st.write("") 
+
         st.markdown('<div class="section-title">Session controls</div>', unsafe_allow_html=True)
         if st.button("➕ Start new session", use_container_width=True, type="primary"):
             reset_session_state()
@@ -391,6 +404,10 @@ def main():
             st.markdown(f'<span class="escalation-chip">Escalation: {safe_text(st.session_state.progress.get("escalation_level", "none"))}</span>', unsafe_allow_html=True)
             prog = st.session_state.progress.get("completion_percent", 0.0)
             st.progress(min(max(prog / 100.0, 0.0), 1.0), text=f"{prog:.1f}% through complaint flow")
+            
+            if st.session_state.get("summary_payload"):
+                st.success("✅ Intake Complete! Move to the **Summary** tab above.")
+                
             st.markdown('</div>', unsafe_allow_html=True)
 
     with tab_intake:
@@ -401,42 +418,71 @@ def main():
             with left:
                 st.markdown('<div class="card">', unsafe_allow_html=True)
                 st.markdown('<div class="section-title">Conversation</div>', unsafe_allow_html=True)
-                if not st.session_state.chat_history:
-                    st.caption("The live conversation will appear here.")
-                else:
-                    for item in st.session_state.chat_history[-10:]:
-                        render_chat_bubble(item["role"], item["message"], item.get("phase"))
+                
+
+                with st.container(height=550, border=False):
+                    if not st.session_state.chat_history:
+                        st.caption("The live conversation will appear here.")
+                    else:
+                        for item in st.session_state.chat_history:
+                            render_chat_bubble(item["role"], item["message"], item.get("phase"))
+                
                 st.markdown('</div>', unsafe_allow_html=True)
             with right:
                 if st.session_state.progress.get("red_flags"):
                     for flag in st.session_state.progress.get("red_flags", []):
                         st.markdown(f'<div class="red-flag">{safe_text(flag.get("pattern", "red flag")).replace("_", " ")}</div>', unsafe_allow_html=True)
+                
                 q = st.session_state.current_question
+                
+
                 if q is None:
-                    st.markdown('<div class="question-shell"><div class="section-title">Ready to summarize</div><div class="helper">The complaint flow, ROS, and modules are exhausted. Generate the summaries and review the calculated metrics.</div></div>', unsafe_allow_html=True)
-                    if st.button("🧠 Generate summaries", use_container_width=True, type="primary"):
-                        complete_session()
-                        st.rerun()
+                    if st.session_state.get("summary_payload"):
+
+                        st.markdown(
+                            '<div class="question-shell" style="text-align:center; padding: 40px;">'
+                            '<h2 style="color:#059669;">🎉 Intake Complete</h2>'
+                            '<p style="color:#64748b;">The AI has finished clerking the patient.</p>'
+                            '</div>', 
+                            unsafe_allow_html=True
+                        )
+                    else:
+
+                        st.markdown('<div class="question-shell"><div class="section-title">Ready to summarize</div><div class="helper">The complaint flow, ROS, and modules are exhausted. Generate the summaries and review the calculated metrics.</div></div>', unsafe_allow_html=True)
+                        if st.button("🧠 Generate summaries", use_container_width=True, type="primary"):
+                            with st.spinner("🤖 AI is writing the clinical summary... This usually takes 10-15 seconds."):
+                                complete_session()
+                            st.rerun()
                 else:
-                    st.markdown('<div class="question-shell">', unsafe_allow_html=True)
-                    st.markdown(f'<div class="phase-tag">{safe_text(q.get("phase"))}</div>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="question-prompt">{safe_text(q.get("text") or q.get("ui_label") or q.get("field"))}</div>', unsafe_allow_html=True)
-                    st.markdown(f'**Field:** {safe_text(q.get("ui_label") or q.get("field"))}')
-                    if q.get("sensitive_topic"):
-                        st.caption("Sensitive topic")
-                    answer = render_widget(q)
-                    st.markdown('<div class="sidebar-question-note">Question text is shown above in high contrast for readability.</div>', unsafe_allow_html=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                    c1, c2, c3 = st.columns(3)
-                    with c1:
-                        if st.button("Submit answer", use_container_width=True, type="primary"):
+
+                    with st.form(key=f"answer_form_{q.get('id', 'default')}", clear_on_submit=False, border=False):
+                        st.markdown('<div class="question-shell">', unsafe_allow_html=True)
+                        st.markdown(f'<div class="phase-tag">{safe_text(q.get("phase"))}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="question-prompt">{safe_text(q.get("text") or q.get("ui_label") or q.get("field"))}</div>', unsafe_allow_html=True)
+                        st.markdown(f'**Field:** {safe_text(q.get("ui_label") or q.get("field"))}')
+                        if q.get("sensitive_topic"):
+                            st.caption("Sensitive topic")
+                        
+
+                        answer = render_widget(q)
+                        
+                        st.markdown('<div class="sidebar-question-note">Question text is shown above in high contrast for readability.</div>', unsafe_allow_html=True)
+                        st.markdown('</div>', unsafe_allow_html=True)
+                        
+                        submitted = st.form_submit_button("Submit answer", use_container_width=True, type="primary")
+                        
+                        if submitted:
                             if not str(answer).strip():
                                 st.warning("Enter an answer before continuing.")
                             else:
                                 submit_answer(str(answer).strip())
                                 st.rerun()
+
+
+                    c2, c3 = st.columns(2)
                     with c2:
-                        if q.get("phase") != "ros" and st.button("Skip question", use_container_width=True):
+                        # Only show the skip button during the initial complaint phase
+                        if q.get("phase") == "complaint" and st.button("Skip question", use_container_width=True):
                             skip_current_question()
                             st.rerun()
                     with c3:
