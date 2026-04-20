@@ -246,6 +246,25 @@ def get_system_symptom_df(session_id, turn_number):
     df = pd.read_sql(sql, conn)
     return df
 
+def get_symptom_kg_df(session_id):
+    """
+    Returns system_symptom data for given session_id, turn_number
+    """
+    conn, cursor = get_connection()
+    # query SymptomSystemKG, filtering by session_id and turn_number
+    sql = f"""
+        SELECT *
+        FROM SymptomSystemKG
+        WHERE SessionId = {session_id}
+        AND turn = (SELECT MAX(turn) 
+                    FROM SymptomSystemKG 
+                    WHERE SessionId = {session_id});
+        """
+    print('Query for grabbing most recent SymptomSystemKG: \n', sql)
+    # read this into a dataframe
+    df = pd.read_sql(sql, conn)
+    return df
+
 def get_turns(session_id):
     """
     Returns a list of turns for a given session
@@ -284,6 +303,7 @@ def get_rankings(session_id, turn_number):
     return df
 
 def get_previous_drilldown_messages(session_id):
+    # TODO: this only factors in drilldown start conversations? check
     conn, cursor = get_connection()
     sql = f'''
         SELECT MAX(timestamp) 

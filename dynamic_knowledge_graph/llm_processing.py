@@ -17,7 +17,8 @@ from db_read import (get_conversations,
                      check_prev_rank_1,
                      retreive_system_symptom_kg,
                      check_symptom_rank_1,
-                     check_session_consistency)
+                     check_session_consistency,
+                     get_symptom_kg_df)
 from knowledge_graph import convert_df_to_kg
 from db_write import push_kg_to_db, push_ranking_to_db
 from external_data_pull import umls_knowledge_graph
@@ -452,13 +453,14 @@ def system_grouping(df, symptom, selected_session, turn_number):
     system_instruction = {
         "role": "system",
         "content": (
-            "Assign a biological system to each item in the following list of symptoms:"
+            "Assign a biological system (examples: musculoskeletal system, urinary system) to each item in the following list of symptoms:"
             f"{symptom_string} and the relation to the system using these relationships: {edge_string}"
             "STRICT RULES: "
             "The response must be formatted as followed: "
             "1. Each symptom must be followed by an :  the relationship : the biological system "
             "2. Each symptom, biological system, and relationship must be followed by a newline "
-            "3. There must be at least 2 biological systems"
+            # "3. There must be at least 2 biological systems"
+            "3. Do not use diagnoses for biological systems"
             "4. Only include this formatted text in the response, do not add number to rows."
             "5. DO NOT NUMBER ROWS. "
         )
@@ -502,10 +504,15 @@ def system_grouping(df, symptom, selected_session, turn_number):
 def symptom_grouping(df, freq_symptom, selected_session, turn_number, question_phase):
     # generate system groupings for tail column data
     # comment out if you want to broaden results to Finding, Intellectual Product, Pathologic Function, etc
-    # TODO: remove this condition for better drill-down
+    # TODO: remove this condition for more comprehensive drill-down
     df = df[df['semantic_type'] == 'Sign or Symptom'].copy()
     # print(df.head())
     symptom_list = df['symptom'].tolist()
+    
+    # lowercase both symptom_list and freq_symptom values for accurate removal
+    symptom_list = [symptom.lower() for symptom in symptom_list]
+    freq_symptom = freq_symptom.lower()
+
     print(f'Symptom list before removal of {freq_symptom}: {symptom_list}')
     # remove system searched for in UMLS
     if freq_symptom in symptom_list:
@@ -550,11 +557,12 @@ def symptom_grouping(df, freq_symptom, selected_session, turn_number, question_p
         system_instruction = {
             "role": "system",
             "content": (
-                f"Assign a relationship to primary symptom {freq_symptom} using the following list of symptoms:"
-                f"{symptom_string} and its relations using these relationships: {edge_string}"
+                f"Assign a relationship to the primary symptom {freq_symptom} using the following list of symptoms:"
+                f"{symptom_string}, and its relations using these relationships: {edge_string}"
                 "STRICT RULES: "
                 "The response must be formatted as followed: "
-                "1. The primary symptom must be followed by an :  the relationship : the related symptom "
+                "1. Primary system : relationship : related symptom "
+                # "1. The primary symptom must be followed by an :  the relationship : the related symptom "
                 "2. An example would be Itchy scalp : Symptom-Symptom : Pruritus of scalp"
                 "3. Each primary symptom, relationship, and related system must be followed by a newline "
                 "4. Only include this formatted text in the response, do not add number to rows."
@@ -597,11 +605,16 @@ def symptom_grouping(df, freq_symptom, selected_session, turn_number, question_p
                     continue_session=True)
     else:
         # making basic 1 node knowledge graph which relates to itself
-        symptom_kg = pd.DataFrame({'tail': symptom_list,
-                                   'head': symptom_list,
-                                   'relation': ['symptom-symptom']})
+        symptom_kg = pd.DataFrame({'symptom': [freq_symptom],
+                                   'system': [freq_symptom],
+                                   'relation': ['symptom-symptom'],
+                                   'turn': [turn_number]})
         # TODO: push this dataframe to database (check column names, mimic push above)
-        
+        push_kg_to_db(symptom_kg, 
+                    selected_session, 
+                    'SymptomSystemKG', 
+                    overwrite=False,
+                    continue_session=True)
         # move onto final phase of question (diagnosis)
         question_phase +=1
     return symptom_kg, question_phase
@@ -641,12 +654,21 @@ def form_system_question(session_id, turn_number, symptom):
     return response
 
 def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, current_phase):
+    
+    # ----------------------------------------------------
+    # Pull most recent KG, extract systems list
+    # ----------------------------------------------------
+    
     # query DB with session_id, turn_number
     df = get_system_symptom_df(session_id, turn_number)
     # print('drilldown system:', df)
     # pull unique systems
     systems = df['system'].unique().tolist()
     systems_str = ", ".join(systems)
+
+    # ----------------------------------------------------
+    # Rank systems
+    # ----------------------------------------------------
 
     # code to rank KG systems
     system_instruction = {
@@ -689,6 +711,10 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
     system_rank['timestamp'] = dt.now()
     push_ranking_to_db(system_rank, 'SystemRank', session_id)
         
+    # ----------------------------------------------------
+    # Duplicate KG to show it was used in this conversation turn
+    # ----------------------------------------------------
+
     # push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
     symptom_system_kg = get_system_symptom_df(session_id, turn_number)
     symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
@@ -697,7 +723,39 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
                 'SymptomSystemKG', 
                 overwrite=False,
                 continue_session=True)
+    
+    # ----------------------------------------------------
+    # Branching for drilldown start, current phase
+    # 1. Drilldown Start
+    #   - Generated question factors biological systems list, initial 
+    #     symptom query sent to UMLS, and first user prompt
+    #   - Only runs once (drilldown_start set to False after)
+    # After Drilldown Start (regardless of Current Phase 2 or 3):
+    #   - Retrieves previous conversation messages
+    #       - Pulls most recent timestamp from SystemRank table for 
+    #         session with drilldown_start flag set to 1
+    #       - Pulls all conversations from Turn table with datetime
+    #         greater or equal to most recent timestamp with
+    #         drilldown start flag set
+    #   - Checks ranking for systems to see if there a 3 matches
+    #       - If 3 matches, current_phase is set to 3
+    #       - If not 3 matches, current_phase stays at 2
+    # 2. Current phase = 2
+    #   - Generated question factors previous messages, biological 
+    #     systems list, and intial symptom used to query UMLS
+    # 3. Current phase = 3
+    #   - EVALUATE IF THIS NEEDS TO BE HERE
+    #   - Filters initial knowledge graphs to selected system
+    #       - There are issues with this - especially if that system
+    #         has few nodes attached
+    #       - Consider querying UMLS with system and initial symptom
+    #         to generate new nodes
+    #   - Generated question factors in filtered symptom_list and
+    #     previous messages
+    # ----------------------------------------------------
+    
     # branch here if drilldown_start is false (will want all conversations from start)
+    print('Drilldown start: ', drilldown_start)
     if drilldown_start:
     # ask next question, factoring in prompt and list of systems
         try:
@@ -727,7 +785,7 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
     else:
         # query database where drilldown_start is false, and grab previous messages
         drilldown_conversation, drilldown_datetime = get_previous_drilldown_messages(session_id)
-        print(drilldown_conversation)
+        print(f'Drilldown conversation: \n{drilldown_conversation}')
         # start from turn where drilldown start is true (first true since current turn)
         # pull rank 1 systems for all previous rankings and see if there are 3 reoccuring
         freq_system = check_prev_rank_1(session_id, drilldown_datetime)
@@ -749,7 +807,7 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
                         "You are a clinical intake bot. "
                         f"""Take the following list of biological systems: {systems_str} and 
                             form a question that narrows down which system to focus on for a 
-                            patient with a symptom of {symptom}. Use these messages for 
+                            patient with a symptom of {symptom}. Use these previous messages for 
                             context: {drilldown_conversation}.
                         """
                         "STRICT RULES: "
@@ -759,7 +817,8 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
                         "4. Refer to biological systems in layman's terms that anyone could understand. "
                         "5. Assume the patient cannot describe the systems themselves, and refer to something they may feel or see. "
                         "6. Do not mention the biological system you are focusing on. "
-                        "7. No pleasantries or small talk. "
+                        "7. Do not repeat any questions the system has asked previously. "
+                        "8. No pleasantries or small talk. "
                         # "6. Be direct and precise."
                     )
                 }
@@ -768,22 +827,35 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
             except Exception as e:
                 response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
         elif current_phase == 3:
-            # filter current kg down to system
-            system_symptom_df = get_system_symptom_df(session_id, turn_number)
-            system_symptom_df = system_symptom_df[system_symptom_df['system'] == freq_system]
-            # push this kg to the SymptomSystemKG
-            system_symptom_df['turn'] = turn_number + 2  # needed to place in proper order
-            push_kg_to_db(system_symptom_df, 
-                            session_id, 
-                            'SymptomSystemKG', 
-                            overwrite=False,
-                            continue_session=True)
-            # generate a question from the list of symptoms in KG
-            # TODO: filtering here often creates random questions unrelated to previous questions
-            # Theory: this is more pronounced when it filters to a system with few nodes
-            symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+            # TODO: replace following steps with query to UMLS with system and initial 
+            # symptom to generate new nodes, and push these to KG table
+            # freq_system + symptom
+            new_umls_term = (freq_system + ' ' + symptom[0]).lower()
+            new_symptoms_df = umls_knowledge_graph(new_umls_term, 50, partial_search=True)
+            symptom_system_graph, question_phase = symptom_grouping(new_symptoms_df, 
+                                            freq_system, 
+                                            session_id, 
+                                            turn_number + 2, # see if needs to be 2 or 1
+                                            3) # symptom drilldown question_phase
+            # TODO: switch this to system and test (was symptom) should smooth transition
+            symptom_list = new_symptoms_df['symptom'].drop_duplicates().tolist()
+            # TODO: verify above knowledge graph generation works before removing lines below
+            # # filter current kg down to system
+            # system_symptom_df = get_system_symptom_df(session_id, turn_number)
+            # system_symptom_df = system_symptom_df[system_symptom_df['system'] == freq_system]
+            # # push this kg to the SymptomSystemKG
+            # system_symptom_df['turn'] = turn_number + 2  # needed to place in proper order
+            # push_kg_to_db(system_symptom_df, 
+            #                 session_id, 
+            #                 'SymptomSystemKG', 
+            #                 overwrite=False,
+            #                 continue_session=True)
+            # # generate a question from the list of symptoms in KG
+            # # TODO: filtering here often creates random questions unrelated to previous questions
+            # # this is more pronounced when it filters to a system with few nodes
+            # symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
             symptom_list = ", ".join(symptom_list)
-            print('Phase 3 start, filtered symptom list: ', symptom_list)
+            print('Phase 3 transition start, filtered symptom list: ', symptom_list)
             try:
                 system_instruction = {
                     "role": "system",
@@ -818,25 +890,32 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
     # pull a list of the symptoms from db (SymptomSystemKG)
     # TODO: uncomment once tables are created
     # check_session_consistency()
-    system_symptom_df = get_system_symptom_df(session_id, turn_number)
+
+    # ----------------------------------------------------
+    # Pull most recent KG, extract symptoms list
+    # ----------------------------------------------------
+
+    # TODO: see if this is failing to pull recent data
+    system_symptom_df = get_symptom_kg_df(session_id)
     # TODO: switch this to system to see if it accurately pulls related symptoms (was symptom)
     # try for symptom_phase = 1 use symptom, symptom_phase > 1 use system
     # chart is symptom-only, and system field shows related symptoms
-    if symptom_phase > 1:
-        symptom_list = system_symptom_df['system'].drop_duplicates().tolist()
-    # chart resembles structure from step 2 system investigation
-    else:
-        symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+    print(f'Symptom phase: {symptom_phase}\nSessionID: {session_id}\nTurn: {turn_number}\n system_symptom_df:\n {system_symptom_df}')
+    # symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+    # TODO: check that this works (should be with smoother transition from phase 2)
+    symptom_list = system_symptom_df['system'].drop_duplicates().tolist()
+    # if symptom_phase > 1:
+    #     symptom_list = system_symptom_df['system'].drop_duplicates().tolist()
+    # # chart resembles structure from step 2 system investigation
+    # else:
+    #     symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
 
-    # # TODO: see if this is needed (may be the reason why old KG keeps popping into new phase)
-    # # push the system_symptom_df to the database to pair with turns
-    # system_symptom_df['turn'] = turn_number + 1  # needed to place in proper order
-    # push_kg_to_db(system_symptom_df, 
-    #             session_id, 
-    #             'SymptomSystemKG', 
-    #             overwrite=False,
-    #             continue_session=True)
     print('Drilldown symptom list:', symptom_list)
+
+    # ----------------------------------------------------
+    # Pull session discussions
+    # ----------------------------------------------------
+
     # pull history of discussion from db (Turn)
     discussion = get_conversations(session_id)
     result = ""
@@ -844,6 +923,12 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
         speaker = row["Speaker"]
         message = row["Message"]
         result += f"'{speaker}: {message}'"
+
+
+    # ----------------------------------------------------
+    # Rank symptoms
+    # ----------------------------------------------------
+
     # create a new ranking of symptoms (store in new SymptomRank table)
     system_instruction = {
         "role": "system",
@@ -863,8 +948,6 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
     }
     response = ollama.chat(model=MODEL, messages=[system_instruction])
     response = response['message']['content']
-    # except Exception as e:
-    #     response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
     
     # parse and log rankings in the database
     lines = response.strip().split('\n')
@@ -879,7 +962,7 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
             rank = int(match.group(1))
             relationship = match.group(2)
             data.append({'rank': rank, 'symptom': relationship})
-    print('Symptom rank LLM-parsed rankings: ', data, lines)
+    print('Symptom rank LLM-parsed rankings: ', data)  #, lines)
     symptom_rank = pd.DataFrame(data)
     # print('symptom_rank df:', symptom_rank)
     # log rank, system, session_id, turn_number, something to indicate start of drilldown
@@ -888,6 +971,10 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
     symptom_rank['timestamp'] = dt.now()
     symptom_rank['symptom_phase'] = symptom_phase
     push_ranking_to_db(symptom_rank, 'SymptomRank', session_id)
+
+    # ----------------------------------------------------
+    # Check rankings for most prominent symptom
+    # ----------------------------------------------------
 
     # pull rank 1 systems for all previous rankings and see if there are 3 reoccuring
     # TODO: this seems to take one extra turn for some reason
@@ -905,12 +992,23 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
                                             session_id, 
                                             turn_number + 1,
                                             question_phase)
+        # TODO: update symptom_list here so that next question is valid
+        system_symptom_df = get_symptom_kg_df(session_id)
+        # symptom_list = system_symptom_df['symptom'].drop_duplicates().tolist()
+        symptom_list = system_symptom_df['system'].drop_duplicates().tolist()
     else:
         print('Still locating symptom for focus')
 
+    # ----------------------------------------------------
+    # Generate next question
+    # ----------------------------------------------------
+
     # generate next question
-    symptom_list = symptom_rank['symptom'].drop_duplicates().tolist()
+    # TODO: this overwrites previous symptom_list - compare with symptom drilldown output
+    # symptom_list = symptom_rank['symptom'].drop_duplicates().tolist()
     symptom_list = ", ".join(symptom_list)
+    print(f'\n\nSession: {session_id}, turn: {turn_number}, question_phase: {question_phase}, symptom_phase: {symptom_phase} \n \
+            Question generated with symptom_list: {symptom_list}')
     try:
         system_instruction = {
             "role": "system",

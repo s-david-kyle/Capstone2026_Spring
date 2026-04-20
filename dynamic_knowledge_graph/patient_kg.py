@@ -158,6 +158,7 @@ if prompt:
     # if st.session_state.system_drilldown == False:
     if st.session_state.question_phase == 1:
         # gather list of symptoms and systems, create kg to search through
+        print('------------ Phase 1: single symptom check ------------')
         new_symptom = llm_single_symptom_check(prompt)
         st.session_state.symptoms.append(new_symptom)
         # for testing/refinement (can remove - results are written to db at session close)
@@ -203,6 +204,7 @@ if prompt:
     # -------------------------------------------------------------------------------------
     elif st.session_state.question_phase == 2:
         # drilldown on system
+        print('------------ Phase 2: System drilldown ------------')
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # pull most recent symptom into this function calls
@@ -223,6 +225,7 @@ if prompt:
     # 3: Drill down to specific symptom
     # -------------------------------------------------------------------------------------
     elif st.session_state.question_phase == 3:
+        print('------------ Phase 3: Symptom drilldown ------------')
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # generate new prompt from filtered systems
@@ -240,6 +243,7 @@ if prompt:
     # 4: Diagnosis
     # -------------------------------------------------------------------------------------
     else:
+        print('------------ Phase 4: Diagnosis ------------')
         # likely end conversation here
         response = 'Below is a summary of our conversation. Have a nice day!'
         clinical_summary = generate_summary(st.session_state.messages)
@@ -262,6 +266,7 @@ if prompt:
 
         st.sidebar.success("Intake Saved Successfully!")
     
+    # output question
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
     
