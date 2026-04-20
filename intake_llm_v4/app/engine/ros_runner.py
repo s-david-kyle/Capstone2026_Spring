@@ -24,13 +24,15 @@ Selection pipeline:
      number ASKED (not candidates). Questions whose field is already in
      state are silently skipped without consuming budget.
 """
+
+
 from __future__ import annotations
 
 import json
 import os
 from typing import Any, Dict, List, Optional
 
-from app.engine.utils import evaluate_condition
+from app.engine.utils import evaluate_condition, is_negative_answer
 
 
 def project_root() -> str:
@@ -66,9 +68,6 @@ class ROSRunner:
         self._asked_count = 0
         self.completed = False
 
-    # ------------------------------------------------------------------
-    # System-matching
-    # ------------------------------------------------------------------
     @staticmethod
     def _system_match(q_system: str, tokens: List[str]) -> bool:
         if not q_system:
@@ -111,9 +110,6 @@ class ROSRunner:
 
         return {"priority": priority_tokens, "cross": cross_tokens}
 
-    # ------------------------------------------------------------------
-    # Queue construction
-    # ------------------------------------------------------------------
     def _build_ordered_queue(self) -> List[str]:
         tokens = self._plan_tokens()
         display_order = self.bank.get("rendering_rules", {}).get("system_display_order", [])
@@ -122,7 +118,7 @@ class ROSRunner:
         cross_pool: List[str] = []
         for qid, q in self.questions.items():
             if q.get("parent_field"):
-                continue  # detail rows are not independently askable
+                continue
             sys = q.get("system", "")
             if self._system_match(sys, tokens["priority"]):
                 priority_pool.append(qid)
@@ -152,9 +148,6 @@ class ROSRunner:
             .get("max_ros_questions", 4)
         )
 
-    # ------------------------------------------------------------------
-    # Skip pipeline — v1.0.0 dedup is trivially field-based
-    # ------------------------------------------------------------------
     def _field_already_captured(self, field: str) -> bool:
         v = self.state.get(field)
         return v is not None and v != "" and v != "not_assessed"
@@ -163,14 +156,21 @@ class ROSRunner:
         field = q.get("field", "")
         if self._field_already_captured(field):
             return True
-        for rule in q.get("skip_if", []) or []:
-            if rule == "FIELD_ALREADY_CAPTURED":
-                if self._field_already_captured(field):
+
+        # Check both skip_if and skip_conditions
+        for rule in (q.get("skip_if") or []) + (q.get("skip_conditions") or []):
+            if isinstance(rule, str):
+                if rule == "FIELD_ALREADY_CAPTURED" and self._field_already_captured(field):
                     return True
-                continue
+                if rule == "PARENT_NEGATIVE":
+                    pf = q.get("parent_field", field.replace("_details", ""))
+                    parent_answer = self.state.get(pf)
+                    if parent_answer is None or is_negative_answer(str(parent_answer)):
+                        return True
             reg = self.skip_if_registry.get(rule)
             if reg and evaluate_condition(reg.get("logic"), self.state, self.patient, q):
                 return True
+
         ask_if = q.get("ask_if")
         if isinstance(ask_if, str):
             reg = self.ask_if_registry.get(ask_if)
@@ -181,9 +181,6 @@ class ROSRunner:
                 return True
         return False
 
-    # ------------------------------------------------------------------
-    # Iteration API
-    # ------------------------------------------------------------------
     def get_next_question(self) -> Optional[Dict[str, Any]]:
         if self._asked_count >= self._max_ros:
             self.completed = True
