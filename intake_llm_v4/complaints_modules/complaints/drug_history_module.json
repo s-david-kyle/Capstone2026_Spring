@@ -1,0 +1,56 @@
+{
+  "module_name": "drug_history_module",
+  "version": "1.0.0",
+  "description": "Reusable medication, allergy, and recent-treatment history module applied once per session after complaint clerking and ROS.",
+  "ui_render_rule": "Use ui_label or text in the UI. Never show raw backend field ids.",
+  "session_cap_questions": 5,
+  "session_non_repeat_required": true,
+  "load_once_per_session": true,
+  "questions": [
+    {
+      "field": "current_medications",
+      "phase": "context_and_history",
+      "text": "What medicines are you currently taking? Please include prescription tablets, inhalers, injections, supplements, and any over-the-counter medicines.",
+      "response_type": "TEXT",
+      "options": [],
+      "skip_conditions": [],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Current medications",
+      "canonical_question_key": "current_medications",
+      "canonical_concept": "current_medications"
+    },
+    {
+      "field": "allergies",
+      "ui_label": "Allergies",
+      "phase": "context_and_history",
+      "text": "Do you have any medication, food, or other allergies or bad reactions we should know about?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_question_key": "allergies",
+      "canonical_concept": "allergies"
+    },
+    {
+      "field": "recent_antibiotics",
+      "ui_label": "Recent antibiotics",
+      "phase": "context_and_history",
+      "text": "Have you taken any antibiotics in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "INFECTIOUS_OR_GU_PRESENTATION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "recent_antibiotics_history_details",
+      "canonical_question_key": "recent_antibiotics",
+      "canonical_concept": "recent_antibiotics"
+    }
+  ],
+  "field_order": [
+    "current_medications",
+    "allergies",
+    "recent_antibiotics"
+  ]
+}
