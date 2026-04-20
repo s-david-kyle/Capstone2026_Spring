@@ -124,7 +124,7 @@ python -m app.engine.validator
 streamlit run app/ui/streamlit_app.py
 
 # Run the FastAPI backend (main.py)
-uvicorn app.engine.main:app --reload --port 8000
+uvicorn app.api.main:app --reload --port 8000
 
 # Run tests
 pytest tests/
@@ -132,7 +132,4 @@ pytest tests/
 
 ## File of record
 
-- `CHANGELOG.md` — release history, migration notes, retired field names
 - `ARCHITECTURE.md` — detailed architecture and design decisions
-- `migration_map.json` — compound → atomic field mapping (historical reference)
-- `audit_v1_0_0.json` / `phase2_audit.json` / `phase3_audit.json` — per-file migration audit trails
