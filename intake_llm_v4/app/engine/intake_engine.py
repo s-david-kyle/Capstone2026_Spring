@@ -55,11 +55,6 @@ def load_complaint(complaint_id: str) -> Dict[str, Any]:
 class IntakeEngine:
 
     # ---- v1.0.0 implicit-parent seeding ---------------------------------
-    # When a complaint file contains linker atomics gated on the complaint's
-    # root symptom (e.g. cough complaint asks pleuritic_quality gated on
-    # $state.cough == yes), we pre-set that parent to "yes" so the linker
-    # actually fires. Only applies when the parent field name matches the
-    # complaint identity or a declared implicit positive.
     _COMPLAINT_IMPLICIT_PARENTS = {
         "cough":                "cough",
         "headache":             "headache",
@@ -89,14 +84,10 @@ class IntakeEngine:
     }
 
     def _seed_complaint_implicits(self) -> None:
-        """Pre-set state[parent] = 'yes' for the complaint's implicit parent
-        field, so linker atomics with ask_if gates on that field actually fire.
-        Idempotent; only sets if state is currently empty for that field."""
         complaint_id = getattr(self, "complaint_id", None) or self.complaint.get("complaint_id","")
         parent = self._COMPLAINT_IMPLICIT_PARENTS.get(complaint_id)
         if parent and self.state.get(parent) in (None, "", "not_assessed"):
             self.state[parent] = "yes"
-    # ---------------------------------------------------------------------
 
     def __init__(self, complaint_data: Dict[str, Any], patient_context: Optional[Dict[str, Any]] = None, shared_data: Optional[Dict[str, Any]] = None):
         self.complaint = complaint_data
@@ -128,7 +119,6 @@ class IntakeEngine:
         hard_cap = self.shared.get("session_guardrails", {}).get("session_hard_cap_questions", 55)
         self._max_questions = min(int(budget.get("max_questions", 50)), int(hard_cap))
 
-        # Seed implicit parent so linker atomics fire
         self._seed_complaint_implicits()
 
     def _load_questions_and_schedule(self) -> None:
@@ -158,8 +148,10 @@ class IntakeEngine:
                     self.current_profile_data = self.profiles[action]
                 return
 
-    # Removed _concept_already_covered method – dedup is now strictly field-based.
-    # The skip pipeline uses FIELD_ALREADY_CAPTURED exclusively.
+    def _concept_already_covered(self, canonical_concept: str) -> bool:
+        if not canonical_concept:
+            return False
+        return canonical_concept in self._answered_concepts
 
     def _mark_concept_answered(self, q: Dict[str, Any]) -> None:
         cc = q.get("canonical_concept")
@@ -170,9 +162,6 @@ class IntakeEngine:
             self._answered_concepts.add(field)
 
     def _parent_from_ask_if(self, ask_if):
-        """Return the parent field name if ask_if is a simple
-        {op: field_equals, field_ref: $state.<field>, value: yes} gate that
-        declares a linker relationship. Otherwise return None."""
         if not isinstance(ask_if, dict):
             return None
         if ask_if.get("op") != "field_equals":
@@ -225,8 +214,13 @@ class IntakeEngine:
         if self.state.get(q["field"]) not in (None, ""):
             return True
 
-        for skip_rule in q.get("skip_if", []):
-            if self._resolve_skip_rule(skip_rule, q):
+        # Exempt detail rows from concept-covered check
+        if not q.get("parent_field") and self._concept_already_covered(q.get("canonical_concept", "")):
+            return True
+
+        # Check both skip_if and skip_conditions (historical)
+        for rule in (q.get("skip_if") or []) + (q.get("skip_conditions") or []):
+            if self._resolve_skip_rule(rule, q):
                 return True
 
         ask_if = q.get("ask_if")
@@ -377,13 +371,6 @@ class IntakeEngine:
         q_def = self.questions.get(qid, {})
         self._mark_concept_answered(q_def)
 
-        # --- Parent auto-set (v1.0.0 linker behaviour) ---
-        # When a qualifier atomic is answered positive, its parent atomic is
-        # implicitly positive too. Parent relationship is declared via
-        # ask_if: {op: field_equals, field_ref: $state.<parent>, value: yes}.
-        # This guarantees dedup correctness: answering `pleuritic_chest_pain=yes`
-        # also sets `chest_pain=yes`, so a later generic ROS "any chest pain?"
-        # is suppressed by the "if state[field] set, skip" rule.
         if is_positive_answer(answer):
             parent_field = self._parent_from_ask_if(q_def.get("ask_if"))
             if parent_field and self.state.get(parent_field) in (None, ""):

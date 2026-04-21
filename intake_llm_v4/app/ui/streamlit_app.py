@@ -198,6 +198,41 @@ h1, h2, h3, h4, h5, h6, .section-title, .stSubheader, .stHeading {
 .stTextArea textarea, .stTextInput input, .stNumberInput input {
   border:1px solid #cbd5e1 !important;
 }
+
+/* --- Sidebar buttons: black text, purple refresh hover, red stop hover --- */
+section[data-testid="stSidebar"] .stButton > button {
+    color: #000000 !important;               /* black text always */
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    font-weight: 600 !important;
+}
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #000000 !important;
+}
+/* New session (primary) keeps its purple gradient */
+section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #7c3aed, #2563eb) !important;
+    color: white !important;
+    border: none !important;
+}
+section[data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #6d28d9, #1e40af) !important;
+    color: white !important;
+}
+/* Stop session (secondary) – red on hover */
+section[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
+    background-color: #fee2e2 !important;
+    border-color: #f87171 !important;
+    color: #991b1b !important;
+}
+/* Override for Refresh button specifically: purple on hover */
+section[data-testid="stSidebar"] .stButton > button[kind="secondary"][aria-label="🔄 Refresh current question"]:hover {
+    background-color: #ede9fe !important;
+    border-color: #a78bfa !important;
+    color: #5b21b6 !important;
+}
 </style>
 """,
     unsafe_allow_html=True,

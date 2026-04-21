@@ -1,8 +1,8 @@
 -- Clinical Intake — schema.sql
 -- Keep in lock-step with db_manager.py SCHEMA constant.
--- Bootstrap version: v2.1.0
+-- Bootstrap version: v1.0.0
 
--- schema_version table (added v2.1.0)
+-- schema_version table
 CREATE TABLE IF NOT EXISTS schema_version (
     version TEXT PRIMARY KEY,
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS encounters (
     secondary_complaint TEXT DEFAULT '[]',
     pertinent_positive TEXT DEFAULT '[]',
     pertinent_negative TEXT DEFAULT '[]',
-    model_version TEXT DEFAULT 'v2.1.0',
+    model_version TEXT DEFAULT 'v1.0.0',
     status TEXT DEFAULT 'active',
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     patient_age INTEGER,

@@ -34,7 +34,7 @@ MODULES_DIR = os.path.join(ROOT, "complaints_modules")
 INDEX_PATH = os.path.join(ROOT, "complaints_modules", "index_v2.json")
 SHARED = load_shared()
 
-app = FastAPI(title="Clinical Intake API", version="3.0.0")
+app = FastAPI(title="Clinical Intake API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 init_db()
 
@@ -404,6 +404,14 @@ def get_session_metrics(sid: int):
     _session_or_404(sid)
     metrics = get_metrics(sid)
     return metrics or {}
+
+@app.post("/sessions/{sid}/abandon")
+def abandon_session(sid: int):
+    sess = _session_or_404(sid)
+    update_encounter_status(sid, "abandoned", ended_at=datetime.utcnow().isoformat())
+    if sid in _sessions:
+        del _sessions[sid]
+    return {"status": "abandoned"}
 
 @app.post("/sessions/{sid}/force_complete")
 def force_complete(sid: int):
