@@ -290,33 +290,72 @@ class IntakeEngine:
             self.state["_escalation_level"] = target
 
     def _check_red_flags(self, field: str, answer: Any) -> None:
-        patterns = self.complaint.get("derived_red_flag_patterns", [])
+        patterns = self.complaint.get("derived_red_flag_patterns", {})
+
+        # v2 format: dict of pattern_name -> list of field names (AND-pattern)
+        # A pattern fires when the newly answered field is in its list AND
+        # all other fields in the list are already positive in state.
         if isinstance(patterns, dict):
-            patterns = list(patterns.values())
-        for pattern in patterns:
-            if not isinstance(pattern, dict):
-                continue
-            trig = pattern.get("trigger_field")
-            if trig and trig != field:
-                continue
-            expected = pattern.get("value")
-            matched = False
-            if isinstance(expected, bool):
-                matched = (is_positive_answer(answer) if expected else is_negative_answer(answer))
-            elif expected is None:
-                matched = is_positive_answer(answer)
-            else:
-                matched = str(answer).strip().lower() == str(expected).strip().lower()
-            if matched:
-                entry = {
-                    "pattern": pattern.get("pattern", field),
-                    "trigger_field": field,
-                    "value": answer,
-                    "escalation_level": pattern.get("escalation_level", "priority_clinician_review"),
-                }
-                if entry not in self.red_flags:
-                    self.red_flags.append(entry)
-                self._raise_escalation(entry["escalation_level"])
+            acuity = self.complaint.get("acuity_tier", "medium")
+            escalation = {
+                "high": "urgent_escalation",
+                "medium": "priority_clinician_review",
+                "low": "same_day_clinician_review",
+            }.get(acuity, "priority_clinician_review")
+
+            for pattern_name, fields in patterns.items():
+                if not isinstance(fields, list):
+                    continue
+                # Only evaluate patterns that include the field just answered
+                if field not in fields:
+                    continue
+                # Current answer must be positive
+                if not is_positive_answer(answer):
+                    continue
+                # All other fields in the pattern must already be positive in state
+                all_positive = all(
+                    is_positive_answer(str(self.state.get(f, "")))
+                    for f in fields if f != field
+                )
+                if all_positive:
+                    entry = {
+                        "pattern": pattern_name,
+                        "trigger_field": field,
+                        "fields": fields,
+                        "value": answer,
+                        "escalation_level": escalation,
+                    }
+                    if entry not in self.red_flags:
+                        self.red_flags.append(entry)
+                    self._raise_escalation(escalation)
+            return
+
+        # Legacy format: list of dicts with trigger_field/value/escalation_level
+        if isinstance(patterns, list):
+            for pattern in patterns:
+                if not isinstance(pattern, dict):
+                    continue
+                trig = pattern.get("trigger_field")
+                if trig and trig != field:
+                    continue
+                expected = pattern.get("value")
+                matched = False
+                if isinstance(expected, bool):
+                    matched = (is_positive_answer(answer) if expected else is_negative_answer(answer))
+                elif expected is None:
+                    matched = is_positive_answer(answer)
+                else:
+                    matched = str(answer).strip().lower() == str(expected).strip().lower()
+                if matched:
+                    entry = {
+                        "pattern": pattern.get("pattern", field),
+                        "trigger_field": field,
+                        "value": answer,
+                        "escalation_level": pattern.get("escalation_level", "priority_clinician_review"),
+                    }
+                    if entry not in self.red_flags:
+                        self.red_flags.append(entry)
+                    self._raise_escalation(entry["escalation_level"])
 
     def record_answer(self, qid: str, field: str, answer: Any, phase: str) -> Dict[str, Any]:
         self.state[field] = answer

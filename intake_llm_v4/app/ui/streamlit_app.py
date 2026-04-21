@@ -252,6 +252,7 @@ def init_state():
         "secondary_selected": [],
         "session_closed": False,
         "confirm_finish": False,
+        "extracted_state_cache": {},
     }
     for k, v in defaults.items():
         st.session_state.setdefault(k, v)
@@ -261,7 +262,7 @@ def reset_session_state():
     for k in [
         "session_id", "current_question", "phase", "progress", "complaint_name", "patient_age",
         "patient_sex", "summary_payload", "doctor_summary", "chat_history", "live_metrics",
-        "secondary_selected", "session_closed", "confirm_finish"
+        "secondary_selected", "session_closed", "confirm_finish", "extracted_state_cache"
     ]:
         if k in st.session_state:
             del st.session_state[k]
@@ -376,6 +377,7 @@ def submit_answer(answer: str):
     st.session_state.current_question = data.get("next_question")
     st.session_state.progress = data.get("progress", {})
     st.session_state.phase = data.get("phase")
+    st.session_state.extracted_state_cache = data.get("extracted_bonus", {}) or st.session_state.extracted_state_cache
     append_system_question(st.session_state.current_question)
     update_live_metrics()
 
@@ -390,6 +392,7 @@ def skip_current_question():
     st.session_state.current_question = data.get("next_question")
     st.session_state.progress = data.get("progress", {})
     st.session_state.phase = data.get("phase")
+    st.session_state.extracted_state_cache = data.get("extracted_bonus", {}) or st.session_state.extracted_state_cache
     append_system_question(st.session_state.current_question)
     update_live_metrics()
 
@@ -481,7 +484,9 @@ def main():
     )
 
     try:
-        complaints = api_get("/complaints")
+        if "complaints_cache" not in st.session_state:
+            st.session_state.complaints_cache = api_get("/complaints")
+        complaints = st.session_state.complaints_cache
     except Exception:
         st.error(f"API not reachable at {API_BASE}. Start the backend first.")
         st.stop()
@@ -629,12 +634,10 @@ def main():
                 st.write("")
                 st.markdown('<div class="card">', unsafe_allow_html=True)
                 st.markdown('<div class="section-title">Current extracted state</div>', unsafe_allow_html=True)
-                extracted_state = {}
                 if st.session_state.summary_payload and st.session_state.summary_payload.get("extracted_state") is not None:
                     extracted_state = st.session_state.summary_payload.get("extracted_state", {})
-                elif not st.session_state.session_closed:
-                    session = api_get(f"/sessions/{st.session_state.session_id}")
-                    extracted_state = session.get("state", {})
+                else:
+                    extracted_state = st.session_state.get("extracted_state_cache", {})
                 st.json(extracted_state, expanded=False)
                 st.markdown('</div>', unsafe_allow_html=True)
 

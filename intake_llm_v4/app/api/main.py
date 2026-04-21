@@ -404,3 +404,21 @@ def get_session_metrics(sid: int):
     _session_or_404(sid)
     metrics = get_metrics(sid)
     return metrics or {}
+
+@app.post("/sessions/{sid}/force_complete")
+def force_complete(sid: int):
+    sess = _session_or_404(sid)
+    engine = sess["engine"]
+    engine.completed = True
+    summary = generate_template_summary(engine)
+    pre = format_summary_text(summary)
+    ai = ai_summarize(engine.state, summary)
+    save_summary(sid, pre_summary=pre, ai_summary=ai)
+    update_encounter_status(sid, "force_completed", ended_at=datetime.utcnow().isoformat())
+    update_encounter_state(sid, engine.state, summary.get("pertinent_positives", []), summary.get("pertinent_negatives", []), engine.escalation_level)
+    return {
+        "template_summary": summary,
+        "pre_summary": pre,
+        "ai_summary": ai,
+        "phase": "completed",
+    }

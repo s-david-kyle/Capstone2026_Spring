@@ -23,6 +23,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 
+try:
+    from api_keys import ANTHROPIC_API_KEY as _ANTHROPIC_API_KEY
+except ImportError:
+    _ANTHROPIC_API_KEY = ""
+
 ROS_DISPLAY = [
     "Constitutional", "Cardiovascular", "Respiratory", "Gastrointestinal",
     "Genitourinary", "Neurological", "Musculoskeletal", "Skin",
@@ -352,7 +357,7 @@ def generate_template_summary(engine, ros_answers: Optional[Dict[str, Any]] = No
     }
 
 
-def ai_summarize(extracted_state: Dict[str, Any], template_summary: Dict[str, Any], model: str = "llama3.1") -> str:
+def ai_summarize(extracted_state: Dict[str, Any], template_summary: Dict[str, Any], model: str = "claude-sonnet-4-20250514") -> str:
     # Build a compact, structured view of everything that was captured, including ROS
     ros_lines = []
     for sys_name, detail in template_summary.get("ros", {}).items():
@@ -376,15 +381,26 @@ def ai_summarize(extracted_state: Dict[str, Any], template_summary: Dict[str, An
         + ("Review of systems positives/denials:\n" + "\n".join(ros_lines) + "\n\n" if ros_lines else "")
         + "Write only the HPI paragraph."
     )
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "") or _ANTHROPIC_API_KEY
     try:
         resp = requests.post(
-            "http://localhost:11434/api/generate",
-            json={"model": model, "prompt": prompt, "stream": False,
-                  "options": {"temperature": 0.2, "num_predict": 900}},
-            timeout=90,
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": model,
+                "max_tokens": 1024,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=60,
         )
         resp.raise_for_status()
-        return resp.json().get("response", "").strip() or template_summary.get("hpi", "")
+        content = resp.json().get("content", [])
+        text = next((block["text"] for block in content if block.get("type") == "text"), "")
+        return text.strip() or template_summary.get("hpi", "")
     except Exception:
         return template_summary.get("hpi", "AI summarizer unavailable.")
 
