@@ -653,12 +653,12 @@ def form_system_question(session_id, turn_number, symptom):
         response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
     return response
 
-def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, current_phase):
+def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, current_phase, avatar):
     
     # ----------------------------------------------------
     # Pull most recent KG, extract systems list
     # ----------------------------------------------------
-    
+    avatar.image("assets/thinking state.gif")
     # query DB with session_id, turn_number
     df = get_system_symptom_df(session_id, turn_number)
     # print('drilldown system:', df)
@@ -827,7 +827,7 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
             except Exception as e:
                 response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
         elif current_phase == 3:
-            # TODO: replace following steps with query to UMLS with system and initial 
+            avatar.image("assets/idle state 1.0.gif")
             # symptom to generate new nodes, and push these to KG table
             # freq_system + symptom
             new_umls_term = (freq_system + ' ' + symptom[0]).lower()
@@ -881,12 +881,13 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
             except Exception as e:
                 response =  f"⚠️ Error: Ensure Ollama is running. ({str(e)})"
 
+    avatar.image("assets/complete state 1.0.gif")
     # indicates symptom_drilldown_start is over
     drilldown_start = False
     # need to add extra turn since decremented for this function
     return response, turn_number + 2, drilldown_start, current_phase
 
-def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_phase):
+def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_phase, avatar):
     # pull a list of the symptoms from db (SymptomSystemKG)
     # TODO: uncomment once tables are created
     # check_session_consistency()
@@ -981,6 +982,7 @@ def drilldown_symptom(prompt, session_id, turn_number, question_phase, symptom_p
     freq_symptom = check_symptom_rank_1(session_id, symptom_phase)
     # when there are 3 matches:
     if freq_symptom:
+        avatar.image("assets/idle state 1.0.gif")
         print(f'Will focus on: {freq_symptom}')
         # modify some phase var to move out of this phase
         symptom_phase += 1
