@@ -1,0 +1,69 @@
+{
+  "module_name": "pmh_psh_module",
+  "version": "1.1.0",
+  "description": "Generalized past medical history and past surgical history module. Ask once per session after complaint clerking and ROS unless an urgent complaint-specific safety question already captured the same concept earlier.",
+  "ui_render_rule": "Use ui_label or text in the UI. Never show raw backend field ids.",
+  "session_cap_questions": 2,
+  "session_non_repeat_required": true,
+  "load_once_per_session": true,
+  "owned_fields": [
+    "past_medical_history",
+    "past_surgical_history"
+  ],
+  "module_ownership_principle": "Generalized PMH and PSH are captured here first. Complaint files may ask only targeted follow-up when clinically necessary.",
+  "activation_rules": [
+    "Run once per session after complaint clerking and ROS unless an emergent safety path requires earlier targeted history.",
+    "If past_medical_history or past_surgical_history was already captured earlier in the session, skip the matching question here."
+  ],
+  "questions": [
+    {
+      "id": "past_medical_history",
+      "field": "past_medical_history",
+      "ui_label": "Past medical history",
+      "phase": "context_and_history",
+      "text": "Do you have any past medical conditions we should know about?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "past_medical_history",
+      "question_category": "context_history",
+      "code": "PMH-001",
+      "canonical_question_key": "past_medical_history",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "past_surgical_history",
+      "field": "past_surgical_history",
+      "ui_label": "Past surgical history",
+      "phase": "context_and_history",
+      "text": "Have you had any operations or procedures we should know about?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "past_surgical_history",
+      "question_category": "context_history",
+      "code": "PSH-001",
+      "canonical_question_key": "past_surgical_history",
+      "question_role": "qualifier"
+    }
+  ],
+  "field_order": [
+    "past_medical_history",
+    "past_surgical_history"
+  ],
+  "summary_rendering": {
+    "past_medical_history": "Past medical history",
+    "past_surgical_history": "Past surgical history"
+  },
+  "followup_guidance": {
+    "principle": "Keep this module generalized. Complaint files should ask specific PMH or surgical follow-up only when the complaint, red flags, or earlier answers make that detail decision-relevant.",
+    "examples": [
+      "abdominal pain may ask about prior abdominal surgery if obstruction or adhesions are being considered",
+      "hematuria may ask about anticoagulant use elsewhere through the appropriate module or complaint-specific follow-up",
+      "back pain may ask about history of cancer as a targeted red-flag follow-up rather than expanding this module"
+    ]
+  },
+  "file_name": "pmh_psh_module.json"
+}

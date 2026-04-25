@@ -1,0 +1,627 @@
+{
+  "complaint_id": "vaginal_discharge",
+  "version": "1.1.0",
+  "primary_system": "genitourinary",
+  "parent_symptom": null,
+  "ui_label": "Vaginal discharge",
+  "display_name": "Vaginal discharge",
+  "ui_name": "Vaginal discharge",
+  "canonical_concept": "vaginal_discharge",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['vaginal_discharge'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 22,
+      "target_question_budget": 34,
+      "max_questions": 42,
+      "early_danger_reserve": 6,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Vaginal discharge requires early screening for fever, pelvic pain, pregnancy overlap, and abnormal bleeding while preserving budget for discharge characterization and GU/GYN source follow-up. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "fever",
+        "abdominal_pain",
+        "abnormal_vaginal_bleeding"
+      ],
+      "selection_rule": "If vaginal discharge is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "genitourinary"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "duration",
+      "severity",
+      "discharge_amount",
+      "discharge_color",
+      "discharge_consistency",
+      "discharge_odor",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "fever",
+      "abdominal_pain",
+      "severe_abdominal_pain",
+      "pregnancy_context",
+      "lmp",
+      "abnormal_vaginal_bleeding",
+      "weakness"
+    ],
+    "targeted_followup": [
+      "vulvovaginal_irritation",
+      "dysuria",
+      "urinary_frequency",
+      "urinary_urgency",
+      "recent_sexual_exposure"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "upper_gyn_infection_branch": {
+      "triggers": [
+        "fever",
+        "abdominal_pain",
+        "severe_abdominal_pain"
+      ]
+    },
+    "pregnancy_overlap_branch": {
+      "triggers": [
+        "pregnancy_context",
+        "lmp",
+        "abnormal_vaginal_bleeding",
+        "abdominal_pain"
+      ]
+    },
+    "urinary_overlap_branch": {
+      "triggers": [
+        "dysuria",
+        "urinary_frequency",
+        "urinary_urgency"
+      ]
+    },
+    "sti_overlap_branch": {
+      "triggers": [
+        "recent_sexual_exposure",
+        "vulvovaginal_irritation"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "vaginal_bleeding",
+      "replace_with": [
+        "abnormal_vaginal_bleeding"
+      ]
+    },
+    {
+      "old_concept": "burning_urine",
+      "replace_with": [
+        "dysuria"
+      ]
+    },
+    {
+      "old_concept": "frequency_of_urination",
+      "replace_with": [
+        "urinary_frequency"
+      ]
+    },
+    {
+      "old_concept": "urge_to_urinate",
+      "replace_with": [
+        "urinary_urgency"
+      ]
+    },
+    {
+      "old_concept": "lower_abdominal_pain",
+      "replace_with": [
+        "abdominal_pain"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_pid_or_upper_gyn_pattern_vaginal_discharge",
+    "possible_pregnancy_related_concern_vaginal_discharge",
+    "pregnancy_abdominal_pain_bleeding_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the discharge start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is the discharge constant, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "On a scale of 0 to 10, how bothersome or severe is it?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "discharge_amount": {
+      "id": "discharge_amount",
+      "field": "discharge_amount",
+      "code": "GYNQ-004",
+      "ui_label": "Discharge amount",
+      "phase": "core_characterization",
+      "text": "How much discharge are you having?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "discharge_amount",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "discharge_amount",
+      "question_role": "qualifier"
+    },
+    "discharge_color": {
+      "id": "discharge_color",
+      "field": "discharge_color",
+      "code": "GYNQ-001",
+      "ui_label": "Discharge colour",
+      "phase": "core_characterization",
+      "text": "What colour is the discharge?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "discharge_color",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "discharge_color",
+      "question_role": "qualifier"
+    },
+    "discharge_consistency": {
+      "id": "discharge_consistency",
+      "field": "discharge_consistency",
+      "code": "GYNQ-002",
+      "ui_label": "Discharge consistency",
+      "phase": "core_characterization",
+      "text": "What is the discharge like in consistency?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "discharge_consistency",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "discharge_consistency",
+      "question_role": "qualifier"
+    },
+    "discharge_odor": {
+      "id": "discharge_odor",
+      "field": "discharge_odor",
+      "code": "GYNQ-003",
+      "ui_label": "Discharge odor",
+      "phase": "core_characterization",
+      "text": "Does the discharge have an odor?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "discharge_odor",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "discharge_odor",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What seems to make the discharge or irritation worse, such as sex, menstruation, hygiene products, antibiotics, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What seems to help, such as avoiding irritants, treatment/medicine, hygiene changes, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is this affecting you, such as comfort, daily activities, sleep, sex, or emotional distress?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pid_or_upper_gyn_pattern_vaginal_discharge"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "abdominal_pain": {
+      "id": "abdominal_pain",
+      "field": "abdominal_pain",
+      "code": "GI-008",
+      "ui_label": "Abdominal pain",
+      "phase": "high_priority_followup",
+      "text": "Do you have lower abdominal or pelvic pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "abdominal_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "abdominal_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pid_or_upper_gyn_pattern_vaginal_discharge",
+        "possible_pregnancy_related_concern_vaginal_discharge"
+      ],
+      "canonical_question_key": "abdominal_pain",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "severe_abdominal_pain": {
+      "id": "severe_abdominal_pain",
+      "field": "severe_abdominal_pain",
+      "code": "GI-013",
+      "ui_label": "Severe abdominal pain",
+      "phase": "high_priority_followup",
+      "text": "Do you have severe abdominal or pelvic pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "severe_abdominal_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "severe_abdominal_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pid_or_upper_gyn_pattern_vaginal_discharge"
+      ],
+      "canonical_question_key": "severe_abdominal_pain",
+      "question_role": "red_flag_subtype",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ]
+    },
+    "pregnancy_context": {
+      "id": "pregnancy_context",
+      "field": "pregnancy_context",
+      "code": "GYNHX-001",
+      "ui_label": "Pregnancy context",
+      "phase": "high_priority_followup",
+      "text": "Could you be pregnant, or is pregnancy a possibility?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "detail_field": "pregnancy_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pregnancy_context",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_pregnancy_related_concern_vaginal_discharge"
+      ],
+      "sensitive_topic": true,
+      "canonical_question_key": "pregnancy_context",
+      "question_role": "qualifier"
+    },
+    "lmp": {
+      "id": "lmp",
+      "field": "lmp",
+      "code": "GYNHX-002",
+      "ui_label": "Last menstrual period",
+      "phase": "high_priority_followup",
+      "text": "When was your last menstrual period?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "canonical_concept": "lmp",
+      "question_category": "context_history",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "sensitive_topic": true,
+      "canonical_question_key": "lmp",
+      "question_role": "qualifier"
+    },
+    "abnormal_vaginal_bleeding": {
+      "id": "abnormal_vaginal_bleeding",
+      "field": "abnormal_vaginal_bleeding",
+      "code": "GYN-003",
+      "ui_label": "Abnormal vaginal bleeding",
+      "phase": "high_priority_followup",
+      "text": "Have you had heavy or unusual vaginal bleeding?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "heavy_or_unusual_bleeding_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "abnormal_vaginal_bleeding",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pregnancy_related_concern_vaginal_discharge"
+      ],
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "sensitive_topic": true,
+      "canonical_question_key": "abnormal_vaginal_bleeding",
+      "dedup_family": "ros:vaginal_bleeding",
+      "dedup_families": [
+        "ros:vaginal_bleeding"
+      ],
+      "question_role": "qualifier"
+    },
+    "weakness": {
+      "id": "weakness",
+      "field": "weakness",
+      "code": "CON-006",
+      "ui_label": "Weakness",
+      "phase": "high_priority_followup",
+      "text": "Have you felt unusually weak?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "weakness",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "qualifier"
+    },
+    "vulvovaginal_irritation": {
+      "id": "vulvovaginal_irritation",
+      "field": "vulvovaginal_irritation",
+      "code": "GYN-004",
+      "ui_label": "Vulvovaginal irritation",
+      "phase": "targeted_followup",
+      "text": "Do you have vulvovaginal itching, burning, or irritation?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "itching_or_irritation_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "vulvovaginal_irritation",
+      "question_category": "symptom",
+      "sensitive_topic": true,
+      "canonical_question_key": "vulvovaginal_irritation",
+      "dedup_family": "ros:vaginal_discharge",
+      "dedup_families": [
+        "ros:vaginal_discharge"
+      ],
+      "question_role": "qualifier",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE"
+    },
+    "dysuria": {
+      "id": "dysuria",
+      "field": "dysuria",
+      "code": "GU-001",
+      "ui_label": "Pain or burning when passing urine",
+      "phase": "targeted_followup",
+      "text": "Do you have pain or burning when passing urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "dysuria_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dysuria",
+      "question_category": "symptom",
+      "canonical_question_key": "dysuria",
+      "dedup_family": "ros:dysuria",
+      "dedup_families": [
+        "ros:dysuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_frequency": {
+      "id": "urinary_frequency",
+      "field": "urinary_frequency",
+      "code": "GU-002",
+      "ui_label": "Passing urine more often",
+      "phase": "targeted_followup",
+      "text": "Are you passing urine more often than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "urinary_frequency_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "urinary_frequency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_frequency",
+      "dedup_family": "ros:urinary_frequency",
+      "dedup_families": [
+        "ros:urinary_frequency"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_urgency": {
+      "id": "urinary_urgency",
+      "field": "urinary_urgency",
+      "code": "GU-003",
+      "ui_label": "Sudden urge to pass urine",
+      "phase": "targeted_followup",
+      "text": "Do you feel a sudden urge to pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "urinary_urgency_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "urinary_urgency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_urgency",
+      "dedup_family": "ros:urinary_urgency",
+      "dedup_families": [
+        "ros:urinary_urgency"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_sexual_exposure": {
+      "id": "recent_sexual_exposure",
+      "field": "recent_sexual_exposure",
+      "code": "SOC-015",
+      "ui_label": "Recent sexual exposure",
+      "phase": "targeted_followup",
+      "text": "Have you had a recent sexual exposure that may be relevant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_sexual_exposure_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_sexual_exposure",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "recent_sexual_exposure",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "eligibility": {
+    "sex_required": "female",
+    "rule": "This complaint should be offered only to female patients."
+  },
+  "file_name": "vaginal_discharge.json"
+}

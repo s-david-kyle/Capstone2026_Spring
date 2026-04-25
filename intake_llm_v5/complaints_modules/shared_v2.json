@@ -1,0 +1,4311 @@
+{
+  "version": "1.1.0",
+  "package_name": "clinical_intake_runtime_rebuild",
+  "document_status": "review_draft_not_drop_in_replacement",
+  "design_goal": "Phase 1 shared contract with unique canonical codes and enforcement of atomic fields, parent-child, and sensitive topics.",
+  "shared_contract_scope": {
+    "shared_owns": [
+      "canonical naming standards",
+      "question category definitions",
+      "response type definitions",
+      "ROS governance rules",
+      "generalized history ownership principles",
+      "anti-redundancy principles",
+      "authoritative module order",
+      "session guardrails",
+      "legacy alias policy",
+      "validation checklist",
+      "canonical_code_registry",
+      "sensitive_concept_list"
+    ],
+    "complaints_own": [
+      "complaint-specific wording",
+      "question budgets",
+      "question schedules",
+      "complaint-local red-flag sequencing",
+      "complaint-local routing behavior",
+      "complaint-specific target follow-up questions"
+    ],
+    "modules_own": [
+      "PMH and PSH capture",
+      "medications and allergies",
+      "social and family history",
+      "gynecologic history",
+      "immunization history"
+    ],
+    "ros_owns": [
+      "true review-of-systems symptom questions by system",
+      "system-specific pertinent positives and negatives not already captured in HPC/HPI"
+    ]
+  },
+  "session_guardrails": {
+    "session_hard_cap_questions": 60,
+    "max_active_complaints": 2,
+    "allow_emergent_red_flag_override": true,
+    "emergent_override_rule": "A newly volunteered red-flag symptom may temporarily pre-empt the scheduled complaint flow without creating a third planned complaint."
+  },
+  "sensitive_concept_list": [
+    "pregnancy_context",
+    "sexual_history",
+    "new_partner",
+    "partner_symptoms",
+    "known_sti_exposure",
+    "recent_unprotected_sex",
+    "vaginal_discharge",
+    "vaginal_bleeding",
+    "heavy_or_unusual_bleeding",
+    "postcoital_or_postmenopausal_bleeding",
+    "dyspareunia",
+    "genital_ulcers_or_sores",
+    "douching",
+    "local_hygiene_products",
+    "gynecologic_history_other",
+    "recent_sexual_exposure",
+    "urethral_discharge",
+    "low_mood_anhedonia",
+    "low_mood_or_food_restriction",
+    "recreational_drug_use",
+    "suicidal_ideation",
+    "food_restriction"
+  ],
+  "canonical_code_registry": {
+    "fever": {
+      "code": "CON-001",
+      "field": "fever",
+      "ui_label": "Fever",
+      "canonical_concept": "fever",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had a fever?",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "chills": {
+      "code": "CON-003",
+      "field": "chills",
+      "ui_label": "Chills",
+      "canonical_concept": "chills",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt cold or shivery without uncontrollable shaking?",
+      "dedup_family": "ros:chills",
+      "dedup_families": [
+        "ros:chills"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "rigors": {
+      "code": "CON-010",
+      "field": "rigors",
+      "ui_label": "Rigors",
+      "canonical_concept": "rigors",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had shaking chills or rigors that made your body shake?",
+      "dedup_family": "ros:chills",
+      "dedup_families": [
+        "ros:chills"
+      ],
+      "question_role": "qualifier"
+    },
+    "malaise": {
+      "code": "CON-009",
+      "field": "malaise",
+      "ui_label": "Malaise",
+      "canonical_concept": "malaise",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you generally felt unwell or weak all over?",
+      "dedup_family": "ros:malaise",
+      "dedup_families": [
+        "ros:malaise"
+      ],
+      "question_role": "qualifier"
+    },
+    "fatigue": {
+      "code": "CON-005",
+      "field": "fatigue",
+      "ui_label": "Fatigue",
+      "canonical_concept": "fatigue",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been unusually tired?",
+      "dedup_family": "ros:fatigue",
+      "dedup_families": [
+        "ros:fatigue"
+      ],
+      "question_role": "qualifier"
+    },
+    "weakness": {
+      "code": "CON-006",
+      "field": "weakness",
+      "ui_label": "Weakness",
+      "canonical_concept": "weakness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt unusually weak?",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "qualifier"
+    },
+    "weight_loss": {
+      "code": "CON-007",
+      "field": "weight_loss",
+      "ui_label": "Weight loss",
+      "canonical_concept": "weight_loss",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "plain_language_question": "Any unexplained weight loss?",
+      "dedup_family": "ros:weight_loss",
+      "dedup_families": [
+        "ros:weight_loss"
+      ],
+      "question_role": "qualifier"
+    },
+    "weight_gain": {
+      "code": "CON-008",
+      "field": "weight_gain",
+      "ui_label": "Weight gain",
+      "canonical_concept": "weight_gain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Any unexpected weight gain?",
+      "dedup_family": "ros:weight_gain",
+      "dedup_families": [
+        "ros:weight_gain"
+      ],
+      "question_role": "qualifier"
+    },
+    "night_sweats": {
+      "code": "CON-004",
+      "field": "night_sweats",
+      "ui_label": "Night sweats",
+      "canonical_concept": "night_sweats",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had night sweats?",
+      "dedup_family": "ros:night_sweats",
+      "dedup_families": [
+        "ros:night_sweats"
+      ],
+      "question_role": "qualifier"
+    },
+    "dehydration": {
+      "code": "CON-011A",
+      "field": "dehydration",
+      "ui_label": "Dehydration",
+      "canonical_concept": "dehydration",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been very dry, dizzy when standing, or unable to keep fluids down?"
+    },
+    "low_urine_output": {
+      "code": "CON-011B",
+      "field": "low_urine_output",
+      "ui_label": "Low urine output",
+      "canonical_concept": "low_urine_output",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been passing much less urine than usual?",
+      "dedup_family": "ros:low_urine_output",
+      "dedup_families": [
+        "ros:low_urine_output"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "chest_pain": {
+      "code": "CV-002",
+      "field": "chest_pain",
+      "ui_label": "Chest pain or tightness",
+      "canonical_concept": "chest_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have any chest pain or tightness?",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "palpitations": {
+      "code": "CV-003",
+      "field": "palpitations",
+      "ui_label": "Palpitations",
+      "canonical_concept": "palpitations",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt your heart racing or beating irregularly?",
+      "dedup_family": "ros:palpitations",
+      "dedup_families": [
+        "ros:palpitations"
+      ],
+      "question_role": "qualifier"
+    },
+    "irregular_heartbeat": {
+      "code": "CV-004",
+      "field": "irregular_heartbeat",
+      "ui_label": "Irregular heartbeat",
+      "canonical_concept": "irregular_heartbeat",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Has your heartbeat felt irregular?",
+      "dedup_family": "ros:irregular_heartbeat",
+      "dedup_families": [
+        "ros:irregular_heartbeat"
+      ],
+      "question_role": "qualifier"
+    },
+    "leg_swelling": {
+      "code": "CV-001",
+      "field": "leg_swelling",
+      "ui_label": "Leg swelling",
+      "canonical_concept": "leg_swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had swelling in one or both legs?",
+      "dedup_family": "ros:leg_swelling",
+      "dedup_families": [
+        "ros:leg_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "claudication": {
+      "code": "CV-005",
+      "field": "claudication",
+      "ui_label": "Leg pain when walking",
+      "canonical_concept": "claudication",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you get leg pain when walking?",
+      "dedup_family": "ros:claudication",
+      "dedup_families": [
+        "ros:claudication"
+      ],
+      "question_role": "qualifier"
+    },
+    "shortness_of_breath": {
+      "code": "RESP-001",
+      "field": "shortness_of_breath",
+      "ui_label": "Difficulty in breathing",
+      "canonical_concept": "shortness_of_breath",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had any difficulty in breathing?",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "cough": {
+      "code": "RESP-005",
+      "field": "cough",
+      "ui_label": "Cough",
+      "canonical_concept": "cough",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have a cough?",
+      "dedup_family": "ros:cough",
+      "dedup_families": [
+        "ros:cough"
+      ],
+      "question_role": "qualifier"
+    },
+    "hemoptysis": {
+      "code": "RESP-004",
+      "field": "hemoptysis",
+      "ui_label": "Coughing up blood",
+      "canonical_concept": "hemoptysis",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you coughed up blood?",
+      "dedup_family": "ros:hemoptysis",
+      "dedup_families": [
+        "ros:hemoptysis"
+      ],
+      "question_role": "qualifier"
+    },
+    "wheeze": {
+      "code": "RESPQ-004",
+      "field": "wheeze",
+      "ui_label": "Whistling sound when breathing",
+      "canonical_concept": "wheeze",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you hear a whistling sound when you breathe?",
+      "dedup_family": "ros:wheeze",
+      "dedup_families": [
+        "ros:wheeze"
+      ],
+      "question_role": "qualifier"
+    },
+    "pleuritic_pain": {
+      "code": "RESP-008",
+      "field": "pleuritic_pain",
+      "ui_label": "Pain worse with deep breathing",
+      "canonical_concept": "pleuritic_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Does the pain get worse when you take a deep breath or cough?",
+      "dedup_family": "ros:pleuritic_pain",
+      "dedup_families": [
+        "ros:pleuritic_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "stridor": {
+      "code": "RESPQ-005",
+      "field": "stridor",
+      "ui_label": "Noisy breathing",
+      "canonical_concept": "stridor",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is your breathing noisy or harsh?",
+      "dedup_family": "ros:stridor",
+      "dedup_families": [
+        "ros:stridor"
+      ],
+      "question_role": "qualifier"
+    },
+    "runny_nose": {
+      "code": "RESP-010",
+      "field": "runny_nose",
+      "ui_label": "Runny nose",
+      "canonical_concept": "runny_nose",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have a runny nose?",
+      "dedup_family": "ros:runny_nose",
+      "dedup_families": [
+        "ros:runny_nose"
+      ],
+      "question_role": "qualifier"
+    },
+    "exertional_dyspnea": {
+      "code": "RESP-009",
+      "field": "exertional_dyspnea",
+      "ui_label": "Short of breath with exertion",
+      "canonical_concept": "exertional_dyspnea",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you get short of breath with physical activity?",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "qualifier"
+    },
+    "orthopnea": {
+      "code": "RESPQ-002",
+      "field": "orthopnea",
+      "ui_label": "Short of breath when lying flat",
+      "canonical_concept": "orthopnea",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is your breathing worse when you lie flat?",
+      "dedup_family": "ros:orthopnea",
+      "dedup_families": [
+        "ros:orthopnea"
+      ],
+      "question_role": "qualifier"
+    },
+    "paroxysmal_nocturnal_dyspnea": {
+      "code": "RESPQ-003",
+      "field": "paroxysmal_nocturnal_dyspnea",
+      "ui_label": "Waking short of breath at night",
+      "canonical_concept": "paroxysmal_nocturnal_dyspnea",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you wake from sleep short of breath or gasping for air?",
+      "dedup_family": "ros:paroxysmal_nocturnal_dyspnea",
+      "dedup_families": [
+        "ros:paroxysmal_nocturnal_dyspnea"
+      ],
+      "question_role": "qualifier"
+    },
+    "sore_throat": {
+      "code": "ENT-000",
+      "field": "sore_throat",
+      "ui_label": "Sore throat",
+      "canonical_concept": "sore_throat",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have a sore throat?",
+      "dedup_family": "ros:sore_throat",
+      "dedup_families": [
+        "ros:sore_throat"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "nausea": {
+      "code": "GI-007",
+      "field": "nausea",
+      "ui_label": "Nausea",
+      "canonical_concept": "nausea",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt nauseated?",
+      "dedup_family": "ros:nausea",
+      "dedup_families": [
+        "ros:nausea"
+      ],
+      "question_role": "qualifier"
+    },
+    "vomiting": {
+      "code": "GI-002",
+      "field": "vomiting",
+      "ui_label": "Vomiting",
+      "canonical_concept": "vomiting",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been vomiting?",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "diarrhea": {
+      "code": "GI-003",
+      "field": "diarrhea",
+      "ui_label": "Loose stool or diarrhea",
+      "canonical_concept": "diarrhea",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had loose stool or diarrhea?",
+      "dedup_family": "ros:diarrhea",
+      "dedup_families": [
+        "ros:diarrhea"
+      ],
+      "question_role": "qualifier"
+    },
+    "constipation": {
+      "code": "GI-011",
+      "field": "constipation",
+      "ui_label": "Difficulty passing stool or constipation",
+      "canonical_concept": "constipation",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been constipated?",
+      "dedup_family": "ros:constipation",
+      "dedup_families": [
+        "ros:constipation"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "blood_in_stool": {
+      "code": "GI-004B",
+      "field": "blood_in_stool",
+      "ui_label": "Blood in stool",
+      "canonical_concept": "blood_in_stool",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed blood in your stool?",
+      "dedup_family": "ros:blood_in_stool",
+      "dedup_families": [
+        "ros:blood_in_stool"
+      ],
+      "question_role": "qualifier"
+    },
+    "rectal_bleeding": {
+      "code": "GI-004C",
+      "field": "rectal_bleeding",
+      "ui_label": "Rectal bleeding",
+      "canonical_concept": "rectal_bleeding",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Any blood noticed when wiping or in the toilet bowl?"
+    },
+    "melena": {
+      "code": "GIQ-021",
+      "field": "melena",
+      "ui_label": "Black or tarry stool",
+      "canonical_concept": "melena",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Has your stool been black or tarry?",
+      "dedup_family": "ros:melena",
+      "dedup_families": [
+        "ros:melena"
+      ],
+      "question_role": "qualifier"
+    },
+    "abdominal_pain": {
+      "code": "GI-008",
+      "field": "abdominal_pain",
+      "ui_label": "Abdominal pain",
+      "canonical_concept": "abdominal_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have abdominal pain?",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "abdominal_distension": {
+      "code": "GI-005",
+      "field": "abdominal_distension",
+      "ui_label": "Abdominal swelling or bloating",
+      "canonical_concept": "abdominal_distension",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Has your abdomen become swollen or more bloated than usual?"
+    },
+    "bloating": {
+      "code": "GI-010",
+      "field": "bloating",
+      "ui_label": "Bloating",
+      "canonical_concept": "bloating",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Does it feel bloated or full of gas?",
+      "dedup_family": "ros:bloating",
+      "dedup_families": [
+        "ros:bloating"
+      ],
+      "question_role": "qualifier"
+    },
+    "coffee_ground_vomit": {
+      "code": "GI-010B",
+      "field": "coffee_ground_vomit",
+      "ui_label": "Coffee-ground vomit",
+      "canonical_concept": "coffee_ground_vomit",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Has the vomit looked dark like coffee grounds?",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "dysphagia": {
+      "code": "GI-025",
+      "field": "dysphagia",
+      "ui_label": "Difficulty swallowing",
+      "canonical_concept": "dysphagia",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have difficulty swallowing?",
+      "dedup_family": "ros:dysphagia",
+      "dedup_families": [
+        "ros:dysphagia"
+      ],
+      "question_role": "qualifier"
+    },
+    "change_in_bowel_habit": {
+      "code": "GI-024",
+      "field": "change_in_bowel_habit",
+      "ui_label": "Change in bowel habit",
+      "canonical_concept": "change_in_bowel_habit",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have your bowel movements changed recently?",
+      "dedup_family": "ros:change_in_bowel_habit",
+      "dedup_families": [
+        "ros:change_in_bowel_habit"
+      ],
+      "question_role": "qualifier"
+    },
+    "jaundice": {
+      "code": "GI-012",
+      "field": "jaundice",
+      "ui_label": "Yellowing of eyes or skin",
+      "canonical_concept": "jaundice",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed yellowing of your eyes or skin?",
+      "dedup_family": "ros:jaundice",
+      "dedup_families": [
+        "ros:jaundice"
+      ],
+      "question_role": "qualifier"
+    },
+    "heartburn": {
+      "code": "GI-009",
+      "field": "heartburn",
+      "ui_label": "Heartburn",
+      "canonical_concept": "heartburn",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have heartburn?",
+      "dedup_family": "ros:heartburn",
+      "dedup_families": [
+        "ros:heartburn"
+      ],
+      "question_role": "qualifier"
+    },
+    "dysuria": {
+      "code": "GU-001",
+      "field": "dysuria",
+      "ui_label": "Pain or burning when passing urine",
+      "canonical_concept": "dysuria",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have pain or burning when you pass urine?",
+      "dedup_family": "ros:dysuria",
+      "dedup_families": [
+        "ros:dysuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_frequency": {
+      "code": "GU-002",
+      "field": "urinary_frequency",
+      "ui_label": "Passing urine more often",
+      "canonical_concept": "urinary_frequency",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Are you passing urine more often than usual?",
+      "dedup_family": "ros:urinary_frequency",
+      "dedup_families": [
+        "ros:urinary_frequency"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_urgency": {
+      "code": "GU-003",
+      "field": "urinary_urgency",
+      "ui_label": "Sudden urge to pass urine",
+      "canonical_concept": "urinary_urgency",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you get a sudden strong urge to pass urine?",
+      "dedup_family": "ros:urinary_urgency",
+      "dedup_families": [
+        "ros:urinary_urgency"
+      ],
+      "question_role": "qualifier"
+    },
+    "hematuria": {
+      "code": "GU-006",
+      "field": "hematuria",
+      "ui_label": "Blood in urine",
+      "canonical_concept": "hematuria",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed blood in your urine?",
+      "dedup_family": "ros:hematuria",
+      "dedup_families": [
+        "ros:hematuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "flank_pain": {
+      "code": "GU-007",
+      "field": "flank_pain",
+      "ui_label": "Pain in the side or back near the kidney",
+      "canonical_concept": "flank_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have pain in your side or back near the kidney?",
+      "dedup_family": "ros:flank_pain",
+      "dedup_families": [
+        "ros:flank_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "inability_to_pass_urine": {
+      "code": "GU-022",
+      "field": "inability_to_pass_urine",
+      "ui_label": "Unable to pass urine",
+      "canonical_concept": "inability_to_pass_urine",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Are you unable to pass urine?",
+      "dedup_family": "ros:urinary_retention",
+      "dedup_families": [
+        "ros:urinary_retention"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "incontinence": {
+      "code": "GU-008",
+      "field": "incontinence",
+      "ui_label": "Loss of bladder control",
+      "canonical_concept": "incontinence",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had any loss of bladder control?",
+      "dedup_family": "ros:incontinence",
+      "dedup_families": [
+        "ros:incontinence"
+      ],
+      "question_role": "qualifier"
+    },
+    "urethral_discharge": {
+      "code": "GU-009B",
+      "field": "urethral_discharge",
+      "ui_label": "Urethral discharge",
+      "canonical_concept": "urethral_discharge",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed any discharge from the urethra?"
+    },
+    "testicular_pain": {
+      "code": "GU-009",
+      "field": "testicular_pain",
+      "ui_label": "Testicular pain",
+      "canonical_concept": "testicular_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had pain in a testicle or the scrotum?",
+      "dedup_family": "ros:testicular_pain",
+      "dedup_families": [
+        "ros:testicular_pain"
+      ],
+      "question_role": "qualifier",
+      "ask_if": "SEX_MALE"
+    },
+    "foamy_urine": {
+      "code": "REN-001",
+      "field": "foamy_urine",
+      "ui_label": "Foamy urine",
+      "canonical_concept": "foamy_urine",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is your urine foamy or frothy?",
+      "dedup_family": "ros:foamy_urine",
+      "dedup_families": [
+        "ros:foamy_urine"
+      ],
+      "question_role": "qualifier"
+    },
+    "headache": {
+      "code": "NEU-005",
+      "field": "headache",
+      "ui_label": "Headache",
+      "canonical_concept": "headache",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have a headache?",
+      "dedup_family": "ros:headache",
+      "dedup_families": [
+        "ros:headache"
+      ],
+      "question_role": "qualifier"
+    },
+    "dizziness": {
+      "code": "NEU-001",
+      "field": "dizziness",
+      "ui_label": "Dizziness or lightheadedness",
+      "canonical_concept": "dizziness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt dizzy, lightheaded, or near-fainting?",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "fainting": {
+      "code": "NEU-002",
+      "field": "fainting",
+      "ui_label": "Fainting",
+      "canonical_concept": "fainting",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you fainted or passed out?",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "loss_of_consciousness": {
+      "code": "NEURO-001",
+      "field": "loss_of_consciousness",
+      "ui_label": "Loss of consciousness",
+      "canonical_concept": "loss_of_consciousness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you actually passed out or lost consciousness?",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "seizure": {
+      "code": "NEU-008",
+      "field": "seizure",
+      "ui_label": "Seizures",
+      "canonical_concept": "seizure",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had a seizure or fit?",
+      "dedup_family": "ros:seizure",
+      "dedup_families": [
+        "ros:seizure"
+      ],
+      "question_role": "qualifier"
+    },
+    "clustered_events": {
+      "code": "NEURO-031",
+      "field": "clustered_events",
+      "ui_label": "Clustered events",
+      "canonical_concept": "clustered_events",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Did more than one event happen close together?"
+    },
+    "confusion": {
+      "code": "NEU-004",
+      "field": "confusion",
+      "ui_label": "Confusion",
+      "canonical_concept": "confusion",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt confused or not yourself?",
+      "dedup_family": "ros:confusion",
+      "dedup_families": [
+        "ros:confusion"
+      ],
+      "question_role": "qualifier"
+    },
+    "neck_stiffness": {
+      "code": "NEU-012",
+      "field": "neck_stiffness",
+      "ui_label": "Neck stiffness",
+      "canonical_concept": "neck_stiffness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is your neck stiff or painful to bend?",
+      "dedup_family": "ros:neck_stiffness",
+      "dedup_families": [
+        "ros:neck_stiffness"
+      ],
+      "question_role": "qualifier"
+    },
+    "photophobia": {
+      "code": "NEU-013",
+      "field": "photophobia",
+      "ui_label": "Sensitivity to light",
+      "canonical_concept": "photophobia",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is bright light bothering your eyes more than usual?",
+      "dedup_family": "ros:photophobia",
+      "dedup_families": [
+        "ros:photophobia"
+      ],
+      "question_role": "qualifier"
+    },
+    "numbness": {
+      "code": "NEURO-004",
+      "field": "numbness",
+      "ui_label": "Numbness",
+      "canonical_concept": "numbness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had numbness or loss of feeling anywhere?",
+      "dedup_family": "ros:numbness",
+      "dedup_families": [
+        "ros:numbness"
+      ],
+      "question_role": "qualifier"
+    },
+    "tingling": {
+      "code": "NEURO-005",
+      "field": "tingling",
+      "ui_label": "Tingling",
+      "canonical_concept": "tingling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had tingling or pins-and-needles?",
+      "dedup_family": "ros:tingling",
+      "dedup_families": [
+        "ros:tingling"
+      ],
+      "question_role": "qualifier"
+    },
+    "memory_loss": {
+      "code": "NEU-009",
+      "field": "memory_loss",
+      "ui_label": "Memory loss",
+      "canonical_concept": "memory_loss",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had any memory problems?",
+      "dedup_family": "ros:memory_loss",
+      "dedup_families": [
+        "ros:memory_loss"
+      ],
+      "question_role": "qualifier"
+    },
+    "speech_difficulty": {
+      "code": "NEU-010",
+      "field": "speech_difficulty",
+      "ui_label": "Speech difficulty",
+      "canonical_concept": "speech_difficulty",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had trouble speaking or getting your words out?",
+      "dedup_family": "ros:speech_difficulty",
+      "dedup_families": [
+        "ros:speech_difficulty"
+      ],
+      "question_role": "qualifier"
+    },
+    "vision_changes": {
+      "code": "NEU-011",
+      "field": "vision_changes",
+      "ui_label": "Vision changes",
+      "canonical_concept": "vision_changes",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had any change in your vision?",
+      "dedup_family": "ros:vision_changes",
+      "dedup_families": [
+        "ros:vision_changes"
+      ],
+      "question_role": "qualifier"
+    },
+    "diplopia": {
+      "code": "NEU-014",
+      "field": "diplopia",
+      "ui_label": "Double vision",
+      "canonical_concept": "diplopia",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had double vision?",
+      "dedup_family": "ros:diplopia",
+      "dedup_families": [
+        "ros:diplopia"
+      ],
+      "question_role": "qualifier"
+    },
+    "dysarthria": {
+      "code": "NEU-015",
+      "field": "dysarthria",
+      "ui_label": "Slurred speech",
+      "canonical_concept": "dysarthria",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Has your speech become slurred?",
+      "dedup_family": "ros:dysarthria",
+      "dedup_families": [
+        "ros:dysarthria"
+      ],
+      "question_role": "qualifier"
+    },
+    "joint_pain": {
+      "code": "MSK-001",
+      "field": "joint_pain",
+      "ui_label": "Joint pain",
+      "canonical_concept": "joint_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have joint pain?",
+      "dedup_family": "ros:joint_pain",
+      "dedup_families": [
+        "ros:joint_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "muscle_pain": {
+      "code": "MSK-002",
+      "field": "muscle_pain",
+      "ui_label": "Muscle pain",
+      "canonical_concept": "muscle_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have muscle pain?",
+      "dedup_family": "ros:muscle_pain",
+      "dedup_families": [
+        "ros:muscle_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "back_pain": {
+      "code": "MSK-003",
+      "field": "back_pain",
+      "ui_label": "Back pain",
+      "canonical_concept": "back_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have back pain?",
+      "dedup_family": "ros:back_pain",
+      "dedup_families": [
+        "ros:back_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "neck_pain": {
+      "code": "MSK-004",
+      "field": "neck_pain",
+      "ui_label": "Neck pain",
+      "canonical_concept": "neck_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have neck pain?",
+      "dedup_family": "ros:neck_pain",
+      "dedup_families": [
+        "ros:neck_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "joint_swelling": {
+      "code": "MSK-005",
+      "field": "joint_swelling",
+      "ui_label": "Joint swelling",
+      "canonical_concept": "joint_swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have any of your joints become swollen?",
+      "dedup_family": "ros:joint_swelling",
+      "dedup_families": [
+        "ros:joint_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "stiffness": {
+      "code": "MSK-010",
+      "field": "stiffness",
+      "ui_label": "Stiffness",
+      "canonical_concept": "stiffness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt stiffness in your muscles or joints?",
+      "dedup_family": "ros:stiffness",
+      "dedup_families": [
+        "ros:stiffness"
+      ],
+      "question_role": "qualifier"
+    },
+    "limited_range_of_motion": {
+      "code": "MSK-006",
+      "field": "limited_range_of_motion",
+      "ui_label": "Limited range of motion",
+      "canonical_concept": "limited_range_of_motion",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have limited movement in any joint?",
+      "dedup_family": "ros:limited_range_of_motion",
+      "dedup_families": [
+        "ros:limited_range_of_motion"
+      ],
+      "question_role": "qualifier"
+    },
+    "inability_to_bear_weight": {
+      "code": "MSK-007",
+      "field": "inability_to_bear_weight",
+      "ui_label": "Unable to bear weight",
+      "canonical_concept": "inability_to_bear_weight",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Are you unable to bear weight on it?",
+      "dedup_family": "ros:inability_to_bear_weight",
+      "dedup_families": [
+        "ros:inability_to_bear_weight"
+      ],
+      "question_role": "qualifier"
+    },
+    "sciatica": {
+      "code": "MSK-008",
+      "field": "sciatica",
+      "ui_label": "Pain shooting down the leg",
+      "canonical_concept": "sciatica",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have pain shooting down your leg?",
+      "dedup_family": "ros:sciatica",
+      "dedup_families": [
+        "ros:sciatica"
+      ],
+      "question_role": "qualifier"
+    },
+    "rash": {
+      "code": "SKIN-001",
+      "field": "rash",
+      "ui_label": "Rash",
+      "canonical_concept": "rash",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have any rash or new skin spots?",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "itching": {
+      "code": "SKIN-002",
+      "field": "itching",
+      "ui_label": "Itching",
+      "canonical_concept": "itching",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had any itching?",
+      "dedup_family": "ros:itching",
+      "dedup_families": [
+        "ros:itching"
+      ],
+      "question_role": "qualifier"
+    },
+    "lesions": {
+      "code": "SKIN-003",
+      "field": "lesions",
+      "ui_label": "Skin lesions",
+      "canonical_concept": "lesions",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed any skin lesions or sores?",
+      "dedup_family": "ros:lesions",
+      "dedup_families": [
+        "ros:lesions"
+      ],
+      "question_role": "qualifier"
+    },
+    "bruising": {
+      "code": "SKIN-004",
+      "field": "bruising",
+      "ui_label": "Easy bruising",
+      "canonical_concept": "bruising",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed easy bruising?",
+      "dedup_family": "ros:bruising",
+      "dedup_families": [
+        "ros:bruising"
+      ],
+      "question_role": "qualifier"
+    },
+    "changes_in_moles": {
+      "code": "SKIN-014",
+      "field": "changes_in_moles",
+      "ui_label": "Changes in moles",
+      "canonical_concept": "changes_in_moles",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have any moles changed in size, shape, or color?",
+      "dedup_family": "ros:changes_in_moles",
+      "dedup_families": [
+        "ros:changes_in_moles"
+      ],
+      "question_role": "qualifier"
+    },
+    "hair_loss": {
+      "code": "SKIN-015",
+      "field": "hair_loss",
+      "ui_label": "Hair loss",
+      "canonical_concept": "hair_loss",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed unusual hair loss?",
+      "dedup_family": "ros:hair_loss",
+      "dedup_families": [
+        "ros:hair_loss"
+      ],
+      "question_role": "qualifier"
+    },
+    "mucosal_involvement": {
+      "code": "SKIN-006",
+      "field": "mucosal_involvement",
+      "ui_label": "Mouth or eye sores",
+      "canonical_concept": "mucosal_involvement",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had sores or rash in your mouth or other moist areas?",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "heat_intolerance": {
+      "code": "ENDO-001",
+      "field": "heat_intolerance",
+      "ui_label": "Heat intolerance",
+      "canonical_concept": "heat_intolerance",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you feel unusually hot or intolerant to heat?",
+      "dedup_family": "ros:heat_intolerance",
+      "dedup_families": [
+        "ros:heat_intolerance"
+      ],
+      "question_role": "qualifier"
+    },
+    "cold_intolerance": {
+      "code": "ENDO-002",
+      "field": "cold_intolerance",
+      "ui_label": "Cold intolerance",
+      "canonical_concept": "cold_intolerance",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you feel unusually cold?",
+      "dedup_family": "ros:cold_intolerance",
+      "dedup_families": [
+        "ros:cold_intolerance"
+      ],
+      "question_role": "qualifier"
+    },
+    "excessive_thirst": {
+      "code": "ENDO-003",
+      "field": "excessive_thirst",
+      "ui_label": "Excessive thirst",
+      "canonical_concept": "excessive_thirst",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been unusually thirsty?",
+      "dedup_family": "ros:excessive_thirst",
+      "dedup_families": [
+        "ros:excessive_thirst"
+      ],
+      "question_role": "qualifier"
+    },
+    "excessive_urination": {
+      "code": "ENDO-004",
+      "field": "excessive_urination",
+      "ui_label": "Excessive urination",
+      "canonical_concept": "excessive_urination",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been passing urine much more often or in larger amounts than usual?",
+      "dedup_family": "ros:excessive_urination",
+      "dedup_families": [
+        "ros:excessive_urination"
+      ],
+      "question_role": "qualifier"
+    },
+    "excessive_hunger": {
+      "code": "ENDO-005",
+      "field": "excessive_hunger",
+      "ui_label": "Excessive hunger",
+      "canonical_concept": "excessive_hunger",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you feel unusually hungry?",
+      "dedup_family": "ros:excessive_hunger",
+      "dedup_families": [
+        "ros:excessive_hunger"
+      ],
+      "question_role": "qualifier"
+    },
+    "easy_bruising": {
+      "code": "HEME-001",
+      "field": "easy_bruising",
+      "ui_label": "Easy bruising",
+      "canonical_concept": "easy_bruising",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you bruise easily?",
+      "dedup_family": "ros:easy_bruising",
+      "dedup_families": [
+        "ros:easy_bruising"
+      ],
+      "question_role": "qualifier"
+    },
+    "easy_bleeding": {
+      "code": "HEME-002",
+      "field": "easy_bleeding",
+      "ui_label": "Easy bleeding",
+      "canonical_concept": "easy_bleeding",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you bleed easily?",
+      "dedup_family": "ros:easy_bleeding",
+      "dedup_families": [
+        "ros:easy_bleeding"
+      ],
+      "question_role": "qualifier"
+    },
+    "lymph_node_swelling": {
+      "code": "HEME-003",
+      "field": "lymph_node_swelling",
+      "ui_label": "Swollen lymph nodes",
+      "canonical_concept": "lymph_node_swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed any swollen glands or lymph nodes?",
+      "dedup_family": "ros:lymph_node_swelling",
+      "dedup_families": [
+        "ros:lymph_node_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "anemia_symptoms": {
+      "code": "HEME-004",
+      "field": "anemia_symptoms",
+      "ui_label": "Anemia symptoms",
+      "canonical_concept": "anemia_symptoms",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt pale, tired, or short of breath?",
+      "dedup_family": "ros:anemia_symptoms",
+      "dedup_families": [
+        "ros:anemia_symptoms"
+      ],
+      "question_role": "qualifier"
+    },
+    "anxiety": {
+      "code": "PSY-001",
+      "field": "anxiety",
+      "ui_label": "Anxiety",
+      "canonical_concept": "anxiety",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt anxious or worried?",
+      "dedup_family": "ros:anxiety",
+      "dedup_families": [
+        "ros:anxiety"
+      ],
+      "question_role": "qualifier"
+    },
+    "depression": {
+      "code": "PSY-003",
+      "field": "depression",
+      "ui_label": "Depression",
+      "canonical_concept": "depression",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt down, depressed, or hopeless?",
+      "dedup_family": "ros:depression",
+      "dedup_families": [
+        "ros:depression"
+      ],
+      "question_role": "qualifier"
+    },
+    "mood_changes": {
+      "code": "PSY-004",
+      "field": "mood_changes",
+      "ui_label": "Mood changes",
+      "canonical_concept": "mood_changes",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed any changes in your mood?",
+      "dedup_family": "ros:mood_changes",
+      "dedup_families": [
+        "ros:mood_changes"
+      ],
+      "question_role": "qualifier"
+    },
+    "sleep_disturbance": {
+      "code": "PSY-005",
+      "field": "sleep_disturbance",
+      "ui_label": "Sleep disturbance",
+      "canonical_concept": "sleep_disturbance",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had trouble sleeping?",
+      "dedup_family": "ros:sleep_disturbance",
+      "dedup_families": [
+        "ros:sleep_disturbance"
+      ],
+      "question_role": "qualifier"
+    },
+    "suicidal_ideation": {
+      "code": "PSY-006",
+      "field": "suicidal_ideation",
+      "ui_label": "Suicidal ideation",
+      "canonical_concept": "suicidal_ideation",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had thoughts of harming yourself?",
+      "dedup_family": "ros:suicidal_ideation",
+      "dedup_families": [
+        "ros:suicidal_ideation"
+      ],
+      "question_role": "qualifier"
+    },
+    "hallucinations": {
+      "code": "PSY-007",
+      "field": "hallucinations",
+      "ui_label": "Hallucinations",
+      "canonical_concept": "hallucinations",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you seen or heard things that others do not?",
+      "dedup_family": "ros:hallucinations",
+      "dedup_families": [
+        "ros:hallucinations"
+      ],
+      "question_role": "qualifier"
+    },
+    "low_mood_anhedonia": {
+      "code": "PSY-002",
+      "field": "low_mood_anhedonia",
+      "ui_label": "Low mood or loss of interest",
+      "canonical_concept": "low_mood_anhedonia",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had low mood or loss of interest in things you usually enjoy?"
+    },
+    "pregnancy_context": {
+      "code": "GYNHX-001",
+      "field": "pregnancy_context",
+      "ui_label": "Pregnancy context",
+      "canonical_concept": "pregnancy_context",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Could you be pregnant now, or are you recently postpartum?"
+    },
+    "lmp": {
+      "code": "GYNHX-002",
+      "field": "lmp",
+      "ui_label": "Last menstrual period",
+      "canonical_concept": "lmp",
+      "response_type": "TEMPORAL_OR_SHORT_TEXT",
+      "plain_language_question": "When was the first day of your last menstrual period?"
+    },
+    "timing_with_cycle": {
+      "code": "GYNHX-003",
+      "field": "timing_with_cycle",
+      "ui_label": "Timing with cycle",
+      "canonical_concept": "timing_with_cycle",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do your symptoms seem related to your menstrual cycle?"
+    },
+    "contraceptive_use": {
+      "code": "GYNHX-004",
+      "field": "contraceptive_use",
+      "ui_label": "Contraceptive use",
+      "canonical_concept": "contraceptive_use",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Are you using any contraception or hormonal treatment that may be relevant?"
+    },
+    "menopausal_status": {
+      "code": "GYNHX-005",
+      "field": "menopausal_status",
+      "ui_label": "Menopausal status",
+      "canonical_concept": "menopausal_status",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Are you still having periods regularly, are they irregular, or have they stopped completely?"
+    },
+    "douching": {
+      "code": "GYNHX-006",
+      "field": "douching",
+      "ui_label": "Douching or internal products",
+      "canonical_concept": "douching",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you used douching, vaginal washes, or internal products recently?"
+    },
+    "local_hygiene_products": {
+      "code": "GYNHX-007",
+      "field": "local_hygiene_products",
+      "ui_label": "Local hygiene products",
+      "canonical_concept": "local_hygiene_products",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Have you recently changed pads, soaps, creams, lubricants, or other local products?"
+    },
+    "gynecologic_history_other": {
+      "code": "GYNHX-009",
+      "field": "gynecologic_history_other",
+      "ui_label": "Other gynecologic history",
+      "canonical_concept": "gynecologic_history_other",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Is there any other gynecologic or obstetric history we should know about?"
+    },
+    "menstrual_history": {
+      "code": "GYNHX-008",
+      "field": "menstrual_history",
+      "ui_label": "Menstrual history",
+      "canonical_concept": "menstrual_history",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "How heavy are your periods? Any change in cycle?"
+    },
+    "prior_anaemia": {
+      "code": "PMH-028",
+      "field": "prior_anaemia",
+      "ui_label": "Prior anaemia",
+      "canonical_concept": "prior_anaemia",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been told you have anaemia before?"
+    },
+    "known_heart_failure": {
+      "code": "PMH-030",
+      "field": "known_heart_failure",
+      "ui_label": "Known heart failure",
+      "canonical_concept": "known_heart_failure",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you ever been told you have heart failure?"
+    },
+    "known_kidney_disease": {
+      "code": "PMH-031",
+      "field": "known_kidney_disease",
+      "ui_label": "Known kidney disease",
+      "canonical_concept": "known_kidney_disease",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have any known kidney problems?"
+    },
+    "known_liver_disease": {
+      "code": "PMH-032",
+      "field": "known_liver_disease",
+      "ui_label": "Known liver disease",
+      "canonical_concept": "known_liver_disease",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have any liver problems?"
+    },
+    "sleep_quality": {
+      "code": "SLEEP-001",
+      "field": "sleep_quality",
+      "ui_label": "Sleep quality",
+      "canonical_concept": "sleep_quality",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Are you sleeping well?"
+    },
+    "osa_screen": {
+      "code": "SLEEP-002",
+      "field": "osa_screen",
+      "ui_label": "Obstructive sleep apnea screen",
+      "canonical_concept": "osa_screen",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you snore loudly or feel excessively sleepy during the day?"
+    },
+    "pitting_character": {
+      "code": "OED-002",
+      "field": "pitting_character",
+      "ui_label": "Pitting character",
+      "canonical_concept": "pitting_character",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "If you press on the swollen area, does it leave an indent?"
+    },
+    "diurnal_variation": {
+      "code": "OED-003",
+      "field": "diurnal_variation",
+      "ui_label": "Diurnal variation",
+      "canonical_concept": "diurnal_variation",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Is the swelling worse at the end of the day?"
+    },
+    "recent_change_in_pattern": {
+      "code": "EVENT-020",
+      "field": "recent_change_in_pattern",
+      "ui_label": "Recent change in pattern",
+      "canonical_concept": "recent_change_in_pattern",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Has the pattern changed noticeably in the last few weeks?"
+    },
+    "amount_lost": {
+      "code": "WL-001",
+      "field": "amount_lost",
+      "ui_label": "Amount lost",
+      "canonical_concept": "amount_lost",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "plain_language_question": "How much weight have you lost?"
+    },
+    "rapid_loss": {
+      "code": "WL-004",
+      "field": "rapid_loss",
+      "ui_label": "Rapid loss",
+      "canonical_concept": "rapid_loss",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Did the weight come off quickly over days to weeks?"
+    },
+    "associated_symptoms": {
+      "code": "ASSOC-001",
+      "field": "associated_symptoms",
+      "ui_label": "Associated symptoms",
+      "canonical_concept": "associated_symptoms",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have any other symptoms come with it?"
+    },
+    "skin_changes_over_swelling": {
+      "code": "DERM-011",
+      "field": "skin_changes_over_swelling",
+      "ui_label": "Skin changes over swelling",
+      "canonical_concept": "skin_changes_over_swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Any skin changes over the swollen area?",
+      "dedup_family": "context:swelling_context",
+      "dedup_families": [
+        "context:swelling_context"
+      ],
+      "question_role": "context_or_qualifier"
+    },
+    "onset": {
+      "field": "onset",
+      "canonical_concept": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have onset?"
+    },
+    "duration": {
+      "field": "duration",
+      "canonical_concept": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have duration?"
+    },
+    "pattern": {
+      "field": "pattern",
+      "canonical_concept": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have pattern?"
+    },
+    "episode_duration": {
+      "field": "episode_duration",
+      "canonical_concept": "episode_duration",
+      "code": "EVENT-004",
+      "ui_label": "Episode duration",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have episode duration?"
+    },
+    "frequency": {
+      "field": "frequency",
+      "canonical_concept": "frequency",
+      "code": "EVENT-005",
+      "ui_label": "Frequency",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have frequency?"
+    },
+    "course": {
+      "field": "course",
+      "canonical_concept": "course",
+      "code": "EVENT-006",
+      "ui_label": "Course",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have course?"
+    },
+    "functional_impact": {
+      "field": "functional_impact",
+      "canonical_concept": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have functional impact?"
+    },
+    "severity": {
+      "field": "severity",
+      "canonical_concept": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have severity?"
+    },
+    "location": {
+      "field": "location",
+      "canonical_concept": "location",
+      "code": "PAIN-014",
+      "ui_label": "Location",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Where exactly is it located?",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "pain_specific_location": {
+      "field": "pain_specific_location",
+      "canonical_concept": "pain_specific_location",
+      "code": "PAIN-014B",
+      "ui_label": "Pain specific location",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have pain specific location?",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "character": {
+      "field": "character",
+      "canonical_concept": "character",
+      "code": "PAIN-016",
+      "ui_label": "Character",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "What does the pain feel like, for example throbbing, sharp, dull, burning, cramping, pressure-like, stabbing, or aching?"
+    },
+    "radiation": {
+      "field": "radiation",
+      "canonical_concept": "radiation",
+      "code": "PAIN-017",
+      "ui_label": "Radiation",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have radiation?"
+    },
+    "aggravating_factors": {
+      "field": "aggravating_factors",
+      "canonical_concept": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have aggravating factors?"
+    },
+    "relieving_factors": {
+      "field": "relieving_factors",
+      "canonical_concept": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have relieving factors?"
+    },
+    "unable_to_speak_full_sentences": {
+      "field": "unable_to_speak_full_sentences",
+      "canonical_concept": "unable_to_speak_full_sentences",
+      "code": "RESP-002",
+      "ui_label": "Unable to speak full sentences",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have unable to speak full sentences?",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "cyanosis": {
+      "field": "cyanosis",
+      "canonical_concept": "cyanosis",
+      "code": "RESP-003",
+      "ui_label": "Cyanosis",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have cyanosis?"
+    },
+    "productive_cough": {
+      "field": "productive_cough",
+      "canonical_concept": "productive_cough",
+      "code": "RESP-011",
+      "ui_label": "Productive cough",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have productive cough?"
+    },
+    "post_tussive_vomiting": {
+      "field": "post_tussive_vomiting",
+      "canonical_concept": "post_tussive_vomiting",
+      "code": "RESP-013",
+      "ui_label": "Post tussive vomiting",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have post tussive vomiting?",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "qualifier"
+    },
+    "exertional_trigger": {
+      "field": "exertional_trigger",
+      "canonical_concept": "exertional_trigger",
+      "code": "EVENT-012",
+      "ui_label": "Exertional trigger",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have exertional trigger?"
+    },
+    "standing_trigger": {
+      "field": "standing_trigger",
+      "canonical_concept": "standing_trigger",
+      "code": "EVENT-013",
+      "ui_label": "Standing trigger",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have standing trigger?"
+    },
+    "positional_trigger": {
+      "field": "positional_trigger",
+      "canonical_concept": "positional_trigger",
+      "code": "NEURO-033",
+      "ui_label": "Positional trigger",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have positional trigger?"
+    },
+    "hematemesis": {
+      "field": "hematemesis",
+      "canonical_concept": "hematemesis",
+      "code": "GI-009B",
+      "ui_label": "Hematemesis",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have hematemesis?",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "severe_abdominal_pain": {
+      "field": "severe_abdominal_pain",
+      "canonical_concept": "severe_abdominal_pain",
+      "code": "GI-013",
+      "ui_label": "Severe abdominal pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have severe abdominal pain?"
+    },
+    "stool_content": {
+      "field": "stool_content",
+      "canonical_concept": "stool_content",
+      "code": "GIQ-014",
+      "ui_label": "Stool content",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have stool content?"
+    },
+    "stool_consistency": {
+      "field": "stool_consistency",
+      "canonical_concept": "stool_consistency",
+      "code": "GIQ-015",
+      "ui_label": "Stool consistency",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have stool consistency?"
+    },
+    "vomit_content": {
+      "field": "vomit_content",
+      "canonical_concept": "vomit_content",
+      "code": "GIQ-016",
+      "ui_label": "Vomit content",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have vomit content?",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "qualifier"
+    },
+    "difficulty_passing_stool": {
+      "field": "difficulty_passing_stool",
+      "canonical_concept": "difficulty_passing_stool",
+      "code": "GIQ-017",
+      "ui_label": "Difficulty passing stool",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have difficulty passing stool?",
+      "dedup_family": "ros:constipation",
+      "dedup_families": [
+        "ros:constipation"
+      ],
+      "question_role": "qualifier"
+    },
+    "vomit_amount": {
+      "field": "vomit_amount",
+      "canonical_concept": "vomit_amount",
+      "code": "GIQ-018",
+      "ui_label": "Vomit amount",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have vomit amount?",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "qualifier"
+    },
+    "projectile_vomiting": {
+      "field": "projectile_vomiting",
+      "canonical_concept": "projectile_vomiting",
+      "code": "GIQ-019",
+      "ui_label": "Projectile vomiting",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have projectile vomiting?",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "qualifier"
+    },
+    "stool_frequency": {
+      "field": "stool_frequency",
+      "canonical_concept": "stool_frequency",
+      "code": "GIQ-008",
+      "ui_label": "Stool frequency",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have stool frequency?"
+    },
+    "suprapubic_pain": {
+      "field": "suprapubic_pain",
+      "canonical_concept": "suprapubic_pain",
+      "code": "GU-008B",
+      "ui_label": "Suprapubic pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have suprapubic pain?"
+    },
+    "hematuria_visible": {
+      "field": "hematuria_visible",
+      "canonical_concept": "hematuria_visible",
+      "code": "GU-020",
+      "ui_label": "Hematuria visible",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have hematuria visible?"
+    },
+    "clots_in_urine": {
+      "field": "clots_in_urine",
+      "canonical_concept": "clots_in_urine",
+      "code": "GU-021",
+      "ui_label": "Clots in urine",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have clots in urine?"
+    },
+    "vaginal_bleeding": {
+      "field": "vaginal_bleeding",
+      "canonical_concept": "vaginal_bleeding",
+      "code": "GYN-001",
+      "ui_label": "Vaginal bleeding",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have vaginal bleeding?",
+      "dedup_family": "ros:vaginal_bleeding",
+      "dedup_families": [
+        "ros:vaginal_bleeding"
+      ],
+      "question_role": "qualifier"
+    },
+    "vaginal_discharge": {
+      "field": "vaginal_discharge",
+      "canonical_concept": "vaginal_discharge",
+      "code": "GYN-002",
+      "ui_label": "Vaginal discharge",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have vaginal discharge?",
+      "dedup_family": "ros:vaginal_discharge",
+      "dedup_families": [
+        "ros:vaginal_discharge"
+      ],
+      "question_role": "qualifier"
+    },
+    "menstrual_flow_pads": {
+      "field": "menstrual_flow_pads",
+      "canonical_concept": "menstrual_flow_pads",
+      "code": "GYNQ-010",
+      "ui_label": "Menstrual flow pads",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have menstrual flow pads?"
+    },
+    "skin_peeling": {
+      "field": "skin_peeling",
+      "canonical_concept": "skin_peeling",
+      "code": "SKIN-005",
+      "ui_label": "Skin peeling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have skin peeling?",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "mouth_involvement": {
+      "field": "mouth_involvement",
+      "canonical_concept": "mouth_involvement",
+      "code": "SKIN-006B",
+      "ui_label": "Mouth involvement",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have mouth involvement?",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "eye_involvement": {
+      "field": "eye_involvement",
+      "canonical_concept": "eye_involvement",
+      "code": "SKIN-008",
+      "ui_label": "Eye involvement",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have eye involvement?",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "discharge": {
+      "field": "discharge",
+      "canonical_concept": "discharge",
+      "code": "SKIN-009",
+      "ui_label": "Discharge",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have discharge?"
+    },
+    "redness": {
+      "field": "redness",
+      "canonical_concept": "redness",
+      "code": "SKIN-010",
+      "ui_label": "Redness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have redness?"
+    },
+    "warmth": {
+      "field": "warmth",
+      "canonical_concept": "warmth",
+      "code": "SKIN-011",
+      "ui_label": "Warmth",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have warmth?"
+    },
+    "blistering": {
+      "field": "blistering",
+      "canonical_concept": "blistering",
+      "code": "SKIN-012",
+      "ui_label": "Blistering",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have blistering?",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "swelling": {
+      "field": "swelling",
+      "canonical_concept": "swelling",
+      "code": "MASS-001",
+      "ui_label": "Swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have swelling?",
+      "dedup_family": "ros:swelling",
+      "dedup_families": [
+        "ros:swelling"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "recent_travel": {
+      "field": "recent_travel",
+      "canonical_concept": "recent_travel",
+      "code": "SOC-007",
+      "ui_label": "Recent travel",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you traveled anywhere recently?",
+      "dedup_family": "ros:recent_travel",
+      "dedup_families": [
+        "ros:recent_travel"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_immobility": {
+      "field": "recent_immobility",
+      "canonical_concept": "recent_immobility",
+      "code": "SOC-014",
+      "ui_label": "Recent immobility",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been stuck in bed, on a long trip, or not moving around much recently?",
+      "dedup_family": "ros:recent_immobility",
+      "dedup_families": [
+        "ros:recent_immobility"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_sexual_exposure": {
+      "field": "recent_sexual_exposure",
+      "canonical_concept": "recent_sexual_exposure",
+      "code": "SOC-015",
+      "ui_label": "Recent sexual exposure",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have recent sexual exposure?"
+    },
+    "recent_trauma": {
+      "field": "recent_trauma",
+      "canonical_concept": "recent_trauma",
+      "code": "CTX-004",
+      "ui_label": "Recent trauma",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Did this start after an injury, fall, blow, or accident?"
+    },
+    "recent_head_trauma": {
+      "field": "recent_head_trauma",
+      "canonical_concept": "recent_head_trauma",
+      "code": "TRAUMA-001",
+      "ui_label": "Recent head trauma",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have recent head trauma?"
+    },
+    "head_injury": {
+      "field": "head_injury",
+      "canonical_concept": "head_injury",
+      "code": "TRAUMA-002",
+      "ui_label": "Head injury",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have head injury?"
+    },
+    "recent_illness": {
+      "field": "recent_illness",
+      "canonical_concept": "recent_illness",
+      "code": "CTX-015",
+      "ui_label": "Recent illness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have recent illness?"
+    },
+    "recent_infection": {
+      "field": "recent_infection",
+      "canonical_concept": "recent_infection",
+      "code": "CTX-016",
+      "ui_label": "Recent infection",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have recent infection?",
+      "dedup_family": "ros:recent_infection",
+      "dedup_families": [
+        "ros:recent_infection"
+      ],
+      "question_role": "qualifier"
+    },
+    "food_exposure": {
+      "field": "food_exposure",
+      "canonical_concept": "food_exposure",
+      "code": "CTX-002",
+      "ui_label": "Food exposure",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have food exposure?",
+      "dedup_family": "ros:food_exposure",
+      "dedup_families": [
+        "ros:food_exposure"
+      ],
+      "question_role": "qualifier"
+    },
+    "contact_exposure": {
+      "field": "contact_exposure",
+      "canonical_concept": "contact_exposure",
+      "code": "CTX-020",
+      "ui_label": "Contact exposure",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have contact exposure?",
+      "dedup_family": "ros:contact_exposure",
+      "dedup_families": [
+        "ros:contact_exposure"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_medication_exposure": {
+      "field": "recent_medication_exposure",
+      "canonical_concept": "recent_medication_exposure",
+      "code": "MED-010",
+      "ui_label": "Recent medication exposure",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have recent medication exposure?"
+    },
+    "recent_antibiotics": {
+      "field": "recent_antibiotics",
+      "canonical_concept": "recent_antibiotics",
+      "code": "MED-002",
+      "ui_label": "Recent antibiotics",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have recent antibiotics?"
+    },
+    "current_medications": {
+      "field": "current_medications",
+      "canonical_concept": "current_medications",
+      "code": "MED-001",
+      "ui_label": "Current medications",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have current medications?"
+    },
+    "allergies": {
+      "field": "allergies",
+      "canonical_concept": "allergies",
+      "code": "ALL-001",
+      "ui_label": "Allergies",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have allergies?"
+    },
+    "past_medical_history": {
+      "field": "past_medical_history",
+      "canonical_concept": "past_medical_history",
+      "code": "PMH-001",
+      "ui_label": "Past medical history",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have past medical history?"
+    },
+    "past_surgical_history": {
+      "field": "past_surgical_history",
+      "canonical_concept": "past_surgical_history",
+      "code": "PSH-001",
+      "ui_label": "Past surgical history",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have past surgical history?"
+    },
+    "recent_surgery": {
+      "field": "recent_surgery",
+      "canonical_concept": "recent_surgery",
+      "code": "SURG-001",
+      "ui_label": "Recent surgery",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had any recent surgery or procedure?"
+    },
+    "calf_pain": {
+      "field": "calf_pain",
+      "canonical_concept": "calf_pain",
+      "code": "VASC-001",
+      "ui_label": "Calf pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is there pain or tenderness in the calf of the swollen leg?"
+    },
+    "calf_redness": {
+      "field": "calf_redness",
+      "canonical_concept": "calf_redness",
+      "code": "VASC-002",
+      "ui_label": "Calf redness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is there redness or warmth in the calf of the swollen leg?"
+    },
+    "facial_swelling": {
+      "field": "facial_swelling",
+      "canonical_concept": "facial_swelling",
+      "code": "SKIN-013",
+      "ui_label": "Facial swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had facial or lip swelling?",
+      "dedup_family": "ros:facial_swelling",
+      "dedup_families": [
+        "ros:facial_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "tongue_swelling": {
+      "field": "tongue_swelling",
+      "canonical_concept": "tongue_swelling",
+      "code": "ENT-011",
+      "ui_label": "Tongue swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had tongue swelling?",
+      "dedup_family": "ros:tongue_swelling",
+      "dedup_families": [
+        "ros:tongue_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "food_restriction": {
+      "field": "food_restriction",
+      "canonical_concept": "food_restriction",
+      "code": "PSY-010",
+      "ui_label": "Food restriction",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you been intentionally restricting food, avoiding meals, or eating much less than usual?"
+    },
+    "loss_of_consciousness_details": {
+      "field": "loss_of_consciousness_details",
+      "canonical_concept": "loss_of_consciousness",
+      "code": "NEURO-001D",
+      "ui_label": "Loss of consciousness details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have loss of consciousness details?",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "detail"
+    },
+    "dizziness_details": {
+      "field": "dizziness_details",
+      "canonical_concept": "dizziness",
+      "code": "NEU-001D2",
+      "ui_label": "Dizziness details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have dizziness details?",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "detail"
+    },
+    "orthopnea_details": {
+      "field": "orthopnea_details",
+      "canonical_concept": "orthopnea",
+      "code": "RESPQ-002D",
+      "ui_label": "Orthopnea details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have orthopnea details?",
+      "dedup_family": "ros:orthopnea",
+      "dedup_families": [
+        "ros:orthopnea"
+      ],
+      "question_role": "detail"
+    },
+    "paroxysmal_nocturnal_dyspnea_details": {
+      "field": "paroxysmal_nocturnal_dyspnea_details",
+      "canonical_concept": "paroxysmal_nocturnal_dyspnea",
+      "code": "RESPQ-003D",
+      "ui_label": "Paroxysmal nocturnal dyspnea details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have paroxysmal nocturnal dyspnea details?",
+      "dedup_family": "ros:paroxysmal_nocturnal_dyspnea",
+      "dedup_families": [
+        "ros:paroxysmal_nocturnal_dyspnea"
+      ],
+      "question_role": "detail"
+    },
+    "facial_swelling_details": {
+      "field": "facial_swelling_details",
+      "canonical_concept": "facial_swelling",
+      "code": "SKIN-013D",
+      "ui_label": "Facial swelling details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have facial swelling details?",
+      "dedup_family": "ros:facial_swelling",
+      "dedup_families": [
+        "ros:facial_swelling"
+      ],
+      "question_role": "detail"
+    },
+    "tongue_swelling_details": {
+      "field": "tongue_swelling_details",
+      "canonical_concept": "tongue_swelling",
+      "code": "ENT-011D",
+      "ui_label": "Tongue swelling details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have tongue swelling details?",
+      "dedup_family": "ros:tongue_swelling",
+      "dedup_families": [
+        "ros:tongue_swelling"
+      ],
+      "question_role": "detail"
+    },
+    "calf_pain_details": {
+      "field": "calf_pain_details",
+      "canonical_concept": "calf_pain",
+      "code": "VASC-001D",
+      "ui_label": "Calf pain details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have calf pain details?"
+    },
+    "calf_redness_details": {
+      "field": "calf_redness_details",
+      "canonical_concept": "calf_redness",
+      "code": "VASC-002D",
+      "ui_label": "Calf redness details",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Do you have calf redness details?"
+    },
+    "prodrome": {
+      "field": "prodrome",
+      "code": "NEURO-041",
+      "canonical_concept": "prodrome",
+      "ui_label": "Prodrome",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS"
+    },
+    "dehydration_context": {
+      "field": "dehydration_context",
+      "code": "CTX-022",
+      "canonical_concept": "dehydration_context",
+      "ui_label": "Dehydration context",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS"
+    },
+    "lump_site": {
+      "code": "MASS-002",
+      "field": "lump_site",
+      "canonical_concept": "lump_site",
+      "dedup_family": "ros:swelling",
+      "dedup_families": [
+        "ros:swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "lump_specific_location": {
+      "field": "lump_specific_location",
+      "canonical_concept": "lump_specific_location",
+      "code": "MASS-003",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "breathlessness_at_rest": {
+      "field": "breathlessness_at_rest",
+      "canonical_concept": "breathlessness_at_rest",
+      "code": "RESPQ-001",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "qualifier"
+    },
+    "alcohol_current": {
+      "field": "alcohol_current",
+      "canonical_concept": "alcohol_current",
+      "code": "SOC-003"
+    },
+    "recreational_drug_use": {
+      "field": "recreational_drug_use",
+      "canonical_concept": "recreational_drug_use",
+      "code": "SOC-004"
+    },
+    "growth_pattern": {
+      "field": "growth_pattern",
+      "canonical_concept": "growth_pattern",
+      "code": "MASS-004"
+    },
+    "painful_lump": {
+      "field": "painful_lump",
+      "canonical_concept": "painful_lump",
+      "code": "MASS-005"
+    },
+    "multiple_lumps": {
+      "field": "multiple_lumps",
+      "canonical_concept": "multiple_lumps",
+      "code": "MASS-006"
+    },
+    "rapid_enlargement": {
+      "field": "rapid_enlargement",
+      "canonical_concept": "rapid_enlargement",
+      "code": "MASS-007"
+    },
+    "mobility": {
+      "field": "mobility",
+      "canonical_concept": "mobility",
+      "code": "MASS-008"
+    },
+    "tenderness": {
+      "field": "tenderness",
+      "canonical_concept": "tenderness",
+      "code": "MASS-009"
+    },
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "ui_label": "Presenting complaint narrative",
+      "canonical_concept": "presenting_complaint_narrative",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Please provide information about presenting complaint narrative.",
+      "code": "NARR-001"
+    },
+    "weight_change": {
+      "field": "weight_change",
+      "ui_label": "Weight change",
+      "canonical_concept": "weight_change",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "plain_language_question": "Please provide information about weight change.",
+      "code": "CON-013"
+    },
+    "bowel_pattern_change": {
+      "field": "bowel_pattern_change",
+      "ui_label": "Bowel pattern change",
+      "canonical_concept": "bowel_pattern_change",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Please provide information about bowel pattern change.",
+      "code": "GI-026"
+    },
+    "bowel_dysfunction": {
+      "code": "SPINE-001A",
+      "field": "bowel_dysfunction",
+      "ui_label": "Bowel dysfunction",
+      "canonical_concept": "bowel_dysfunction",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had new trouble controlling your bowels or new loss of stool control?"
+    },
+    "bladder_dysfunction": {
+      "code": "SPINE-001B",
+      "field": "bladder_dysfunction",
+      "ui_label": "Bladder dysfunction",
+      "canonical_concept": "bladder_dysfunction",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had new trouble passing urine or controlling your bladder?"
+    },
+    "nutrition_status": {
+      "code": "NUT-001",
+      "field": "nutrition_status",
+      "ui_label": "Nutrition status",
+      "canonical_concept": "nutrition_status",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "How is your usual diet and nutrition, including restricted eating, food avoidance, or poor access to food?"
+    },
+    "prior_clot_history": {
+      "code": "VASC-004",
+      "field": "prior_clot_history",
+      "ui_label": "Prior clot history",
+      "canonical_concept": "prior_clot_history",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you ever had a blood clot, such as DVT or pulmonary embolism?"
+    },
+    "prior_clot_history_details": {
+      "code": "DETAIL-PRIOR_CLOT_HISTORY",
+      "field": "prior_clot_history_details",
+      "ui_label": "Prior clot history details",
+      "canonical_concept": "prior_clot_history",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "When did it happen, where was the clot, and what treatment did you receive?"
+    },
+    "local_inflammation_over_swelling": {
+      "code": "OED-005",
+      "field": "local_inflammation_over_swelling",
+      "ui_label": "Local inflammation over swelling",
+      "canonical_concept": "local_inflammation_over_swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Is there redness, warmth, tenderness, or skin irritation over the swollen area?"
+    },
+    "throat_irritant_exposure": {
+      "code": "CTX-021",
+      "field": "throat_irritant_exposure",
+      "ui_label": "Allergy or irritant exposure",
+      "canonical_concept": "throat_irritant_exposure",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Was there a recent exposure to smoke, dust, chemicals, allergens, or another throat irritant?"
+    },
+    "bowel_obstruction_symptom": {
+      "code": "GI-023",
+      "field": "bowel_obstruction_symptom",
+      "ui_label": "Unable to pass stool or gas",
+      "canonical_concept": "bowel_obstruction_symptom",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Are you unable to pass stool or gas?"
+    },
+    "abnormal_vaginal_bleeding": {
+      "code": "GYN-003",
+      "field": "abnormal_vaginal_bleeding",
+      "ui_label": "Abnormal vaginal bleeding",
+      "canonical_concept": "abnormal_vaginal_bleeding",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had heavy or unusual vaginal bleeding?"
+    },
+    "vulvovaginal_irritation": {
+      "code": "GYN-004",
+      "field": "vulvovaginal_irritation",
+      "ui_label": "Vulvovaginal irritation",
+      "canonical_concept": "vulvovaginal_irritation",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have itching or irritation?"
+    },
+    "ocular_redness_pain": {
+      "field": "ocular_redness_pain",
+      "code": "HEADQ-009",
+      "ui_label": "Ocular redness or pain",
+      "canonical_concept": "ocular_redness_pain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have eye redness or eye pain with the headache?",
+      "dedup_family": "ros:eye_symptoms",
+      "dedup_families": [
+        "ros:eye_symptoms"
+      ],
+      "question_role": "qualifier"
+    },
+    "severe_skin_blistering": {
+      "code": "SKIN-007",
+      "field": "severe_skin_blistering",
+      "ui_label": "Severe skin blistering",
+      "canonical_concept": "severe_skin_blistering",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had any blistering or peeling of the skin?"
+    },
+    "weight_loss_intent_details": {
+      "field": "weight_loss_intent_details",
+      "code": "DETAIL-WEIGHT_LOSS_INTENT",
+      "ui_label": "Intentional weight loss details",
+      "canonical_concept": "weight_loss_intent",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "What were you doing to lose weight, such as diet, exercise, or medication?",
+      "dedup_family": "ros:weight_loss",
+      "dedup_families": [
+        "ros:weight_loss"
+      ],
+      "question_role": "detail"
+    },
+    "upper_body_radiation": {
+      "field": "upper_body_radiation",
+      "code": "CPQ-002",
+      "ui_label": "Upper body radiation",
+      "canonical_concept": "upper_body_radiation",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Does the pain spread to your arm, shoulder, neck, or jaw?",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "fracture_risk_history": {
+      "field": "fracture_risk_history",
+      "code": "PMH-021",
+      "ui_label": "Fracture risk history",
+      "canonical_concept": "fracture_risk_history",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have osteoporosis or long-term steroid use?",
+      "dedup_family": "ros:back_pain",
+      "dedup_families": [
+        "ros:back_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "family_history_urologic_cancer": {
+      "field": "family_history_urologic_cancer",
+      "code": "GUC-003",
+      "ui_label": "Family history of urologic cancer",
+      "canonical_concept": "family_history_urologic_cancer",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Any family history of bladder or kidney cancer?",
+      "dedup_family": "context:urologic_cancer_family_history",
+      "dedup_families": [
+        "context:urologic_cancer_family_history"
+      ],
+      "question_role": "context_history"
+    },
+    "meningitis_vaccine_history": {
+      "field": "meningitis_vaccine_history",
+      "code": "IMM-007",
+      "ui_label": "Meningitis vaccine history",
+      "canonical_concept": "meningitis_vaccine_history",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had meningococcal or Hib vaccination before?",
+      "dedup_family": "ros:immunization_history",
+      "dedup_families": [
+        "ros:immunization_history"
+      ],
+      "question_role": "qualifier"
+    },
+    "gait_balance_problem": {
+      "code": "NEU-016",
+      "field": "gait_balance_problem",
+      "ui_label": "Gait or balance problem",
+      "canonical_concept": "gait_balance_problem",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Do you have any balance or walking problems?"
+    },
+    "low_mood_reduced_intake": {
+      "code": "PSY-008",
+      "field": "low_mood_reduced_intake",
+      "ui_label": "Low mood or reduced intake",
+      "canonical_concept": "low_mood_reduced_intake",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Any depression, reduced intake, or deliberate restriction?"
+    },
+    "lump_swelling": {
+      "field": "lump_swelling",
+      "code": "MASS-000",
+      "ui_label": "Lump or swelling",
+      "canonical_concept": "lump_swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you noticed a swelling or lump?",
+      "dedup_family": "ros:swelling",
+      "dedup_families": [
+        "ros:swelling"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "vomiting_frequency": {
+      "code": "GIQ-001",
+      "field": "vomiting_frequency",
+      "ui_label": "Vomiting frequency",
+      "canonical_concept": "vomiting_frequency",
+      "response_type": "COUNT_OR_SHORT_TEXT",
+      "plain_language_question": "How often are you vomiting?"
+    },
+    "bowel_dysfunction_details": {
+      "code": "DETAIL-BOWEL_DYSFUNCTION",
+      "field": "bowel_dysfunction_details",
+      "ui_label": "Bowel dysfunction details",
+      "canonical_concept": "bowel_dysfunction",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "What bowel control problem have you noticed and when did it start?"
+    },
+    "bladder_dysfunction_details": {
+      "code": "DETAIL-BLADDER_DYSFUNCTION",
+      "field": "bladder_dysfunction_details",
+      "ui_label": "Bladder dysfunction details",
+      "canonical_concept": "bladder_dysfunction",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "What bladder problem have you noticed and when did it start?"
+    },
+    "timing": {
+      "code": "EVENT-009",
+      "field": "timing",
+      "ui_label": "Timing",
+      "canonical_concept": "timing",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "When does it happen or when is it worst?"
+    },
+    "weight_loss_intentionality": {
+      "code": "WL-003",
+      "field": "weight_loss_intentionality",
+      "ui_label": "Weight loss intentionality",
+      "canonical_concept": "weight_loss_intentionality",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Was the weight loss intentional, or were you not trying to lose weight?"
+    },
+    "appetite_change": {
+      "code": "GI-006B",
+      "field": "appetite_change",
+      "ui_label": "Appetite change",
+      "canonical_concept": "appetite_change",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Has your appetite changed?"
+    },
+    "swelling_location": {
+      "code": "OED-000",
+      "field": "swelling_location",
+      "ui_label": "Swelling location",
+      "canonical_concept": "swelling_location",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Where is the swelling — feet, ankles, legs, hands, face, abdomen, or all over?"
+    },
+    "swelling_distribution": {
+      "code": "OED-001",
+      "field": "swelling_distribution",
+      "ui_label": "Swelling distribution",
+      "canonical_concept": "swelling_distribution",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Is the swelling on one side, both sides, or generalized all over?"
+    },
+    "acute_unilateral_swelling": {
+      "code": "DVT-001",
+      "field": "acute_unilateral_swelling",
+      "ui_label": "Acute unilateral swelling",
+      "canonical_concept": "acute_unilateral_swelling",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Did one leg or one area become swollen suddenly?"
+    },
+    "rapid_weight_gain": {
+      "code": "CON-012",
+      "field": "rapid_weight_gain",
+      "ui_label": "Rapid weight gain",
+      "canonical_concept": "rapid_weight_gain",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you gained weight rapidly over the past few days or weeks?"
+    },
+    "swelling_related_medications": {
+      "code": "MED-017",
+      "field": "swelling_related_medications",
+      "ui_label": "Swelling-related medications",
+      "canonical_concept": "swelling_related_medications",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Are you taking any medicines that can cause swelling, such as amlodipine, steroids, NSAIDs, gabapentin, or pioglitazone?",
+      "dedup_family": "context:swelling_context",
+      "dedup_families": [
+        "context:swelling_context"
+      ],
+      "question_role": "context_or_qualifier"
+    },
+    "hypothyroid_symptoms": {
+      "code": "ENDO-007",
+      "field": "hypothyroid_symptoms",
+      "ui_label": "Hypothyroid symptoms",
+      "canonical_concept": "hypothyroid_symptoms",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had symptoms such as cold intolerance, constipation, dry skin, or unexplained weight gain?"
+    },
+    "weight_loss_timeframe": {
+      "code": "WL-002",
+      "field": "weight_loss_timeframe",
+      "ui_label": "Weight loss timeframe",
+      "canonical_concept": "weight_loss_timeframe",
+      "response_type": "SHORT_TEXT",
+      "plain_language_question": "Over what period of time did you lose that weight?"
+    },
+    "hyperthyroid_symptoms": {
+      "code": "ENDO-006",
+      "field": "hyperthyroid_symptoms",
+      "ui_label": "Hyperthyroid symptoms",
+      "canonical_concept": "hyperthyroid_symptoms",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you had heat intolerance, tremor, sweating, anxiety, or a racing heartbeat?"
+    },
+    "severe_weakness": {
+      "code": "CON-006S",
+      "field": "severe_weakness",
+      "ui_label": "Severe weakness",
+      "canonical_concept": "severe_weakness",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "plain_language_question": "Have you felt severely weak or unable to do normal activities?"
+    }
+  },
+  "authoritative_runtime_principles": {
+    "runtime_source_of_truth": "Complaint wording and executable schedules live in complaint files. Shared defines naming, registries, ownership, deduplication, and reusable rules.",
+    "complaint_budget_authority": "Every complaint owns its own budget. There is no universal complaint-level target budget.",
+    "schedule_authority": "Each complaint question_schedule is executable order, not a hint.",
+    "ros_gap_fill_principle": "After complaint clerking, ROS should review unresolved system symptoms without repeating concepts already captured in HPC/HPI, derived state, prior ROS, or module history.",
+    "history_module_principle": "PMH/PSH, medications/allergies, social/family, gynecologic, and immunization history are generalized shared modules first. Complaint files should ask only targeted follow-up when clinically necessary.",
+    "concept_resolution_principle": "A concept should be asked once per session unless immediate safety requires clarification."
+  },
+  "canonical_naming_contract": {
+    "principles": [
+      "One concept, one live canonical field name everywhere.",
+      "Default rule: id equals field equals canonical_concept.",
+      "ui_label is display-only and may differ from field.",
+      "Do not use compound live fields when clinically distinct concepts exist.",
+      "Do not keep British and American spellings as parallel live concepts.",
+      "Retired names may exist only in alias maps for compatibility, not as rebuilt active fields."
+    ]
+  },
+  "question_category_registry": {
+    "characterization_field": "Universal HPC/HPI clerking field such as onset, duration, timing, severity, location, character, course, radiation, aggravating factors, relieving factors, or functional impact.",
+    "complaint_related_symptom": "Symptom used in clerking the presenting complaint because it helps characterize the active problem.",
+    "symptom_qualifier": "Reusable non-ROS qualifier or discriminator that sharpens a symptom but is not itself a standard ROS symptom.",
+    "ros_symptom": "True patient-reported review-of-systems symptom by body system.",
+    "history_module_field": "Field owned by PMH/PSH, medications/allergies, social/family, gynecologic, or immunization modules."
+  },
+  "universal_clerking_fields": {
+    "presenting_complaint_narrative": {
+      "id": "presenting_complaint_narrative",
+      "field": "presenting_complaint_narrative",
+      "code": "NARR-001",
+      "ui_label": "Presenting Complaint Narrative",
+      "text": "Please tell me briefly what brought you in today and how this started.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "canonical_concept": "presenting_complaint_narrative",
+      "question_category": "characterization_field"
+    },
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "text": "When did this first start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "canonical_concept": "onset",
+      "question_category": "characterization_field"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "text": "Is it there all the time, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "pattern",
+      "question_category": "characterization_field"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "canonical_concept": "duration",
+      "question_category": "characterization_field"
+    },
+    "episode_duration": {
+      "id": "episode_duration",
+      "field": "episode_duration",
+      "code": "EVENT-004",
+      "ui_label": "Episode duration",
+      "text": "When it happens, how long does each episode last?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "canonical_concept": "episode_duration",
+      "question_category": "characterization_field",
+      "parent_field": "pattern",
+      "skip_if": [
+        "PARENT_NEGATIVE"
+      ]
+    },
+    "timing": {
+      "id": "timing",
+      "field": "timing",
+      "code": "EVENT-009",
+      "ui_label": "Timing",
+      "text": "When does it happen or when is it worst?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "timing",
+      "question_category": "characterization_field"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "text": "How severe is it on a scale of 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "canonical_concept": "severity",
+      "question_category": "characterization_field"
+    },
+    "location": {
+      "id": "location",
+      "field": "location",
+      "code": "PAIN-014",
+      "ui_label": "Location",
+      "text": "Where exactly is it?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "location",
+      "question_category": "characterization_field"
+    },
+    "character": {
+      "id": "character",
+      "field": "character",
+      "code": "PAIN-016",
+      "ui_label": "Character",
+      "text": "What does the pain feel like, for example throbbing, sharp, dull, burning, cramping, pressure-like, stabbing, or aching?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "character",
+      "question_category": "characterization_field"
+    },
+    "course": {
+      "id": "course",
+      "field": "course",
+      "code": "EVENT-006",
+      "ui_label": "Course",
+      "text": "Has it been getting better, worse, or staying the same?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "course",
+      "question_category": "characterization_field"
+    },
+    "radiation": {
+      "id": "radiation",
+      "field": "radiation",
+      "code": "PAIN-017",
+      "ui_label": "Radiation",
+      "text": "Does it travel or spread anywhere else?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "radiation",
+      "question_category": "characterization_field"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating Factors",
+      "text": "What makes it worse?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "aggravating_factors",
+      "question_category": "characterization_field"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving Factors",
+      "text": "What makes it better?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "relieving_factors",
+      "question_category": "characterization_field"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional Impact",
+      "text": "How is this affecting what you can do?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "functional_impact",
+      "question_category": "characterization_field"
+    }
+  },
+  "response_type_registry": {
+    "NARRATIVE_FREE_TEXT": {
+      "description": "Open narrative answer in the patient's own words.",
+      "allowed_values": [
+        "free_text"
+      ],
+      "ui_render_hint": "multiline_text"
+    },
+    "SHORT_TEXT": {
+      "description": "Short patient answer, phrase, or sentence.",
+      "allowed_values": [
+        "free_text"
+      ],
+      "ui_render_hint": "single_line_text"
+    },
+    "BOOLEAN_WITH_OPTIONAL_DETAILS": {
+      "description": "Yes/no answer, optionally followed by details when positive.",
+      "allowed_values": [
+        "yes",
+        "no",
+        "unknown",
+        "not_assessed"
+      ],
+      "ui_render_hint": "radio_with_text_if_yes"
+    },
+    "SCALE_0_10": {
+      "description": "Numeric severity scale from 0 to 10.",
+      "allowed_values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        "unknown",
+        "not_assessed"
+      ],
+      "ui_render_hint": "slider_or_numeric_input"
+    },
+    "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT": {
+      "description": "Time-based answer using units or short text.",
+      "allowed_values": [
+        "numeric_with_unit",
+        "short_text",
+        "unknown",
+        "not_assessed"
+      ],
+      "ui_render_hint": "duration_input_with_free_text_fallback"
+    },
+    "NUMERIC_OR_SHORT_TEXT": {
+      "description": "Numeric answer or short text when exact number is unavailable.",
+      "allowed_values": [
+        "number",
+        "short_text",
+        "unknown",
+        "not_assessed"
+      ],
+      "ui_render_hint": "numeric_input_with_text_fallback"
+    },
+    "COUNT_OR_SHORT_TEXT": {
+      "description": "Numeric count when available, otherwise a short description.",
+      "allowed_values": [
+        "integer",
+        "range",
+        "short_text",
+        "unknown",
+        "not_assessed"
+      ],
+      "ui_render_hint": "numeric_input_with_text_fallback"
+    },
+    "TEMPORAL_OR_SHORT_TEXT": {
+      "description": "Short description of timing, chronology, or course.",
+      "allowed_values": [
+        "short_text",
+        "normalized_temporal",
+        "unknown",
+        "not_assessed"
+      ],
+      "ui_render_hint": "short_text_with_temporal_parser"
+    }
+  },
+  "ask_if_registry": {
+    "ALWAYS": {
+      "type": "constant",
+      "condition": "true",
+      "description": "Ask this question whenever it appears in the active flow."
+    },
+    "SEX_FEMALE_REPRODUCTIVE_AGE": {
+      "type": "patient_condition",
+      "condition": "sex == 'female' AND age >= 12 AND age <= 55",
+      "description": "Use for pregnancy- and gyne-relevant questions."
+    },
+    "SEX_FEMALE": {
+      "type": "patient_condition",
+      "condition": "sex == 'female'",
+      "description": "Ask only if the patient is female."
+    },
+    "SEX_MALE": {
+      "type": "patient_condition",
+      "condition": "sex == 'male'",
+      "description": "Ask only if the patient is male."
+    },
+    "AGE_GTE_50": {
+      "type": "patient_condition",
+      "condition": "age >= 50",
+      "description": "Use for age-linked risk questions."
+    },
+    "AGE_GTE_65": {
+      "type": "patient_condition",
+      "condition": "age >= 65",
+      "description": "Use for elderly-risk follow-up."
+    },
+    "DURATION_GTE_4_WEEKS": {
+      "type": "state_condition",
+      "condition": "duration_weeks >= 4",
+      "description": "Use for chronic or prolonged symptom follow-up."
+    },
+    "PAIN_SITE_IS_FLANK": {
+      "type": "state_condition",
+      "condition": "location_normalized CONTAINS 'flank'",
+      "description": "Use for renal or flank-specific follow-up."
+    },
+    "GYNECOLOGIC_CONTEXT_RELEVANT": {
+      "type": "session_context_condition",
+      "condition": "primary_complaint IN ['vaginal_discharge','abdominal_pain','vomiting','dysuria','hematuria','constipation','fatigue','weight_loss'] OR pregnancy_context == 'yes' OR last_menstrual_period_exists == true",
+      "description": "Use when gynecologic or pregnancy-related context may matter."
+    },
+    "SEXUAL_HISTORY_RELEVANT_SESSION": {
+      "type": "session_context_condition",
+      "condition": "primary_complaint IN ['vaginal_discharge','dysuria','hematuria','abdominal_pain','sore_throat'] OR new_partner == 'yes' OR known_sti_exposure == 'yes'",
+      "description": "Use when STI-related or sexual-history questions may be clinically relevant."
+    },
+    "INFECTIOUS_OR_GU_PRESENTATION": {
+      "type": "session_context_condition",
+      "condition": "primary_complaint IN ['fever','cough','sore_throat','rash','vomiting','diarrhea','dysuria','hematuria','vaginal_discharge'] OR fever == 'yes' OR dysuria == 'yes'",
+      "description": "Use when infection- or GU-linked history such as recent antibiotics may matter."
+    },
+    "PATIENT_PEDIATRIC_OR_CAREGIVER_HISTORY_RELEVANT": {
+      "type": "patient_condition",
+      "condition": "age < 18 OR caregiver_present == true",
+      "description": "Use when pediatric or caregiver-provided history changes questioning."
+    },
+    "MUCOSAL_INVOLVEMENT_POSITIVE": {
+      "type": "state_condition",
+      "condition": "mucosal_involvement == 'yes'",
+      "description": "Ask only if mucosal involvement has been confirmed."
+    },
+    "POSSIBLE_TB_PRESENTATION": {
+      "type": "session_context_condition",
+      "condition": "tb_exposure == 'yes' OR hemoptysis == 'yes' OR night_sweats == 'yes' OR weight_loss == 'yes' OR (duration_weeks >= 2 AND primary_complaint == 'cough')",
+      "description": "Use when TB is part of the differential."
+    },
+    "POSSIBLE_CNS_INFECTION_PRESENTATION": {
+      "type": "session_context_condition",
+      "condition": "neck_stiffness == 'yes' OR photophobia == 'yes' OR altered_mental_status == 'yes' OR confusion == 'yes' OR (fever == 'yes' AND primary_complaint IN ['headache','fever','sore_throat'])",
+      "description": "Use when meningitis or another CNS infection is possible."
+    }
+  },
+  "skip_if_registry": {
+    "FIELD_ALREADY_CAPTURED": {
+      "type": "state_condition",
+      "condition": "field_exists == true",
+      "description": "Skip if the field already has a value in session state."
+    },
+    "DETAIL_ALREADY_CAPTURED": {
+      "type": "state_condition",
+      "condition": "detail_field_exists == true",
+      "description": "Skip if the detail field for this concept is already populated."
+    },
+    "PARENT_NEGATIVE": {
+      "type": "parent_answer_condition",
+      "condition": "parent_answer IN ['no', 'unknown', 'not_assessed']",
+      "description": "Skip detail question if the parent concept is not positive."
+    },
+    "ROS_CONCEPT_ALREADY_COVERED": {
+      "type": "state_condition",
+      "condition": "ros_concept_already_covered == true",
+      "description": "Skip ROS question if the concept was already captured in HPC/HPI, prior ROS, or another complaint flow."
+    },
+    "SAME_FIELD_ASKED_IN_OVERLAP_SESSION": {
+      "type": "overlap_session_condition",
+      "condition": "field_in_shared_session_state == true",
+      "description": "Skip if the same field was already asked in a co-active overlapping complaint flow."
+    },
+    "PATIENT_PEDIATRIC": {
+      "type": "patient_condition",
+      "condition": "age < 12",
+      "description": "Skip adult-only questions for young children."
+    },
+    "PATIENT_ELDERLY_SKIP_PREGNANCY": {
+      "type": "patient_condition",
+      "condition": "age > 55",
+      "description": "Skip pregnancy-focused questions for patients above the configured age threshold."
+    },
+    "QUESTION_BUDGET_EXHAUSTED": {
+      "type": "runtime_condition",
+      "condition": "remaining_question_budget <= 0",
+      "description": "Skip non-critical follow-up when budget is exhausted."
+    },
+    "SEVERITY_BELOW_8": {
+      "type": "clinical_threshold",
+      "condition": "severity < 8",
+      "description": "Skip extreme pain screens if severity is below 8."
+    },
+    "SEVERITY_BELOW_7": {
+      "type": "clinical_threshold",
+      "condition": "severity < 7",
+      "description": "Skip questions that require severity 7 or above."
+    },
+    "TIMING_ALREADY_RESOLVED": {
+      "type": "state_condition",
+      "condition": "timing_already_resolved == true",
+      "description": "Skip timing follow-up if the timing pattern has already been resolved by earlier high-priority questions."
+    },
+    "PAIN_SITE_NOT_FLANK": {
+      "type": "routing_condition",
+      "condition": "location_normalized DOES_NOT_CONTAIN 'flank'",
+      "description": "Skip flank-specific clarification if the pain site is not flank."
+    },
+    "DURATION_BELOW_2_WEEKS": {
+      "type": "clinical_threshold",
+      "condition": "duration_weeks < 2",
+      "description": "Skip chronicity-dependent screens when duration is below 2 weeks."
+    },
+    "DURATION_BELOW_4_WEEKS": {
+      "type": "clinical_threshold",
+      "condition": "duration_weeks < 4",
+      "description": "Skip chronic-only questions when duration is below 4 weeks."
+    },
+    "PATTERN_NOT_EPISODIC": {
+      "type": "state_condition",
+      "condition": "pattern answer does not indicate intermittent/episodic symptoms",
+      "description": "Skip episode-duration questions unless the pattern answer indicates the symptom comes and goes in episodes."
+    }
+  },
+  "final_closeout_question": {
+    "id": "final_closeout_question",
+    "field": "final_closeout_question",
+    "ui_label": "Anything else",
+    "text": "Is there anything else you want to mention that we have not asked about yet?",
+    "response_type": "SHORT_TEXT",
+    "canonical_concept": "final_closeout_question",
+    "question_category": "context_history",
+    "code": "CLOSE-001"
+  },
+  "authoritative_module_order": [
+    "pmh_psh_module.json",
+    "drug_history_module.json",
+    "social_family_history_module.json",
+    "gynecologic_history_module.json",
+    "immunization_history_module.json"
+  ],
+  "escalation_rules": {
+    "meningitis_screen": {
+      "label": "Possible meningitis pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Fever with neck stiffness, confusion, or light sensitivity may require immediate clinical review.",
+      "applies_to_complaints": [
+        "headache",
+        "fever",
+        "seizure",
+        "loss_of_consciousness"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.fever",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.neck_stiffness",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.photophobia",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.confusion",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "severe_headache_with_fever": {
+      "label": "Severe headache with fever",
+      "escalation_level": "urgent_escalation",
+      "message": "Severe headache with fever should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "headache"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.fever",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.severity",
+            "op": "field_gte",
+            "value": 8
+          }
+        ]
+      }
+    },
+    "thunderclap_headache_screen": {
+      "label": "Possible thunderclap headache pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Sudden severe headache features may require immediate clinical review.",
+      "applies_to_complaints": [
+        "headache"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.sudden_onset",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.maximal_at_onset",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.worst_headache_of_life",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "focal_neurologic_deficit_screen": {
+      "label": "Possible focal neurologic deficit pattern",
+      "escalation_level": "immediate_alert",
+      "message": "New weakness, speech difficulty, vision change, numbness, or focal neurologic symptoms may require immediate clinical review.",
+      "applies_to_complaints": [
+        "headache",
+        "dizziness",
+        "loss_of_consciousness",
+        "seizure"
+      ],
+      "condition": {
+        "op": "any",
+        "conditions": [
+          {
+            "field_ref": "$state.focal_weakness",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.weakness",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.speech_difficulty",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.vision_changes",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.numbness",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    "cardiac_chest_pain_screen": {
+      "label": "Possible high-risk chest pain pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Chest pain with exertional features, breathlessness, sweating, fainting, or rest pain may require immediate clinical review.",
+      "applies_to_complaints": [
+        "chest_pain",
+        "shortness_of_breath",
+        "palpitations",
+        "dizziness",
+        "loss_of_consciousness"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.chest_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.pain_at_rest",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.exertional_trigger",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.shortness_of_breath",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.diaphoresis",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.fainting",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.loss_of_consciousness",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "aortic_pain_screen": {
+      "label": "Possible tearing vascular pain pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Tearing or ripping pain with radiation may require immediate clinical review.",
+      "applies_to_complaints": [
+        "chest_pain",
+        "abdominal_pain"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.tearing_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.radiation",
+            "op": "field_exists_and_not_null"
+          }
+        ]
+      }
+    },
+    "pulmonary_embolism_screen": {
+      "label": "Possible pulmonary embolism pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Breathlessness or chest pain with clot-risk features should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "shortness_of_breath",
+        "chest_pain",
+        "cough",
+        "oedema"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.shortness_of_breath",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.chest_pain",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.hemoptysis",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.leg_swelling",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.recent_immobility",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.recent_travel",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.pleuritic_component",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.pleuritic_pain",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "respiratory_distress_screen": {
+      "label": "Possible respiratory distress pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Severe breathlessness, cyanosis, confusion, stridor, or inability to speak full sentences may require immediate clinical review.",
+      "applies_to_complaints": [
+        "shortness_of_breath",
+        "cough",
+        "chest_pain",
+        "sore_throat",
+        "oedema"
+      ],
+      "condition": {
+        "op": "any",
+        "conditions": [
+          {
+            "field_ref": "$state.unable_to_speak_full_sentences",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.cyanosis",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.stridor",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "all",
+            "conditions": [
+              {
+                "field_ref": "$state.shortness_of_breath",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.confusion",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          },
+          {
+            "field_ref": "$state.breathlessness_at_rest",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    "airway_or_anaphylaxis_screen": {
+      "label": "Possible airway or anaphylaxis pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Tongue/facial swelling with breathing or airway symptoms may require immediate clinical review.",
+      "applies_to_complaints": [
+        "oedema",
+        "sore_throat",
+        "rash",
+        "shortness_of_breath"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.tongue_swelling",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.facial_swelling",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.shortness_of_breath",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.stridor",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.drooling",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "gi_bleed_screen": {
+      "label": "Possible GI bleeding pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Blood in vomit, coffee-ground vomit, black/tarry stool, or blood in stool should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "vomiting",
+        "diarrhea",
+        "abdominal_pain",
+        "constipation",
+        "fatigue",
+        "weight_loss"
+      ],
+      "condition": {
+        "op": "any",
+        "conditions": [
+          {
+            "field_ref": "$state.hematemesis",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.coffee_ground_vomit",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.melena",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.blood_in_stool",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    "bowel_obstruction_screen": {
+      "label": "Possible bowel obstruction pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Abdominal distension with inability to pass stool or gas, or severe abdominal pain, should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "abdominal_pain",
+        "constipation",
+        "vomiting",
+        "diarrhea"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.abdominal_distension",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.severe_abdominal_pain",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          },
+          {
+            "field_ref": "$state.unable_to_pass_stool_or_flatus",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    "pregnancy_abdominal_pain_bleeding_screen": {
+      "label": "Possible pregnancy-related abdominal pain or bleeding pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Pregnancy context with abdominal pain, vaginal bleeding, or fainting may require immediate clinical review.",
+      "applies_to_complaints": [
+        "abdominal_pain",
+        "vaginal_discharge",
+        "dizziness",
+        "loss_of_consciousness"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.pregnancy_context",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.abdominal_pain",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.vaginal_bleeding",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.loss_of_consciousness",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.fainting",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "sepsis_or_systemic_instability_screen": {
+      "label": "Possible systemic instability pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Fever with confusion, low urine output, marked weakness, or breathlessness should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "fever",
+        "fatigue",
+        "weight_loss",
+        "dysuria",
+        "rash",
+        "sore_throat",
+        "cough",
+        "shortness_of_breath"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.fever",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.confusion",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.low_urine_output",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.severe_weakness",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.weakness",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.shortness_of_breath",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "cauda_equina_screen": {
+      "label": "Possible cauda equina pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Back pain with saddle anesthesia, bowel/bladder symptoms, or leg weakness may require immediate clinical review.",
+      "applies_to_complaints": [
+        "back_pain"
+      ],
+      "condition": {
+        "op": "any",
+        "conditions": [
+          {
+            "field_ref": "$state.saddle_anesthesia",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.bowel_dysfunction",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.bladder_dysfunction",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.leg_weakness",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    "septic_joint_screen": {
+      "label": "Possible septic joint pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Joint pain with fever and an inflamed joint should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "joint_pain"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.fever",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.swelling",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.warmth",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.redness",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.inability_to_bear_weight",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "urinary_retention_screen": {
+      "label": "Urinary retention pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Inability to pass urine should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "dysuria",
+        "hematuria"
+      ],
+      "condition": {
+        "field_ref": "$state.inability_to_pass_urine",
+        "op": "field_equals",
+        "value": "yes"
+      }
+    },
+    "pyelonephritis_or_upper_uti_screen": {
+      "label": "Possible upper urinary infection pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Urinary symptoms with fever, chills, or flank pain should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "dysuria",
+        "hematuria",
+        "fever"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.dysuria",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.hematuria",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.fever",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.chills",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.flank_pain",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "high_risk_seizure_screen": {
+      "label": "High-risk seizure pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Seizure with head injury, fever, focal weakness, pregnancy context, or incomplete recovery may require immediate clinical review.",
+      "applies_to_complaints": [
+        "seizure"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.seizure",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.head_injury",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.fever",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.focal_weakness",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.pregnancy_context",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.return_to_baseline",
+                "op": "field_equals",
+                "value": "no"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "severe_rash_screen": {
+      "label": "Possible severe rash pattern",
+      "escalation_level": "immediate_alert",
+      "message": "Rash with blistering, peeling, mouth involvement, eye involvement, or breathing/facial swelling symptoms may require immediate clinical review.",
+      "applies_to_complaints": [
+        "rash",
+        "sore_throat",
+        "fever"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.rash",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.blistering",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.skin_peeling",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.mouth_involvement",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.eye_involvement",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.shortness_of_breath",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.facial_swelling",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "dvt_screen": {
+      "label": "Possible DVT pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Sudden unilateral swelling with calf pain/redness or clot-risk context should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "oedema"
+      ],
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.acute_unilateral_swelling",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.calf_pain",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.calf_redness",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.recent_immobility",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.recent_travel",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.prior_clot_history",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "heart_failure_oedema_screen": {
+      "label": "Possible cardiopulmonary oedema pattern",
+      "escalation_level": "urgent_escalation",
+      "message": "Swelling with breathlessness, orthopnea, PND, chest pain, or rapid weight gain should receive urgent clinician review.",
+      "applies_to_complaints": [
+        "oedema"
+      ],
+      "condition": {
+        "op": "any",
+        "conditions": [
+          {
+            "field_ref": "$state.shortness_of_breath",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.orthopnea",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.paroxysmal_nocturnal_dyspnea",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.chest_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.rapid_weight_gain",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    }
+  },
+  "concept_alias_map": {
+    "dehydration_or_low_urine_output": "dehydration",
+    "low_urine_output_alias": "low_urine_output",
+    "orthopnea_or_pnd": "orthopnea",
+    "pleuritic_component": "pleuritic_pain",
+    "pain_site": "location",
+    "syncope": "loss_of_consciousness",
+    "collapse": "loss_of_consciousness",
+    "fainting": "loss_of_consciousness",
+    "syncope_or_near_syncope": "loss_of_consciousness",
+    "near_syncope": "dizziness",
+    "cyanosis_or_confusion": "cyanosis",
+    "stridor_or_airway_swelling": "stridor",
+    "voice_change_or_muffled_voice": "voice_change",
+    "neck_mass_or_swelling": "neck_swelling",
+    "unable_to_pass_urine": "inability_to_pass_urine",
+    "calf_pain_or_redness": "calf_pain",
+    "facial_or_tongue_swelling": "facial_swelling",
+    "polyuria_polydipsia": "excessive_thirst",
+    "bowel_or_bladder_dysfunction": "bowel_dysfunction",
+    "poor_diet_or_nutrition": "nutrition_status",
+    "prior_dvt_or_clot": "prior_clot_history",
+    "prior_dvt_or_clot_details": "prior_clot_history_details",
+    "fever_with_swelling": "local_inflammation_over_swelling",
+    "allergy_or_irritant_exposure": "throat_irritant_exposure",
+    "unable_to_pass_stool_or_flatus": "bowel_obstruction_symptom",
+    "heavy_or_unusual_bleeding": "abnormal_vaginal_bleeding",
+    "itching_or_irritation": "vulvovaginal_irritation",
+    "red_eye_or_eye_pain": "ocular_redness_pain",
+    "skin_sloughing_or_blistering": "severe_skin_blistering",
+    "intentional_or_unintentional": "weight_loss_intentionality",
+    "intentional_or_unintentional_details": "weight_loss_intent_details",
+    "arm_or_jaw_radiation": "upper_body_radiation",
+    "osteoporosis_or_steroid_use": "fracture_risk_history",
+    "family_history_bladder_or_kidney_cancer": "family_history_urologic_cancer",
+    "meningococcal_or_hib_immunization_history": "meningitis_vaccine_history",
+    "gait_or_balance_problem": "gait_balance_problem",
+    "low_mood_or_food_restriction": "low_mood_reduced_intake",
+    "persistent_vomiting": "vomiting",
+    "inability_to_keep_fluids_down": "dehydration",
+    "swelling_or_lump": "lump_swelling",
+    "persistent_vomiting_details": "vomiting_frequency",
+    "inability_to_keep_fluids_down_details": "dehydration",
+    "fever_with_swelling_details": "local_inflammation_over_swelling_details",
+    "fever_or_night_sweats": "fever",
+    "blood_in_stool_or_melena": "blood_in_stool",
+    "reduced_urine_output": "low_urine_output",
+    "recent_immobility_or_travel": "recent_immobility",
+    "recent_surgery_or_trauma": "recent_surgery",
+    "severe_weakness_or_dehydration": "severe_weakness",
+    "thyroid_symptoms_weight_loss": "hyperthyroid_symptoms",
+    "medication_induced_oedema": "swelling_related_medications",
+    "site": "swelling_location",
+    "distribution": "swelling_distribution",
+    "acute_onset_unilateral": "acute_unilateral_swelling",
+    "weight_gain_rapid": "rapid_weight_gain",
+    "timeframe": "weight_loss_timeframe",
+    "loss_of_appetite": "appetite_change",
+    "difficulty_swallowing": "dysphagia"
+  },
+  "file_name": "shared_v2.json",
+  "retired_compound_concepts": {
+    "dehydration_or_low_urine_output": [
+      "dehydration",
+      "low_urine_output"
+    ],
+    "orthopnea_or_pnd": [
+      "orthopnea",
+      "paroxysmal_nocturnal_dyspnea"
+    ],
+    "syncope_or_near_syncope": [
+      "loss_of_consciousness",
+      "dizziness"
+    ],
+    "recent_immobility_or_travel": [
+      "recent_immobility",
+      "recent_travel"
+    ],
+    "recent_surgery_or_trauma": [
+      "recent_surgery",
+      "recent_trauma"
+    ],
+    "calf_pain_or_redness": [
+      "calf_pain",
+      "calf_redness"
+    ],
+    "facial_or_tongue_swelling": [
+      "facial_swelling",
+      "tongue_swelling"
+    ],
+    "polyuria_polydipsia": [
+      "excessive_urination",
+      "excessive_thirst"
+    ],
+    "low_mood_or_food_restriction": [
+      "low_mood_anhedonia",
+      "food_restriction"
+    ]
+  },
+  "dedup_family_source_of_truth": "ros_question_bank.dedup_family_registry",
+  "dedup_family_by_field": {
+    "abdominal_pain": "ros:abdominal_pain",
+    "abnormal_vaginal_bleeding": "ros:vaginal_bleeding",
+    "anemia_symptoms": "ros:anemia_symptoms",
+    "anxiety": "ros:anxiety",
+    "back_pain": "ros:back_pain",
+    "bladder_dysfunction": "ros:bladder_dysfunction",
+    "blistering": "ros:rash",
+    "bloating": "ros:bloating",
+    "blood_in_stool": "ros:blood_in_stool",
+    "bowel_dysfunction": "ros:bowel_dysfunction",
+    "bowel_obstruction_symptom": "ros:bowel_obstruction_symptom",
+    "breathlessness_at_rest": "ros:shortness_of_breath",
+    "bruising": "ros:bruising",
+    "change_in_bowel_habit": "ros:change_in_bowel_habit",
+    "changes_in_moles": "ros:changes_in_moles",
+    "chest_pain": "ros:chest_pain",
+    "chills": "ros:chills",
+    "claudication": "ros:claudication",
+    "coffee_ground_vomit": "ros:vomiting",
+    "cold_intolerance": "ros:cold_intolerance",
+    "complete_blackout": "ros:fainting",
+    "confusion": "ros:confusion",
+    "constipation": "ros:constipation",
+    "contact_exposure": "ros:contact_exposure",
+    "cough": "ros:cough",
+    "depression": "ros:depression",
+    "diarrhea": "ros:diarrhea",
+    "difficulty_passing_stool": "ros:constipation",
+    "difficulty_swallowing": "ros:dysphagia",
+    "diplopia": "ros:diplopia",
+    "dizziness": "ros:dizziness",
+    "dizziness_type": "ros:dizziness",
+    "dysarthria": "ros:dysarthria",
+    "dysphagia": "ros:dysphagia",
+    "dysuria": "ros:dysuria",
+    "easy_bleeding": "ros:easy_bleeding",
+    "easy_bruising": "ros:easy_bruising",
+    "excessive_hunger": "ros:excessive_hunger",
+    "excessive_thirst": "ros:excessive_thirst",
+    "excessive_urination": "ros:excessive_urination",
+    "exertional_dyspnea": "ros:shortness_of_breath",
+    "eye_involvement": "ros:rash",
+    "facial_swelling": "ros:facial_swelling",
+    "fainting": "ros:fainting",
+    "family_history_urologic_cancer": "ros:hematuria",
+    "fatigue": "ros:fatigue",
+    "fever": "ros:fever",
+    "fever_details": "ros:fever",
+    "flank_pain": "ros:flank_pain",
+    "foamy_urine": "ros:foamy_urine",
+    "food_exposure": "ros:food_exposure",
+    "fracture_risk_history": "ros:back_pain",
+    "gait_balance_problem": "ros:gait_balance_problem",
+    "hair_loss": "ros:hair_loss",
+    "hallucinations": "ros:hallucinations",
+    "headache": "ros:headache",
+    "heartburn": "ros:heartburn",
+    "heat_intolerance": "ros:heat_intolerance",
+    "hematemesis": "ros:vomiting",
+    "hematuria": "ros:hematuria",
+    "hemoptysis": "ros:hemoptysis",
+    "imbalance": "ros:gait_or_balance_problem",
+    "inability_to_bear_weight": "ros:inability_to_bear_weight",
+    "inability_to_keep_fluids_down": "ros:vomiting",
+    "inability_to_keep_fluids_down_details": "ros:vomiting",
+    "inability_to_pass_urine": "ros:urinary_retention",
+    "incontinence": "ros:incontinence",
+    "irregular_heartbeat": "ros:irregular_heartbeat",
+    "itching": "ros:itching",
+    "jaundice": "ros:jaundice",
+    "joint_pain": "ros:joint_pain",
+    "joint_swelling": "ros:joint_swelling",
+    "last_bowel_movement": "ros:constipation",
+    "leg_swelling": "ros:leg_swelling",
+    "lesions": "ros:lesions",
+    "lightheadedness": "ros:dizziness",
+    "limited_range_of_motion": "ros:limited_range_of_motion",
+    "local_inflammation_over_swelling": "ros:local_inflammation_over_swelling",
+    "location": "ros:location",
+    "loss_of_appetite": "ros:loss_of_appetite",
+    "loss_of_consciousness": "ros:fainting",
+    "low_mood_reduced_intake": "ros:depression",
+    "low_urine_output": "ros:low_urine_output",
+    "lump_site": "ros:swelling",
+    "lump_specific_location": "ros:location",
+    "lymph_node_swelling": "ros:lymph_node_swelling",
+    "malaise": "ros:malaise",
+    "medication_induced_oedema": "ros:swelling",
+    "melena": "ros:melena",
+    "memory_loss": "ros:memory_loss",
+    "meningitis_vaccine_history": "ros:immunization_history",
+    "mood_changes": "ros:mood_changes",
+    "mouth_involvement": "ros:rash",
+    "mucosal_involvement": "ros:rash",
+    "muffled_voice": "ros:sore_throat",
+    "muscle_pain": "ros:muscle_pain",
+    "nausea": "ros:nausea",
+    "neck_pain": "ros:neck_pain",
+    "neck_stiffness": "ros:neck_stiffness",
+    "neck_swelling": "ros:neck_swelling",
+    "night_sweats": "ros:night_sweats",
+    "numbness": "ros:numbness",
+    "nutrition_status": "ros:nutrition_status",
+    "occupational_exposures": "ros:occupational_exposures",
+    "ocular_redness_pain": "ros:vision_changes",
+    "orthopnea": "ros:orthopnea",
+    "pain_specific_location": "ros:location",
+    "pain_with_swallowing": "ros:sore_throat",
+    "painful_rash": "ros:rash",
+    "palpitations": "ros:palpitations",
+    "paroxysmal_nocturnal_dyspnea": "ros:paroxysmal_nocturnal_dyspnea",
+    "persistent_vomiting": "ros:vomiting",
+    "persistent_vomiting_details": "ros:vomiting",
+    "photophobia": "ros:photophobia",
+    "pleuritic_pain": "ros:pleuritic_pain",
+    "post_tussive_vomiting": "ros:vomiting",
+    "prior_clot_history": "ros:prior_clot_history",
+    "projectile_vomiting": "ros:vomiting",
+    "rash": "ros:rash",
+    "rash_site": "ros:location",
+    "rash_specific_location": "ros:location",
+    "recent_immobility": "ros:recent_immobility",
+    "recent_infection": "ros:recent_infection",
+    "recent_travel": "ros:recent_travel",
+    "reduced_urine_output": "ros:low_urine_output",
+    "rigors": "ros:chills",
+    "runny_nose": "ros:runny_nose",
+    "sciatica": "ros:sciatica",
+    "seizure": "ros:seizure",
+    "severe_skin_blistering": "ros:rash",
+    "shortness_of_breath": "ros:shortness_of_breath",
+    "sick_contact": "ros:sick_contact",
+    "site": "ros:location",
+    "skin_changes_over_swelling": "ros:swelling",
+    "skin_peeling": "ros:rash",
+    "sleep_disturbance": "ros:sleep_disturbance",
+    "sore_throat": "ros:sore_throat",
+    "speech_difficulty": "ros:speech_difficulty",
+    "stiffness": "ros:stiffness",
+    "stool_hardness": "ros:constipation",
+    "straining": "ros:constipation",
+    "stridor": "ros:stridor",
+    "suicidal_ideation": "ros:suicidal_ideation",
+    "swelling": "ros:swelling",
+    "swelling_or_lump": "ros:swelling",
+    "testicular_pain": "ros:testicular_pain",
+    "throat_irritant_exposure": "ros:sore_throat",
+    "tingling": "ros:tingling",
+    "tongue_swelling": "ros:tongue_swelling",
+    "unable_to_pass_urine": "ros:urinary_retention",
+    "unable_to_speak_full_sentences": "ros:shortness_of_breath",
+    "upper_body_radiation": "ros:chest_pain",
+    "urinary_frequency": "ros:urinary_frequency",
+    "urinary_urgency": "ros:urinary_urgency",
+    "vaginal_bleeding": "ros:vaginal_bleeding",
+    "vaginal_discharge": "ros:vaginal_discharge",
+    "vision_changes": "ros:vision_changes",
+    "voice_change": "ros:sore_throat",
+    "vomit_amount": "ros:vomiting",
+    "vomit_content": "ros:vomiting",
+    "vomiting": "ros:vomiting",
+    "vomiting_frequency": "ros:vomiting",
+    "vulvovaginal_irritation": "ros:vaginal_discharge",
+    "weakness": "ros:weakness",
+    "weight_gain": "ros:weight_gain",
+    "weight_loss": "ros:weight_loss",
+    "weight_loss_intent": "ros:weight_loss",
+    "weight_loss_intent_details": "ros:weight_loss",
+    "wheeze": "ros:wheeze",
+    "witnessed_collapse": "ros:fainting",
+    "lump_swelling": "ros:swelling"
+  },
+  "retired_live_fields": [
+    "inability_to_keep_fluids_down",
+    "inability_to_keep_fluids_down_details",
+    "persistent_vomiting",
+    "persistent_vomiting_details",
+    "fever_with_swelling",
+    "fever_with_swelling_details",
+    "bowel_or_bladder_dysfunction",
+    "prior_dvt_or_clot",
+    "prior_dvt_or_clot_details",
+    "poor_diet_or_nutrition",
+    "gait_or_balance_problem",
+    "skin_sloughing_or_blistering",
+    "low_mood_or_food_restriction",
+    "intentional_or_unintentional",
+    "unable_to_pass_stool_or_flatus",
+    "heavy_or_unusual_bleeding",
+    "itching_or_irritation",
+    "allergy_or_irritant_exposure",
+    "timing"
+  ],
+  "escalation_rule_policy": {
+    "source_of_truth": "shared_v2.json",
+    "evaluation_timing": "after_every_answer_across_complaint_ros_and_modules",
+    "pattern": "Evaluate accumulated session state against rule.condition; do not rely on single question-level escalation only.",
+    "severity_note": "Avoid generic severity in global rules unless applies_to_complaints makes the severity meaning clear."
+  }
+}

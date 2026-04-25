@@ -1,0 +1,172 @@
+{
+  "module_name": "immunization_history_module",
+  "version": "1.1.0",
+  "description": "Reusable conditional immunization history module for pediatric, infectious, respiratory, TB-risk, or other selected encounters. Run only when the activation rules fire.",
+  "ui_render_rule": "Use ui_label for all visible labels. Do not show raw backend field ids in the UI.",
+  "summary_rendering": "Render as an Immunization history subsection when used, or append to PMH / PSH if the target summary template has no dedicated immunization section.",
+  "session_cap_questions": 6,
+  "session_non_repeat_required": true,
+  "load_once_per_session": true,
+  "activation_rules": [
+    "PATIENT_PEDIATRIC_OR_CAREGIVER_HISTORY_RELEVANT",
+    "SUSPECTED_INFECTIOUS_PRESENTATION",
+    "ELDERLY_OR_HIGH_RISK_RESPIRATORY_PRESENTATION",
+    "POSSIBLE_TB_PRESENTATION",
+    "POSSIBLE_CNS_INFECTION_PRESENTATION"
+  ],
+  "questions": [
+    {
+      "field": "immunization_record_available",
+      "ui_label": "Immunization record available",
+      "phase": "context_and_history",
+      "text": "Do you have an immunisation record, or do you know which vaccines you've had?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "immunization_record_available",
+      "canonical_question_key": "immunization_record_available",
+      "id": "immunization_record_available",
+      "code": "IMM-001",
+      "question_role": "qualifier"
+    },
+    {
+      "field": "childhood_immunizations_current",
+      "ui_label": "Childhood immunizations current",
+      "phase": "context_and_history",
+      "text": "Are your routine childhood immunisations up to date, as far as you know?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "PATIENT_PEDIATRIC_OR_CAREGIVER_HISTORY_RELEVANT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "childhood_immunizations_current_details",
+      "canonical_concept": "childhood_immunizations_current",
+      "canonical_question_key": "childhood_immunizations_current",
+      "id": "childhood_immunizations_current",
+      "code": "IMM-002",
+      "question_role": "qualifier"
+    },
+    {
+      "field": "influenza_immunization_recent",
+      "ui_label": "Recent influenza vaccine",
+      "phase": "context_and_history",
+      "text": "Have you had the flu vaccine this season?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SUSPECTED_INFECTIOUS_PRESENTATION_OR_RESPIRATORY",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "influenza_immunization_recent_details",
+      "canonical_concept": "influenza_immunization_recent",
+      "canonical_question_key": "influenza_immunization_recent",
+      "id": "influenza_immunization_recent",
+      "code": "IMM-003",
+      "question_role": "qualifier"
+    },
+    {
+      "field": "covid_immunization_recent",
+      "ui_label": "Recent COVID vaccine",
+      "phase": "context_and_history",
+      "text": "Have you had a COVID vaccine or booster recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SUSPECTED_INFECTIOUS_PRESENTATION_OR_RESPIRATORY",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "covid_immunization_recent_details",
+      "canonical_concept": "covid_immunization_recent",
+      "canonical_question_key": "covid_immunization_recent",
+      "id": "covid_immunization_recent",
+      "code": "IMM-004",
+      "question_role": "qualifier"
+    },
+    {
+      "field": "pneumococcal_immunization_history",
+      "ui_label": "Pneumococcal vaccine history",
+      "phase": "context_and_history",
+      "text": "Have you had a pneumococcal vaccine before?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "ELDERLY_OR_HIGH_RISK_RESPIRATORY_PRESENTATION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "pneumococcal_immunization_history_details",
+      "canonical_concept": "pneumococcal_immunization_history",
+      "canonical_question_key": "pneumococcal_immunization_history",
+      "id": "pneumococcal_immunization_history",
+      "code": "IMM-005",
+      "question_role": "qualifier"
+    },
+    {
+      "field": "bcg_immunization_history",
+      "ui_label": "BCG vaccine history",
+      "phase": "context_and_history",
+      "text": "Have you ever had a BCG vaccine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "POSSIBLE_TB_PRESENTATION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "bcg_immunization_history_details",
+      "canonical_concept": "bcg_immunization_history",
+      "canonical_question_key": "bcg_immunization_history",
+      "id": "bcg_immunization_history",
+      "code": "IMM-006",
+      "question_role": "qualifier"
+    },
+    {
+      "field": "meningitis_vaccine_history",
+      "ui_label": "Meningitis vaccine history",
+      "phase": "context_and_history",
+      "text": "Have you had meningococcal or Hib vaccination before?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "POSSIBLE_CNS_INFECTION_PRESENTATION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "meningococcal_or_hib_immunization_history_details",
+      "canonical_concept": "meningitis_vaccine_history",
+      "canonical_question_key": "meningitis_vaccine_history",
+      "id": "meningitis_vaccine_history",
+      "code": "IMM-007",
+      "dedup_family": "ros:immunization_history",
+      "dedup_families": [
+        "ros:immunization_history"
+      ],
+      "question_role": "qualifier"
+    },
+    {
+      "field": "other_relevant_immunization_history",
+      "ui_label": "Other relevant immunization history",
+      "phase": "context_and_history",
+      "text": "Is there any other relevant vaccine history you think we should know about?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "other_relevant_immunization_history",
+      "canonical_question_key": "other_relevant_immunization_history",
+      "id": "other_relevant_immunization_history",
+      "code": "IMM-008",
+      "question_role": "qualifier"
+    }
+  ],
+  "field_order": [
+    "immunization_record_available",
+    "childhood_immunizations_current",
+    "influenza_immunization_recent",
+    "covid_immunization_recent",
+    "pneumococcal_immunization_history",
+    "bcg_immunization_history",
+    "meningitis_vaccine_history",
+    "other_relevant_immunization_history"
+  ],
+  "file_name": "immunization_history_module.json"
+}

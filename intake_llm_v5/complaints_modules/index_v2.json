@@ -1,0 +1,489 @@
+{
+  "file_name": "index_v2.json",
+  "version": "1.1.0",
+  "description": "Top-level package map for intake orchestration.",
+  "version_contract": {
+    "shared": "1.1.0",
+    "ros_question_bank": "1.1.0",
+    "ros_runner": "1.1.0",
+    "module_runner": "1.1.0",
+    "index": "1.1.0"
+  },
+  "core_files": {
+    "shared": "shared_v2.json",
+    "ros_question_bank": "ros_question_bank.json",
+    "ros_runner": "ros_runner_contract.json",
+    "module_runner": "module_runner_contract.json"
+  },
+  "global_orchestration": {
+    "session_flow_order": [
+      "load_shared",
+      "load_index",
+      "open_complaint",
+      "run_complaint_core_flow",
+      "run_high_priority_followup",
+      "run_targeted_followup",
+      "run_modules",
+      "run_ros",
+      "run_final_closeout"
+    ],
+    "module_run_point_default": "after_targeted_followup_before_ros",
+    "ros_run_point_default": "after_modules",
+    "deduplication_principle": "Canonical concept deduplication must apply across complaint flow, modules, ROS, and overlapping complaints.",
+    "opening_state_rule": "Selecting a complaint may set a canonical complaint symptom to yes when the complaint itself implies that symptom is present."
+  },
+  "module_registry": {
+    "general_modules": [
+      {
+        "module_id": "pmh_psh_module",
+        "file": "pmh_psh_module.json",
+        "load_policy": "once_per_session",
+        "run_after": "targeted_followup"
+      },
+      {
+        "module_id": "drug_history_module",
+        "file": "drug_history_module.json",
+        "load_policy": "once_per_session",
+        "run_after": "targeted_followup"
+      },
+      {
+        "module_id": "social_family_history_module",
+        "file": "social_family_history_module.json",
+        "load_policy": "once_per_session",
+        "run_after": "targeted_followup"
+      }
+    ],
+    "conditional_modules": [
+      {
+        "module_id": "gynecologic_history_module",
+        "file": "gynecologic_history_module.json",
+        "load_policy": "conditional_once_per_session"
+      },
+      {
+        "module_id": "immunization_history_module",
+        "file": "immunization_history_module.json",
+        "load_policy": "conditional_once_per_session"
+      }
+    ]
+  },
+  "complaint_registry": [
+    {
+      "complaint_id": "abdominal_pain",
+      "file": "abdominal_pain.json",
+      "display_name": "Abdominal Pain",
+      "primary_system": "gastrointestinal",
+      "parent_symptom": "pain",
+      "ros_priority_systems": [
+        "gastrointestinal",
+        "genitourinary",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module",
+        "immunization_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module",
+        "immunization_history_module"
+      ]
+    },
+    {
+      "complaint_id": "shortness_of_breath",
+      "file": "shortness_of_breath.json",
+      "display_name": "Shortness of Breath",
+      "primary_system": "respiratory",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "respiratory",
+        "cardiovascular",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "immunization_history_module"
+      ],
+      "conditional_session_modules": [
+        "immunization_history_module"
+      ]
+    },
+    {
+      "complaint_id": "chest_pain",
+      "file": "chest_pain.json",
+      "display_name": "Chest Pain",
+      "primary_system": "cardiovascular",
+      "parent_symptom": "pain",
+      "ros_priority_systems": [
+        "cardiovascular",
+        "respiratory",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "cough",
+      "file": "cough.json",
+      "display_name": "Cough",
+      "primary_system": "respiratory",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "respiratory",
+        "constitutional",
+        "cardiovascular"
+      ],
+      "conditional_modules": [
+        "immunization_history_module"
+      ],
+      "conditional_session_modules": [
+        "immunization_history_module"
+      ]
+    },
+    {
+      "complaint_id": "diarrhea",
+      "file": "diarrhea.json",
+      "display_name": "Diarrhea",
+      "primary_system": "gastrointestinal",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "gastrointestinal",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "dysuria",
+      "file": "dysuria.json",
+      "display_name": "Dysuria",
+      "primary_system": "genitourinary",
+      "parent_symptom": "pain",
+      "ros_priority_systems": [
+        "genitourinary",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "fever",
+      "file": "fever.json",
+      "display_name": "Fever",
+      "primary_system": "constitutional",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "constitutional",
+        "respiratory",
+        "gastrointestinal"
+      ],
+      "conditional_modules": [
+        "immunization_history_module"
+      ],
+      "conditional_session_modules": [
+        "immunization_history_module"
+      ]
+    },
+    {
+      "complaint_id": "headache",
+      "file": "headache.json",
+      "display_name": "Headache",
+      "primary_system": "neurological",
+      "parent_symptom": "pain",
+      "ros_priority_systems": [
+        "neurological",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "palpitations",
+      "file": "palpitations.json",
+      "display_name": "Palpitations",
+      "primary_system": "cardiovascular",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "cardiovascular",
+        "respiratory",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "vaginal_discharge",
+      "file": "vaginal_discharge.json",
+      "display_name": "Vaginal Discharge",
+      "primary_system": "genitourinary",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "genitourinary",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "vomiting",
+      "file": "vomiting.json",
+      "display_name": "Vomiting",
+      "primary_system": "gastrointestinal",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "gastrointestinal",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "back_pain",
+      "file": "back_pain.json",
+      "display_name": "Back Pain",
+      "primary_system": "musculoskeletal",
+      "parent_symptom": "pain",
+      "ros_priority_systems": [
+        "musculoskeletal",
+        "neurological",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "joint_pain",
+      "file": "joint_pain.json",
+      "display_name": "Joint Pain",
+      "primary_system": "musculoskeletal",
+      "parent_symptom": "pain",
+      "ros_priority_systems": [
+        "musculoskeletal",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "hematuria",
+      "file": "hematuria.json",
+      "display_name": "Hematuria",
+      "primary_system": "genitourinary",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "genitourinary",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "constipation",
+      "file": "constipation.json",
+      "display_name": "Constipation",
+      "primary_system": "gastrointestinal",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "gastrointestinal",
+        "constitutional"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "pain",
+      "file": "pain.json",
+      "display_name": "Generalized Body Pain",
+      "primary_system": "pain",
+      "parent_symptom": "pain",
+      "ros_priority_systems": [
+        "constitutional",
+        "musculoskeletal",
+        "skin"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    },
+    {
+      "complaint_id": "seizure",
+      "file": "seizure.json",
+      "display_name": "Seizure",
+      "primary_system": "neurological",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "neurological",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "swelling_or_lump",
+      "file": "swelling_or_lump.json",
+      "display_name": "Swelling or Lump",
+      "primary_system": "skin",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "skin",
+        "constitutional",
+        "hematologic"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "loss_of_consciousness",
+      "file": "loss_of_consciousness.json",
+      "display_name": "Loss of consciousness",
+      "primary_system": "neurological",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "neurological",
+        "cardiovascular",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "rash",
+      "file": "rash.json",
+      "display_name": "Rash",
+      "primary_system": "skin",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "skin",
+        "constitutional",
+        "respiratory"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "sore_throat",
+      "file": "sore_throat.json",
+      "display_name": "Sore Throat",
+      "primary_system": "respiratory",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "ent",
+        "respiratory",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "dizziness",
+      "file": "dizziness.json",
+      "display_name": "Dizziness",
+      "primary_system": "neurological",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "neurological",
+        "cardiovascular",
+        "constitutional"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "fatigue",
+      "file": "fatigue.json",
+      "display_name": "Fatigue",
+      "primary_system": "constitutional",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "constitutional",
+        "gastrointestinal",
+        "endocrine",
+        "psychiatric"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "oedema",
+      "file": "oedema.json",
+      "display_name": "Oedema",
+      "primary_system": "cardiovascular",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "cardiovascular",
+        "renal",
+        "hepatic",
+        "respiratory"
+      ],
+      "conditional_modules": [
+        "gynecologic_history_module"
+      ],
+      "conditional_session_modules": [
+        "gynecologic_history_module"
+      ]
+    },
+    {
+      "complaint_id": "weight_loss",
+      "file": "weight_loss.json",
+      "display_name": "Weight Loss",
+      "primary_system": "constitutional",
+      "parent_symptom": null,
+      "ros_priority_systems": [
+        "constitutional",
+        "gastrointestinal",
+        "respiratory",
+        "endocrine"
+      ],
+      "conditional_modules": [],
+      "conditional_session_modules": []
+    }
+  ],
+  "ros_orchestration": {
+    "ros_bank_file": "ros_question_bank.json",
+    "ros_runner_file": "ros_runner.json",
+    "default_run_point": "after_modules",
+    "batch_mode": true,
+    "batch_cap_per_system": 12
+  },
+  "module_orchestration": {
+    "module_runner_file": "module_runner.json",
+    "default_run_point": "after_targeted_followup_before_ros"
+  },
+  "remaining_symptoms_to_build": []
+}

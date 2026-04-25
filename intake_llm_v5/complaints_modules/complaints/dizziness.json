@@ -1,0 +1,731 @@
+{
+  "complaint_id": "dizziness",
+  "version": "1.1.0",
+  "primary_system": "neurological",
+  "parent_symptom": null,
+  "ui_label": "Dizziness",
+  "display_name": "Dizziness",
+  "ui_name": "Dizziness",
+  "canonical_concept": "dizziness",
+  "document_status": "draft_completed_for_current_iteration",
+  "opening_state_note": "Selecting this complaint should set state['dizziness'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 24,
+      "target_question_budget": 36,
+      "max_questions": 45,
+      "early_danger_reserve": 8,
+      "ros_reserve": 3,
+      "context_history_reserve": 4,
+      "rationale": "Dizziness complaints require early cardiac, neurologic, pregnancy-related, and infectious screening while preserving enough budget for vestibular and presyncopal characterization. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 10,
+      "priority_question_ids_if_secondary": [
+        "dizziness",
+        "onset",
+        "duration",
+        "dizziness_type",
+        "loss_of_consciousness",
+        "chest_pain",
+        "palpitations",
+        "focal_weakness"
+      ],
+      "selection_rule": "If dizziness is secondary, ask only the listed priority questions unless a high-risk branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "neurological"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "question_phase_map": {
+    "core_characterization": [
+      "dizziness",
+      "onset",
+      "duration",
+      "dizziness_type",
+      "pattern",
+      "positional_trigger",
+      "standing_trigger",
+      "spinning_sensation",
+      "lightheadedness",
+      "imbalance"
+    ],
+    "high_priority_followup": [
+      "loss_of_consciousness",
+      "chest_pain",
+      "palpitations",
+      "shortness_of_breath",
+      "focal_weakness",
+      "headache",
+      "fever",
+      "pregnancy_context"
+    ],
+    "targeted_followup": [
+      "hearing_change",
+      "tinnitus",
+      "dehydration_context",
+      "recent_illness",
+      "nausea",
+      "vomiting",
+      "vomiting_frequency",
+      "dehydration",
+      "low_urine_output"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "cardiac_or_presyncopal_branch": {
+      "triggers": [
+        "loss_of_consciousness",
+        "chest_pain",
+        "palpitations",
+        "shortness_of_breath",
+        "standing_trigger",
+        "lightheadedness"
+      ]
+    },
+    "neurologic_branch": {
+      "triggers": [
+        "focal_weakness",
+        "headache"
+      ]
+    },
+    "vestibular_branch": {
+      "triggers": [
+        "spinning_sensation",
+        "positional_trigger",
+        "hearing_change",
+        "tinnitus",
+        "imbalance"
+      ]
+    },
+    "pregnancy_or_infectious_branch": {
+      "triggers": [
+        "pregnancy_context",
+        "fever",
+        "recent_illness"
+      ]
+    }
+  },
+  "shared_escalation_rules_expected": [
+    "possible_cardiac_or_presyncopal_pattern_dizziness",
+    "possible_neurologic_pattern_dizziness",
+    "possible_pregnancy_or_infectious_pattern_dizziness",
+    "focal_neurologic_deficit_screen",
+    "cardiac_chest_pain_screen",
+    "pregnancy_abdominal_pain_bleeding_screen"
+  ],
+  "questions_by_id": {
+    "dizziness": {
+      "id": "dizziness",
+      "field": "dizziness",
+      "code": "NEU-001",
+      "ui_label": "Dizziness",
+      "phase": "core_characterization",
+      "text": "Have you been feeling dizzy or lightheaded?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dizziness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dizziness",
+      "question_category": "symptom",
+      "canonical_question_key": "dizziness",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the dizziness start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has it been going on?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "dizziness_type": {
+      "id": "dizziness_type",
+      "field": "dizziness_type",
+      "code": "NEURO-032",
+      "ui_label": "Dizziness type",
+      "phase": "core_characterization",
+      "text": "Is it more like spinning, lightheadedness, near-fainting, or imbalance?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dizziness_type",
+      "question_category": "qualifier",
+      "canonical_question_key": "dizziness_type",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is the dizziness constant, or does it come and go in episodes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "episode_duration": {
+      "id": "episode_duration",
+      "field": "episode_duration",
+      "code": "EVENT-004",
+      "ui_label": "Episode duration",
+      "phase": "core_characterization",
+      "text": "When it comes, how long does each episode last?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "parent_field": "pattern",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATTERN_NOT_EPISODIC"
+      ],
+      "canonical_concept": "episode_duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "episode_duration",
+      "question_role": "detail",
+      "ask_if_note": "Ask only when pattern indicates episodic/intermittent symptoms that come and go."
+    },
+    "positional_trigger": {
+      "id": "positional_trigger",
+      "field": "positional_trigger",
+      "code": "NEURO-033",
+      "ui_label": "Positional trigger",
+      "phase": "core_characterization",
+      "text": "Is it triggered by turning in bed, looking up, bending, or changing head position?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "positional_trigger_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "positional_trigger",
+      "question_category": "qualifier",
+      "canonical_question_key": "positional_trigger",
+      "question_role": "qualifier"
+    },
+    "standing_trigger": {
+      "id": "standing_trigger",
+      "field": "standing_trigger",
+      "code": "EVENT-013",
+      "ui_label": "Standing trigger",
+      "phase": "core_characterization",
+      "text": "Does it happen when you stand up or after standing for a while?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "standing_trigger_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "standing_trigger",
+      "question_category": "qualifier",
+      "canonical_question_key": "standing_trigger",
+      "question_role": "qualifier"
+    },
+    "spinning_sensation": {
+      "id": "spinning_sensation",
+      "field": "spinning_sensation",
+      "code": "NEURO-034",
+      "ui_label": "Spinning sensation",
+      "phase": "core_characterization",
+      "text": "Does it feel like the room is spinning or moving?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "spinning_sensation_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "spinning_sensation",
+      "question_category": "symptom",
+      "canonical_question_key": "spinning_sensation",
+      "question_role": "qualifier"
+    },
+    "lightheadedness": {
+      "id": "lightheadedness",
+      "field": "lightheadedness",
+      "code": "NEURO-035",
+      "ui_label": "Lightheadedness",
+      "phase": "core_characterization",
+      "text": "Does it feel more like lightheadedness or near-fainting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "lightheadedness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "lightheadedness",
+      "question_category": "symptom",
+      "canonical_question_key": "lightheadedness",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "qualifier"
+    },
+    "imbalance": {
+      "id": "imbalance",
+      "field": "imbalance",
+      "code": "NEURO-036",
+      "ui_label": "Imbalance",
+      "phase": "core_characterization",
+      "text": "Do you feel off-balance or unsteady when walking or standing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "imbalance_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "imbalance",
+      "question_category": "symptom",
+      "canonical_question_key": "imbalance",
+      "dedup_family": "ros:gait_or_balance_problem",
+      "dedup_families": [
+        "ros:gait_or_balance_problem"
+      ],
+      "question_role": "qualifier"
+    },
+    "loss_of_consciousness": {
+      "id": "loss_of_consciousness",
+      "field": "loss_of_consciousness",
+      "code": "NEURO-001",
+      "ui_label": "Loss of consciousness",
+      "phase": "high_priority_followup",
+      "text": "Did you actually pass out or lose consciousness with the dizziness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "loss_of_consciousness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "loss_of_consciousness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_or_presyncopal_pattern_dizziness"
+      ],
+      "canonical_question_key": "loss_of_consciousness",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "chest_pain": {
+      "id": "chest_pain",
+      "field": "chest_pain",
+      "code": "CV-002",
+      "ui_label": "Chest pain or tightness",
+      "phase": "high_priority_followup",
+      "text": "Do you have chest pain with the dizziness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "chest_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "chest_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_or_presyncopal_pattern_dizziness"
+      ],
+      "canonical_question_key": "chest_pain",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "palpitations": {
+      "id": "palpitations",
+      "field": "palpitations",
+      "code": "CV-003",
+      "ui_label": "Palpitations",
+      "phase": "high_priority_followup",
+      "text": "Do you feel racing, pounding, or irregular heartbeats with it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "palpitations_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "palpitations",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_or_presyncopal_pattern_dizziness"
+      ],
+      "canonical_question_key": "palpitations",
+      "dedup_family": "ros:palpitations",
+      "dedup_families": [
+        "ros:palpitations"
+      ],
+      "question_role": "qualifier"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Difficulty in breathing",
+      "phase": "high_priority_followup",
+      "text": "Are you short of breath with the dizziness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "shortness_of_breath_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_or_presyncopal_pattern_dizziness"
+      ],
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "focal_weakness": {
+      "id": "focal_weakness",
+      "field": "focal_weakness",
+      "code": "NEURO-023",
+      "ui_label": "Focal weakness",
+      "phase": "high_priority_followup",
+      "text": "Any weakness on one side, facial droop, or one-sided clumsiness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "focal_weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "focal_weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_neurologic_pattern_dizziness"
+      ],
+      "canonical_question_key": "focal_weakness",
+      "question_role": "qualifier"
+    },
+    "headache": {
+      "id": "headache",
+      "field": "headache",
+      "code": "NEU-005",
+      "ui_label": "Headache",
+      "phase": "high_priority_followup",
+      "text": "Do you have a headache with it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "headache_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "headache",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_neurologic_pattern_dizziness"
+      ],
+      "canonical_question_key": "headache",
+      "dedup_family": "ros:headache",
+      "dedup_families": [
+        "ros:headache"
+      ],
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with the dizziness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pregnancy_or_infectious_pattern_dizziness"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "pregnancy_context": {
+      "id": "pregnancy_context",
+      "field": "pregnancy_context",
+      "code": "GYNHX-001",
+      "ui_label": "Pregnancy context",
+      "phase": "high_priority_followup",
+      "text": "Could you be pregnant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "detail_field": "pregnancy_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pregnancy_context",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "linked_escalation_rules": [
+        "possible_pregnancy_or_infectious_pattern_dizziness"
+      ],
+      "canonical_question_key": "pregnancy_context",
+      "question_role": "qualifier"
+    },
+    "hearing_change": {
+      "id": "hearing_change",
+      "field": "hearing_change",
+      "code": "ENT-009",
+      "ui_label": "Hearing change",
+      "phase": "targeted_followup",
+      "text": "Have you noticed reduced hearing or hearing changes?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "hearing_change_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "hearing_change",
+      "question_category": "symptom",
+      "canonical_question_key": "hearing_change",
+      "question_role": "qualifier"
+    },
+    "tinnitus": {
+      "id": "tinnitus",
+      "field": "tinnitus",
+      "code": "ENT-010",
+      "ui_label": "Tinnitus",
+      "phase": "targeted_followup",
+      "text": "Do you hear ringing, buzzing, or noise in the ear?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "tinnitus_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "tinnitus",
+      "question_category": "symptom",
+      "canonical_question_key": "tinnitus",
+      "question_role": "qualifier"
+    },
+    "dehydration_context": {
+      "id": "dehydration_context",
+      "field": "dehydration_context",
+      "code": "CTX-022",
+      "ui_label": "Dehydration context",
+      "phase": "targeted_followup",
+      "text": "Had you been dehydrated, not drinking, vomiting, having diarrhea, or losing fluids before this started?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dehydration_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dehydration_context",
+      "question_category": "context_history",
+      "canonical_question_key": "dehydration_context",
+      "question_role": "qualifier"
+    },
+    "recent_illness": {
+      "id": "recent_illness",
+      "field": "recent_illness",
+      "code": "CTX-015",
+      "ui_label": "Recent illness",
+      "phase": "targeted_followup",
+      "text": "Have you had a recent illness before the dizziness started?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_illness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_illness",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_illness",
+      "question_role": "qualifier"
+    },
+    "nausea": {
+      "id": "nausea",
+      "field": "nausea",
+      "code": "GI-007",
+      "ui_label": "Nausea",
+      "phase": "targeted_followup",
+      "text": "Do you have nausea with the dizziness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "nausea_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "nausea",
+      "question_category": "symptom",
+      "canonical_question_key": "nausea",
+      "dedup_family": "ros:nausea",
+      "dedup_families": [
+        "ros:nausea"
+      ],
+      "question_role": "qualifier"
+    },
+    "vomiting": {
+      "id": "vomiting",
+      "field": "vomiting",
+      "code": "GI-002",
+      "ui_label": "Vomiting",
+      "phase": "targeted_followup",
+      "text": "Have you been vomiting with the dizziness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "vomiting_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "vomiting",
+      "question_category": "symptom",
+      "canonical_question_key": "vomiting",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "vomiting_frequency": {
+      "id": "vomiting_frequency",
+      "field": "vomiting_frequency",
+      "code": "GIQ-001",
+      "ui_label": "Vomiting frequency",
+      "phase": "targeted_followup",
+      "text": "How often are you vomiting?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "vomiting",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "vomiting_frequency",
+      "question_category": "qualifier",
+      "canonical_question_key": "vomiting_frequency",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "detail"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "dehydration": {
+      "id": "dehydration",
+      "field": "dehydration",
+      "code": "CON-011A",
+      "ui_label": "Dehydration",
+      "phase": "targeted_followup",
+      "text": "Have you been very dry, dizzy when standing, or unable to keep fluids down?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dehydration",
+      "question_category": "symptom",
+      "question_role": "qualifier"
+    },
+    "low_urine_output": {
+      "id": "low_urine_output",
+      "field": "low_urine_output",
+      "code": "CON-011B",
+      "ui_label": "Low urine output",
+      "phase": "targeted_followup",
+      "text": "Have you been passing much less urine than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "low_urine_output",
+      "question_category": "symptom",
+      "dedup_family": "ros:low_urine_output",
+      "dedup_families": [
+        "ros:low_urine_output"
+      ],
+      "question_role": "red_flag_subtype"
+    }
+  },
+  "file_name": "dizziness.json"
+}

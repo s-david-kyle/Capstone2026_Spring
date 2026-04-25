@@ -1,0 +1,484 @@
+{
+  "complaint_id": "pain",
+  "legacy_source_name": "pain_v2",
+  "version": "1.1.0",
+  "primary_system": "pain",
+  "parent_symptom": null,
+  "ui_label": "Generalized body pain",
+  "display_name": "Generalized body pain",
+  "ui_name": "Generalized body pain",
+  "canonical_concept": "pain",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Repurposed from generic pain_v2 to generalized body pain. Remains revisable if later routing or shared-contract updates require refinement.",
+  "description": "Diffuse, non-focal body pain complaint for widespread aches or generalized soreness without a clearly dominant focal site.",
+  "opening_state_note": "Selecting this complaint should set state['pain'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 16,
+      "target_question_budget": 28,
+      "max_questions": 40,
+      "early_danger_reserve": 5,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Diffuse pain requires pain-core characterization plus systemic-illness screening without competing with focal pain complaints. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "severity",
+        "fever",
+        "weakness",
+        "weight_loss"
+      ],
+      "selection_rule": "If generalized body pain is secondary, ask only the listed priority questions unless systemic red-flag branches activate."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": false,
+      "pathological_system": "constitutional"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "branching_principles": [
+    "Use this complaint only for diffuse or widespread pain.",
+    "Do not force a focal site when the pain is truly generalized.",
+    "Screen early for fever, weakness, rash, and weight loss.",
+    "Keep pain-family code standards aligned with the other pain complaints."
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_systemic_illness_pattern_generalized_body_pain"
+  ],
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "generic_pain_fallback",
+      "replace_with": [
+        "generalized body pain routing only"
+      ]
+    },
+    {
+      "old_concept": "location_required_for_all_pain",
+      "replace_with": [
+        "allow diffuse pain without forcing focal site"
+      ]
+    },
+    {
+      "old_concept": "site_required_even_if_widespread",
+      "replace_with": [
+        "widespread_pain",
+        "body_aches"
+      ]
+    }
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "duration",
+      "widespread_pain",
+      "body_aches",
+      "character",
+      "severity",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "fever",
+      "weakness",
+      "rash",
+      "weight_loss"
+    ],
+    "targeted_followup": [
+      "fatigue",
+      "stiffness",
+      "recent_illness"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "systemic_illness_branch": {
+      "triggers": [
+        "fever",
+        "weight_loss",
+        "rash",
+        "weakness"
+      ]
+    },
+    "viral_or_post_illness_branch": {
+      "triggers": [
+        "body_aches",
+        "fatigue",
+        "recent_illness"
+      ]
+    },
+    "musculoskeletal_branch": {
+      "triggers": [
+        "stiffness",
+        "aggravating_factors",
+        "relieving_factors"
+      ]
+    }
+  },
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the generalized body pain start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is the pain constant, or does it come and go in episodes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "widespread_pain": {
+      "id": "widespread_pain",
+      "field": "widespread_pain",
+      "code": "PAIN-030",
+      "ui_label": "Widespread pain",
+      "phase": "core_characterization",
+      "text": "Is the pain widespread or all over the body?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "widespread_pain_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "widespread_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "widespread_pain",
+      "question_role": "qualifier"
+    },
+    "body_aches": {
+      "id": "body_aches",
+      "field": "body_aches",
+      "code": "PAIN-031",
+      "ui_label": "Body aches",
+      "phase": "core_characterization",
+      "text": "Are you having body aches all over?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "body_aches_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "body_aches",
+      "question_category": "symptom",
+      "canonical_question_key": "body_aches",
+      "question_role": "qualifier"
+    },
+    "character": {
+      "id": "character",
+      "field": "character",
+      "code": "PAIN-016",
+      "ui_label": "Character",
+      "phase": "core_characterization",
+      "text": "What does the pain feel like, for example throbbing, sharp, dull, burning, cramping, pressure-like, stabbing, or aching?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "character",
+      "question_category": "qualifier",
+      "canonical_question_key": "character",
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "On a scale of 0 to 10, how severe is it?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What makes the body pain worse, such as movement, activity, touch, fever, stress, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What makes it better, such as rest, fluids, sleep, pain medicine, heat, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is it affecting what you can do, such as walking, standing, eating, sleeping, breathing, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with the body pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_systemic_illness_pattern_generalized_body_pain"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "weakness": {
+      "id": "weakness",
+      "field": "weakness",
+      "code": "CON-006",
+      "ui_label": "Weakness",
+      "phase": "high_priority_followup",
+      "text": "Any unusual weakness with this?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "weakness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_systemic_illness_pattern_generalized_body_pain"
+      ],
+      "canonical_question_key": "weakness",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "qualifier"
+    },
+    "rash": {
+      "id": "rash",
+      "field": "rash",
+      "code": "SKIN-001",
+      "ui_label": "Rash",
+      "phase": "high_priority_followup",
+      "text": "Any rash or skin change with this?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "rash_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "rash",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_systemic_illness_pattern_generalized_body_pain"
+      ],
+      "canonical_question_key": "rash",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "weight_loss": {
+      "id": "weight_loss",
+      "field": "weight_loss",
+      "code": "CON-007",
+      "ui_label": "Weight loss",
+      "phase": "high_priority_followup",
+      "text": "Any unexplained weight loss?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "weight_loss_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "weight_loss",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_systemic_illness_pattern_generalized_body_pain"
+      ],
+      "canonical_question_key": "weight_loss",
+      "dedup_family": "ros:weight_loss",
+      "dedup_families": [
+        "ros:weight_loss"
+      ],
+      "question_role": "qualifier"
+    },
+    "fatigue": {
+      "id": "fatigue",
+      "field": "fatigue",
+      "code": "CON-005",
+      "ui_label": "Fatigue",
+      "phase": "targeted_followup",
+      "text": "Any fatigue with the body pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "fatigue_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "fatigue",
+      "question_category": "symptom",
+      "canonical_question_key": "fatigue",
+      "dedup_family": "ros:fatigue",
+      "dedup_families": [
+        "ros:fatigue"
+      ],
+      "question_role": "qualifier"
+    },
+    "stiffness": {
+      "id": "stiffness",
+      "field": "stiffness",
+      "code": "MSK-010",
+      "ui_label": "Stiffness",
+      "phase": "targeted_followup",
+      "text": "Any generalized stiffness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "stiffness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "stiffness",
+      "question_category": "symptom",
+      "canonical_question_key": "stiffness",
+      "dedup_family": "ros:stiffness",
+      "dedup_families": [
+        "ros:stiffness"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_illness": {
+      "id": "recent_illness",
+      "field": "recent_illness",
+      "code": "CTX-015",
+      "ui_label": "Recent illness",
+      "phase": "targeted_followup",
+      "text": "Have you been sick recently before this started?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_illness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_illness",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_illness",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "pain.json"
+}

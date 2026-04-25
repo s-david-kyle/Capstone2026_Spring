@@ -1,0 +1,95 @@
+{
+  "file_name": "ros_runner.json",
+  "runner_name": "ros_runner",
+  "version": "1.1.0",
+  "description": "Execution contract for selecting and asking ROS questions after complaint clerking.",
+  "data_sources": {
+    "shared_file": "shared_v2.json",
+    "ros_bank_file": "ros_question_bank.json",
+    "required_shared_sections": [
+      "shared_ros_canonical_registry",
+      "system_to_display_system",
+      "concept_alias_map",
+      "ros_concept_priority_map"
+    ]
+  },
+  "input_contract": {
+    "required": [
+      "complaint_id",
+      "primary_system",
+      "ros_mode",
+      "session_state"
+    ],
+    "optional": [
+      "active_complaints",
+      "system_order_override",
+      "max_ros_questions_override",
+      "captured_fields_override"
+    ],
+    "default_capture_derivation_rule": "Unless captured_fields_override is provided, compute covered concepts from session_state, complaint-owned fields, module-owned fields, prior ROS outputs, overlapping complaints, and narrative-derived state."
+  },
+  "ros_modes": {
+    "problem_pertinent": {
+      "default_target_questions": 3,
+      "default_max_questions": 5
+    },
+    "extended": {
+      "default_target_questions": 6,
+      "default_max_questions": 10
+    },
+    "complete": {
+      "default_target_questions": 10,
+      "default_max_questions": 20
+    }
+  },
+  "system_selection_logic": {
+    "default_system_order": [
+      "constitutional",
+      "cardiovascular",
+      "respiratory",
+      "gastrointestinal",
+      "genitourinary",
+      "neurological",
+      "musculoskeletal",
+      "skin",
+      "endocrine",
+      "hematologic_lymphatic",
+      "psychiatric"
+    ],
+    "pathologic_system_first": true,
+    "complaint_priority_source": "Read complaint-defined ROS priority systems when present; otherwise use default_system_order."
+  },
+  "deduplication_rules": {
+    "core_dedup_principle": "Deduplicate by canonical field name, not by raw wording.",
+    "sources_to_dedup_against": [
+      "session_state",
+      "complaint_owned_fields",
+      "module_owned_fields",
+      "prior_ros_outputs",
+      "overlapping_complaints",
+      "narrative_derived_state"
+    ],
+    "alias_source": "concept_alias_map"
+  },
+  "priority_selection_rule": {
+    "priority_source": "ros_concept_priority_map"
+  },
+  "cap_enforcement": {
+    "global_cap_source": "shared_v2.session_guardrails.session_hard_cap_questions"
+  },
+  "output_contract": {
+    "return_fields": [
+      "selected_ros_mode",
+      "ordered_systems_used",
+      "covered_concepts",
+      "deduped_out_concepts",
+      "selected_question_ids",
+      "selected_fields",
+      "selected_questions",
+      "grouped_question_batches",
+      "skipped_fields_with_reasons",
+      "remaining_budget"
+    ]
+  },
+  "explanation_note": "Build a session-wide covered_concepts set first, then ask only ROS concepts still unknown."
+}

@@ -1,0 +1,26 @@
+symptom,display_name,source_file,question_count
+abdominal_pain,Abdominal Pain,abdominal_pain.json,48
+back_pain,Back pain,back_pain.json,27
+chest_pain,Chest Pain,chest_pain.json,30
+constipation,Constipation,constipation.json,20
+cough,Cough,cough.json,32
+diarrhea,Diarrhea,diarrhea.json,25
+dizziness,Dizziness,dizziness.json,28
+dysuria,Dysuria,dysuria.json,30
+fatigue,Fatigue,fatigue.json,30
+fever,Fever,fever.json,34
+headache,Headache,headache.json,34
+hematuria,Hematuria,hematuria.json,21
+joint_pain,Joint pain,joint_pain.json,21
+loss_of_consciousness,Loss of consciousness,loss_of_consciousness.json,20
+oedema,Oedema,oedema.json,41
+pain,Generalized body pain,pain.json,18
+palpitations,Palpitations,palpitations.json,25
+rash,Rash,rash.json,22
+seizure,Seizure,seizure.json,23
+shortness_of_breath,Shortness of Breath,shortness_of_breath.json,32
+sore_throat,Sore throat,sore_throat.json,19
+swelling_or_lump,Swelling or lump,swelling_or_lump.json,21
+vaginal_discharge,Vaginal discharge,vaginal_discharge.json,24
+vomiting,Vomiting,vomiting.json,28
+weight_loss,Weight Loss,weight_loss.json,31

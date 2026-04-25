@@ -1,0 +1,545 @@
+{
+  "complaint_id": "loss_of_consciousness",
+  "version": "1.1.0",
+  "primary_system": "neurological",
+  "parent_symptom": null,
+  "ui_label": "Loss of consciousness",
+  "display_name": "Loss of consciousness",
+  "ui_name": "Loss of consciousness",
+  "canonical_concept": "loss_of_consciousness",
+  "document_status": "draft_completed_for_current_iteration",
+  "opening_state_note": "Selecting this complaint should set state['loss_of_consciousness'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 24,
+      "target_question_budget": 36,
+      "max_questions": 45,
+      "early_danger_reserve": 8,
+      "ros_reserve": 3,
+      "context_history_reserve": 4,
+      "rationale": "Loss-of-consciousness complaints require early screening for cardiac, neurologic, traumatic, pregnancy-related, and infectious risk. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 10,
+      "priority_question_ids_if_secondary": [
+        "loss_of_consciousness",
+        "onset",
+        "duration",
+        "head_injury",
+        "chest_pain",
+        "palpitations",
+        "shortness_of_breath",
+        "focal_weakness"
+      ],
+      "selection_rule": "If loss of consciousness is secondary, ask only the listed priority questions unless a high-risk branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": false,
+      "pathological_system": "neurological"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "question_phase_map": {
+    "core_characterization": [
+      "loss_of_consciousness",
+      "onset",
+      "duration",
+      "complete_blackout",
+      "witnessed_collapse"
+    ],
+    "high_priority_followup": [
+      "head_injury",
+      "chest_pain",
+      "palpitations",
+      "shortness_of_breath",
+      "focal_weakness",
+      "seizure",
+      "pregnancy_context",
+      "fever"
+    ],
+    "targeted_followup": [
+      "prodrome",
+      "return_to_baseline",
+      "prior_similar_events",
+      "dehydration_context",
+      "standing_trigger",
+      "exertional_trigger"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "cardiac_or_high_risk_branch": {
+      "triggers": [
+        "chest_pain",
+        "palpitations",
+        "shortness_of_breath",
+        "exertional_trigger"
+      ]
+    },
+    "neurologic_or_traumatic_branch": {
+      "triggers": [
+        "head_injury",
+        "focal_weakness",
+        "seizure"
+      ]
+    },
+    "pregnancy_or_infectious_branch": {
+      "triggers": [
+        "pregnancy_context",
+        "fever"
+      ]
+    },
+    "vasovagal_or_volume_branch": {
+      "triggers": [
+        "prodrome",
+        "dehydration_context",
+        "standing_trigger"
+      ]
+    }
+  },
+  "shared_escalation_rules_expected": [
+    "possible_cardiac_or_high_risk_loc_pattern",
+    "possible_neurologic_or_traumatic_loc_pattern",
+    "possible_pregnancy_or_infectious_loc_pattern",
+    "meningitis_screen",
+    "focal_neurologic_deficit_screen",
+    "cardiac_chest_pain_screen",
+    "pregnancy_abdominal_pain_bleeding_screen"
+  ],
+  "questions_by_id": {
+    "loss_of_consciousness": {
+      "id": "loss_of_consciousness",
+      "field": "loss_of_consciousness",
+      "code": "NEURO-001",
+      "ui_label": "Loss of consciousness",
+      "phase": "core_characterization",
+      "text": "Did you lose consciousness or pass out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "loss_of_consciousness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "loss_of_consciousness",
+      "question_category": "symptom",
+      "canonical_question_key": "loss_of_consciousness",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did this happen?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "About how long were you out or not fully aware?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "complete_blackout": {
+      "id": "complete_blackout",
+      "field": "complete_blackout",
+      "code": "EVENT-010",
+      "ui_label": "Complete blackout",
+      "phase": "core_characterization",
+      "text": "Did you completely black out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "parent_field": "loss_of_consciousness",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "detail_field": "complete_blackout_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "complete_blackout",
+      "question_category": "qualifier",
+      "canonical_question_key": "complete_blackout",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "detail"
+    },
+    "witnessed_collapse": {
+      "id": "witnessed_collapse",
+      "field": "witnessed_collapse",
+      "code": "EVENT-011",
+      "ui_label": "Witnessed collapse",
+      "phase": "core_characterization",
+      "text": "Did anyone see you suddenly go down or collapse?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "witnessed_collapse_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "witnessed_collapse",
+      "question_category": "qualifier",
+      "canonical_question_key": "witnessed_collapse",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "qualifier"
+    },
+    "head_injury": {
+      "id": "head_injury",
+      "field": "head_injury",
+      "code": "TRAUMA-002",
+      "ui_label": "Head injury",
+      "phase": "high_priority_followup",
+      "text": "Did you hit your head or have a head injury with the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "head_injury_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "head_injury",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_neurologic_or_traumatic_loc_pattern"
+      ],
+      "canonical_question_key": "head_injury",
+      "question_role": "qualifier"
+    },
+    "chest_pain": {
+      "id": "chest_pain",
+      "field": "chest_pain",
+      "code": "CV-002",
+      "ui_label": "Chest pain or tightness",
+      "phase": "high_priority_followup",
+      "text": "Did you have chest pain before or during the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "chest_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "chest_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_or_high_risk_loc_pattern"
+      ],
+      "canonical_question_key": "chest_pain",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "palpitations": {
+      "id": "palpitations",
+      "field": "palpitations",
+      "code": "CV-003",
+      "ui_label": "Palpitations",
+      "phase": "high_priority_followup",
+      "text": "Did you feel racing, pounding, or irregular heartbeats before the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "palpitations_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "palpitations",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_or_high_risk_loc_pattern"
+      ],
+      "canonical_question_key": "palpitations",
+      "dedup_family": "ros:palpitations",
+      "dedup_families": [
+        "ros:palpitations"
+      ],
+      "question_role": "qualifier"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Difficulty in breathing",
+      "phase": "high_priority_followup",
+      "text": "Were you short of breath before or during the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "shortness_of_breath_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_or_high_risk_loc_pattern"
+      ],
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "focal_weakness": {
+      "id": "focal_weakness",
+      "field": "focal_weakness",
+      "code": "NEURO-023",
+      "ui_label": "Focal weakness",
+      "phase": "high_priority_followup",
+      "text": "Any weakness on one side afterward?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "focal_weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "focal_weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_neurologic_or_traumatic_loc_pattern"
+      ],
+      "canonical_question_key": "focal_weakness",
+      "question_role": "qualifier"
+    },
+    "seizure": {
+      "id": "seizure",
+      "field": "seizure",
+      "code": "NEU-008",
+      "ui_label": "Seizure",
+      "phase": "high_priority_followup",
+      "text": "Did anyone think it looked like a seizure or seizure-like event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "seizure_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "seizure",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_neurologic_or_traumatic_loc_pattern"
+      ],
+      "canonical_question_key": "seizure",
+      "dedup_family": "ros:seizure",
+      "dedup_families": [
+        "ros:seizure"
+      ],
+      "question_role": "qualifier"
+    },
+    "pregnancy_context": {
+      "id": "pregnancy_context",
+      "field": "pregnancy_context",
+      "code": "GYNHX-001",
+      "ui_label": "Pregnancy context",
+      "phase": "high_priority_followup",
+      "text": "Could you be pregnant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "detail_field": "pregnancy_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pregnancy_context",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "linked_escalation_rules": [
+        "possible_pregnancy_or_infectious_loc_pattern"
+      ],
+      "canonical_question_key": "pregnancy_context",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever before or around the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pregnancy_or_infectious_loc_pattern"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "prodrome": {
+      "id": "prodrome",
+      "field": "prodrome",
+      "code": "NEURO-041",
+      "ui_label": "Prodrome",
+      "phase": "targeted_followup",
+      "text": "Was there any warning beforehand, such as dizziness, lightheadedness, nausea, sweating, blurred vision, or palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "prodrome_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "prodrome",
+      "question_category": "qualifier",
+      "canonical_question_key": "prodrome",
+      "question_role": "qualifier"
+    },
+    "return_to_baseline": {
+      "id": "return_to_baseline",
+      "field": "return_to_baseline",
+      "code": "NEURO-029",
+      "ui_label": "Return to baseline",
+      "phase": "targeted_followup",
+      "text": "Did you return fully to your usual self afterward?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "return_to_baseline_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "return_to_baseline",
+      "question_category": "qualifier",
+      "canonical_question_key": "return_to_baseline",
+      "question_role": "qualifier"
+    },
+    "prior_similar_events": {
+      "id": "prior_similar_events",
+      "field": "prior_similar_events",
+      "code": "PMH-027",
+      "ui_label": "Prior similar events",
+      "phase": "targeted_followup",
+      "text": "Has something like this happened before?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "prior_similar_events_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "prior_similar_events",
+      "question_category": "context_history",
+      "canonical_question_key": "prior_similar_events",
+      "question_role": "qualifier"
+    },
+    "dehydration_context": {
+      "id": "dehydration_context",
+      "field": "dehydration_context",
+      "code": "CTX-022",
+      "ui_label": "Dehydration context",
+      "phase": "targeted_followup",
+      "text": "Had you been dehydrated, not drinking, vomiting, having diarrhea, or losing fluids before this happened?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dehydration_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dehydration_context",
+      "question_category": "context_history",
+      "canonical_question_key": "dehydration_context",
+      "question_role": "qualifier"
+    },
+    "standing_trigger": {
+      "id": "standing_trigger",
+      "field": "standing_trigger",
+      "code": "EVENT-013",
+      "ui_label": "Standing trigger",
+      "phase": "targeted_followup",
+      "text": "Did it happen while standing up or after standing for a while?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "standing_trigger_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "standing_trigger",
+      "question_category": "qualifier",
+      "canonical_question_key": "standing_trigger",
+      "question_role": "qualifier"
+    },
+    "exertional_trigger": {
+      "id": "exertional_trigger",
+      "field": "exertional_trigger",
+      "code": "EVENT-012",
+      "ui_label": "Exertional trigger",
+      "phase": "targeted_followup",
+      "text": "Did it happen during exercise or exertion?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "exertional_trigger_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "exertional_trigger",
+      "question_category": "qualifier",
+      "canonical_question_key": "exertional_trigger",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "loss_of_consciousness.json"
+}

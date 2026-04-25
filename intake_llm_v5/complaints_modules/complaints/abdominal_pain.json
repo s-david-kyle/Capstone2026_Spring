@@ -1,0 +1,1218 @@
+{
+  "complaint_id": "abdominal_pain",
+  "version": "1.1.0",
+  "primary_system": "gastrointestinal",
+  "parent_symptom": "pain",
+  "ui_label": "Abdominal pain",
+  "display_name": "Abdominal Pain",
+  "ui_name": "Abdominal pain",
+  "canonical_concept": "abdominal_pain",
+  "document_status": "draft_completed_for_current_iteration",
+  "opening_state_note": "Selecting this complaint should set state['abdominal_pain'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 30,
+      "target_question_budget": 41,
+      "max_questions": 50,
+      "early_danger_reserve": 5,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Abdominal pain requires full characterization plus early screening for vascular catastrophe, obstruction, GI bleeding, pregnancy emergency, and intra-abdominal infection. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "severity",
+        "location"
+      ],
+      "selection_rule": "If abdominal pain is secondary, ask only the listed priority questions unless a red-flag branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "gastrointestinal"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module",
+      "immunization_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "episode_duration",
+      "duration",
+      "location",
+      "severity",
+      "character",
+      "radiation",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "sudden_onset",
+      "tearing_pain",
+      "abdominal_pulsation",
+      "vomiting",
+      "vomiting_frequency",
+      "dehydration",
+      "low_urine_output",
+      "blood_in_stool",
+      "melena",
+      "bowel_obstruction_symptom",
+      "fainting",
+      "fever",
+      "pregnancy_context",
+      "abdominal_distension",
+      "recent_trauma"
+    ],
+    "targeted_followup": [
+      "diarrhea",
+      "stool_frequency",
+      "stool_content",
+      "constipation",
+      "stool_consistency",
+      "difficulty_passing_stool",
+      "loss_of_appetite",
+      "food_exposure",
+      "dysuria",
+      "urinary_frequency",
+      "urinary_urgency",
+      "hematuria",
+      "flank_pain",
+      "prior_stones",
+      "lmp",
+      "vaginal_bleeding",
+      "menstrual_flow_pads",
+      "vaginal_discharge",
+      "discharge_color",
+      "discharge_consistency",
+      "discharge_odor"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did it start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is the pain constant, or does it come and go in episodes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "episode_duration": {
+      "id": "episode_duration",
+      "field": "episode_duration",
+      "code": "EVENT-004",
+      "ui_label": "Episode duration",
+      "phase": "core_characterization",
+      "text": "When it comes, how long does each episode last?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "parent_field": "pattern",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATTERN_NOT_EPISODIC"
+      ],
+      "canonical_concept": "episode_duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "episode_duration",
+      "question_role": "detail",
+      "ask_if_note": "Ask only when pattern indicates episodic/intermittent symptoms that come and go."
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "location": {
+      "id": "location",
+      "field": "location",
+      "code": "PAIN-014",
+      "ui_label": "Location",
+      "phase": "core_characterization",
+      "text": "Where exactly is the pain?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "location",
+      "question_category": "qualifier",
+      "canonical_question_key": "location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "How severe is it from 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "character": {
+      "id": "character",
+      "field": "character",
+      "code": "PAIN-016",
+      "ui_label": "Character",
+      "phase": "core_characterization",
+      "text": "What does the abdominal pain feel like, for example throbbing, sharp, dull, burning, cramping, pressure-like, stabbing, or aching?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "character",
+      "question_category": "qualifier",
+      "canonical_question_key": "character",
+      "question_role": "qualifier"
+    },
+    "radiation": {
+      "id": "radiation",
+      "field": "radiation",
+      "code": "PAIN-017",
+      "ui_label": "Radiation",
+      "phase": "core_characterization",
+      "text": "Does the pain travel anywhere else, such as the back, groin, chest, shoulder, or leg? If yes, where?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "radiation",
+      "question_category": "qualifier",
+      "canonical_question_key": "radiation",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What makes the abdominal pain worse, such as eating, movement, coughing, passing urine, passing stool, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What makes it better, such as rest, lying still, food, antacids, vomiting, passing urine or stool, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is it affecting what you can do, such as walking, standing, eating, sleeping, breathing, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "sudden_onset": {
+      "id": "sudden_onset",
+      "field": "sudden_onset",
+      "code": "HEADQ-001",
+      "ui_label": "Sudden onset",
+      "phase": "high_priority_followup",
+      "text": "Did the pain start suddenly, meaning it came on abruptly rather than gradually?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "sudden_onset_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "sudden_onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "sudden_onset",
+      "question_role": "qualifier"
+    },
+    "tearing_pain": {
+      "id": "tearing_pain",
+      "field": "tearing_pain",
+      "code": "PAIN-002",
+      "ui_label": "Tearing pain",
+      "phase": "high_priority_followup",
+      "text": "Does the pain feel tearing or ripping, especially toward the back?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "SEVERITY_BELOW_7"
+      ],
+      "detail_field": "tearing_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "tearing_pain",
+      "question_category": "qualifier",
+      "canonical_question_key": "tearing_pain",
+      "question_role": "qualifier"
+    },
+    "abdominal_pulsation": {
+      "id": "abdominal_pulsation",
+      "field": "abdominal_pulsation",
+      "code": "ABD-001",
+      "ui_label": "Pulsing feeling in abdomen",
+      "phase": "high_priority_followup",
+      "text": "Does it feel like there is a pulsing or throbbing feeling in your abdomen?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "abdominal_pulsation_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "abdominal_pulsation",
+      "question_category": "qualifier",
+      "canonical_question_key": "abdominal_pulsation",
+      "question_role": "qualifier"
+    },
+    "vomiting": {
+      "id": "vomiting",
+      "field": "vomiting",
+      "code": "GI-002",
+      "ui_label": "Vomiting",
+      "phase": "high_priority_followup",
+      "text": "Have you been vomiting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "vomiting_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "vomiting",
+      "question_category": "symptom",
+      "canonical_question_key": "vomiting",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "vomiting_frequency": {
+      "id": "vomiting_frequency",
+      "field": "vomiting_frequency",
+      "code": "GIQ-001",
+      "ui_label": "Vomiting frequency",
+      "phase": "high_priority_followup",
+      "text": "How often are you vomiting?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "vomiting",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "vomiting_frequency",
+      "question_category": "qualifier",
+      "canonical_question_key": "vomiting_frequency",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "detail"
+    },
+    "blood_in_stool": {
+      "id": "blood_in_stool",
+      "field": "blood_in_stool",
+      "code": "GI-004B",
+      "ui_label": "Blood in stool",
+      "phase": "high_priority_followup",
+      "text": "Have you noticed blood in the stool?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "blood_in_stool_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "blood_in_stool",
+      "question_category": "symptom",
+      "canonical_question_key": "blood_in_stool",
+      "dedup_family": "ros:blood_in_stool",
+      "dedup_families": [
+        "ros:blood_in_stool"
+      ],
+      "question_role": "qualifier"
+    },
+    "melena": {
+      "id": "melena",
+      "field": "melena",
+      "code": "GIQ-021",
+      "ui_label": "Black or tarry stool",
+      "phase": "high_priority_followup",
+      "text": "Has the stool been black or tarry?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "melena_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "melena",
+      "question_category": "symptom",
+      "canonical_question_key": "melena",
+      "dedup_family": "ros:melena",
+      "dedup_families": [
+        "ros:melena"
+      ],
+      "question_role": "qualifier"
+    },
+    "bowel_obstruction_symptom": {
+      "id": "bowel_obstruction_symptom",
+      "field": "bowel_obstruction_symptom",
+      "code": "GI-023",
+      "ui_label": "Bowel obstruction symptom",
+      "phase": "high_priority_followup",
+      "text": "Are you unable to pass stool or gas?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "unable_to_pass_stool_or_flatus_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "bowel_obstruction_symptom",
+      "question_category": "symptom",
+      "canonical_question_key": "bowel_obstruction_symptom",
+      "dedup_family": "ros:bowel_obstruction",
+      "dedup_families": [
+        "ros:bowel_obstruction"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "fainting": {
+      "id": "fainting",
+      "field": "fainting",
+      "code": "NEU-002",
+      "ui_label": "Fainting",
+      "phase": "high_priority_followup",
+      "text": "Have you fainted or passed out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fainting_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fainting",
+      "question_category": "symptom",
+      "canonical_question_key": "fainting",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "pregnancy_context": {
+      "id": "pregnancy_context",
+      "field": "pregnancy_context",
+      "code": "GYNHX-001",
+      "ui_label": "Pregnancy context",
+      "phase": "high_priority_followup",
+      "text": "Could you be pregnant now, or are you recently postpartum?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "detail_field": "pregnancy_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pregnancy_context",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "pregnancy_context",
+      "question_role": "qualifier"
+    },
+    "abdominal_distension": {
+      "id": "abdominal_distension",
+      "field": "abdominal_distension",
+      "code": "GI-005",
+      "ui_label": "Abdominal swelling or bloating",
+      "phase": "high_priority_followup",
+      "text": "Has your abdomen become swollen or more bloated than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "abdominal_distension_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "abdominal_distension",
+      "question_category": "symptom",
+      "canonical_question_key": "abdominal_distension",
+      "question_role": "qualifier"
+    },
+    "recent_trauma": {
+      "id": "recent_trauma",
+      "field": "recent_trauma",
+      "code": "CTX-004",
+      "ui_label": "Recent trauma",
+      "phase": "high_priority_followup",
+      "text": "Did this start after an injury, fall, blow, or accident?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_trauma_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_trauma",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_trauma",
+      "question_role": "qualifier"
+    },
+    "diarrhea": {
+      "id": "diarrhea",
+      "field": "diarrhea",
+      "code": "GI-003",
+      "ui_label": "Loose stool or diarrhea",
+      "phase": "targeted_followup",
+      "text": "Have you had loose stool or diarrhea?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "diarrhea_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "diarrhea",
+      "question_category": "symptom",
+      "canonical_question_key": "diarrhea",
+      "dedup_family": "ros:diarrhea",
+      "dedup_families": [
+        "ros:diarrhea"
+      ],
+      "question_role": "qualifier"
+    },
+    "stool_frequency": {
+      "id": "stool_frequency",
+      "field": "stool_frequency",
+      "code": "GIQ-008",
+      "ui_label": "Stool frequency",
+      "phase": "targeted_followup",
+      "text": "How often are you passing stool?",
+      "response_type": "COUNT_OR_SHORT_TEXT",
+      "parent_field": "diarrhea",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "stool_frequency",
+      "question_category": "qualifier",
+      "canonical_question_key": "stool_frequency",
+      "question_role": "detail"
+    },
+    "stool_content": {
+      "id": "stool_content",
+      "field": "stool_content",
+      "code": "GIQ-014",
+      "ui_label": "Stool content",
+      "phase": "targeted_followup",
+      "text": "What is the stool like?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "diarrhea",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "stool_content",
+      "question_category": "qualifier",
+      "canonical_question_key": "stool_content",
+      "question_role": "detail"
+    },
+    "constipation": {
+      "id": "constipation",
+      "field": "constipation",
+      "code": "GI-011",
+      "ui_label": "Difficulty passing stool or constipation",
+      "phase": "targeted_followup",
+      "text": "Have you been constipated or had difficulty passing stool?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "constipation_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "constipation",
+      "question_category": "symptom",
+      "canonical_question_key": "constipation",
+      "dedup_family": "ros:constipation",
+      "dedup_families": [
+        "ros:constipation"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "stool_consistency": {
+      "id": "stool_consistency",
+      "field": "stool_consistency",
+      "code": "GIQ-015",
+      "ui_label": "Stool consistency",
+      "phase": "targeted_followup",
+      "text": "What is the stool like when it comes?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "constipation",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "stool_consistency",
+      "question_category": "qualifier",
+      "canonical_question_key": "stool_consistency",
+      "question_role": "detail"
+    },
+    "difficulty_passing_stool": {
+      "id": "difficulty_passing_stool",
+      "field": "difficulty_passing_stool",
+      "code": "GIQ-017",
+      "ui_label": "Difficulty passing stool",
+      "phase": "targeted_followup",
+      "text": "Are you having difficulty passing stool?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "parent_field": "constipation",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "detail_field": "difficulty_passing_stool_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "difficulty_passing_stool",
+      "question_category": "qualifier",
+      "canonical_question_key": "difficulty_passing_stool",
+      "dedup_family": "ros:constipation",
+      "dedup_families": [
+        "ros:constipation"
+      ],
+      "question_role": "detail"
+    },
+    "loss_of_appetite": {
+      "id": "loss_of_appetite",
+      "field": "loss_of_appetite",
+      "code": "GI-006",
+      "ui_label": "Loss of appetite",
+      "phase": "targeted_followup",
+      "text": "Has your appetite gone down?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "loss_of_appetite_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "loss_of_appetite",
+      "question_category": "symptom",
+      "canonical_question_key": "loss_of_appetite",
+      "dedup_family": "ros:loss_of_appetite",
+      "dedup_families": [
+        "ros:loss_of_appetite"
+      ],
+      "question_role": "qualifier"
+    },
+    "food_exposure": {
+      "id": "food_exposure",
+      "field": "food_exposure",
+      "code": "CTX-002",
+      "ui_label": "Food exposure",
+      "phase": "targeted_followup",
+      "text": "Did this seem to start after any suspicious food or meal?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "food_exposure_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "food_exposure",
+      "question_category": "context_history",
+      "canonical_question_key": "food_exposure",
+      "dedup_family": "ros:food_exposure",
+      "dedup_families": [
+        "ros:food_exposure"
+      ],
+      "question_role": "qualifier"
+    },
+    "dysuria": {
+      "id": "dysuria",
+      "field": "dysuria",
+      "code": "GU-001",
+      "ui_label": "Pain or burning when passing urine",
+      "phase": "targeted_followup",
+      "text": "Do you have pain or burning when you pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dysuria_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dysuria",
+      "question_category": "symptom",
+      "canonical_question_key": "dysuria",
+      "dedup_family": "ros:dysuria",
+      "dedup_families": [
+        "ros:dysuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_frequency": {
+      "id": "urinary_frequency",
+      "field": "urinary_frequency",
+      "code": "GU-002",
+      "ui_label": "Passing urine more often",
+      "phase": "targeted_followup",
+      "text": "Are you passing urine more often than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "urinary_frequency_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "urinary_frequency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_frequency",
+      "dedup_family": "ros:urinary_frequency",
+      "dedup_families": [
+        "ros:urinary_frequency"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_urgency": {
+      "id": "urinary_urgency",
+      "field": "urinary_urgency",
+      "code": "GU-003",
+      "ui_label": "Sudden urge to pass urine",
+      "phase": "targeted_followup",
+      "text": "Do you get a sudden strong urge to pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "urinary_urgency_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "urinary_urgency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_urgency",
+      "dedup_family": "ros:urinary_urgency",
+      "dedup_families": [
+        "ros:urinary_urgency"
+      ],
+      "question_role": "qualifier"
+    },
+    "hematuria": {
+      "id": "hematuria",
+      "field": "hematuria",
+      "code": "GU-006",
+      "ui_label": "Blood in urine",
+      "phase": "targeted_followup",
+      "text": "Have you noticed blood in your urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "hematuria_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "hematuria",
+      "question_category": "symptom",
+      "canonical_question_key": "hematuria",
+      "dedup_family": "ros:hematuria",
+      "dedup_families": [
+        "ros:hematuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "flank_pain": {
+      "id": "flank_pain",
+      "field": "flank_pain",
+      "code": "GU-007",
+      "ui_label": "Pain in the side or back near the kidney",
+      "phase": "targeted_followup",
+      "text": "Do you have pain in your side or back near the kidney?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "flank_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "flank_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "flank_pain",
+      "dedup_family": "ros:flank_pain",
+      "dedup_families": [
+        "ros:flank_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "prior_stones": {
+      "id": "prior_stones",
+      "field": "prior_stones",
+      "code": "PMH-023",
+      "ui_label": "Prior stones",
+      "phase": "targeted_followup",
+      "text": "Have you had kidney stones before?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "prior_stones_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "prior_stones",
+      "question_category": "context_history",
+      "canonical_question_key": "prior_stones",
+      "question_role": "qualifier"
+    },
+    "lmp": {
+      "id": "lmp",
+      "field": "lmp",
+      "code": "GYNHX-002",
+      "ui_label": "Last menstrual period",
+      "phase": "targeted_followup",
+      "text": "When was the first day of your last menstrual period?",
+      "response_type": "TEMPORAL_OR_SHORT_TEXT",
+      "parent_field": "pregnancy_context",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "canonical_concept": "lmp",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "lmp",
+      "question_role": "detail"
+    },
+    "vaginal_bleeding": {
+      "id": "vaginal_bleeding",
+      "field": "vaginal_bleeding",
+      "code": "GYN-001",
+      "ui_label": "Vaginal bleeding",
+      "phase": "targeted_followup",
+      "text": "Have you had any bleeding from the vagina?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "detail_field": "vaginal_bleeding_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "vaginal_bleeding",
+      "question_category": "symptom",
+      "sensitive_topic": true,
+      "canonical_question_key": "vaginal_bleeding",
+      "dedup_family": "ros:vaginal_bleeding",
+      "dedup_families": [
+        "ros:vaginal_bleeding"
+      ],
+      "question_role": "qualifier"
+    },
+    "menstrual_flow_pads": {
+      "id": "menstrual_flow_pads",
+      "field": "menstrual_flow_pads",
+      "code": "GYNQ-010",
+      "ui_label": "Menstrual flow quantity (pads per day)",
+      "phase": "targeted_followup",
+      "text": "How many pads or tampons do you use on your heaviest day?",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "parent_field": "vaginal_bleeding",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "menstrual_flow_pads",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "menstrual_flow_pads",
+      "question_role": "detail"
+    },
+    "vaginal_discharge": {
+      "id": "vaginal_discharge",
+      "field": "vaginal_discharge",
+      "code": "GYN-002",
+      "ui_label": "Vaginal discharge",
+      "phase": "targeted_followup",
+      "text": "Have you noticed any vaginal discharge?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "detail_field": "vaginal_discharge_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "vaginal_discharge",
+      "question_category": "symptom",
+      "sensitive_topic": true,
+      "canonical_question_key": "vaginal_discharge",
+      "dedup_family": "ros:vaginal_discharge",
+      "dedup_families": [
+        "ros:vaginal_discharge"
+      ],
+      "question_role": "qualifier"
+    },
+    "discharge_color": {
+      "id": "discharge_color",
+      "field": "discharge_color",
+      "code": "GYNQ-001",
+      "ui_label": "Discharge colour",
+      "phase": "targeted_followup",
+      "text": "What color is the discharge?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "vaginal_discharge",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "discharge_color",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "discharge_color",
+      "question_role": "detail"
+    },
+    "discharge_consistency": {
+      "id": "discharge_consistency",
+      "field": "discharge_consistency",
+      "code": "GYNQ-002",
+      "ui_label": "Discharge consistency",
+      "phase": "targeted_followup",
+      "text": "What is the discharge like: thin, thick, clumpy, or something else?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "vaginal_discharge",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "discharge_consistency",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "discharge_consistency",
+      "question_role": "detail"
+    },
+    "discharge_odor": {
+      "id": "discharge_odor",
+      "field": "discharge_odor",
+      "code": "GYNQ-003",
+      "ui_label": "Discharge odor",
+      "phase": "targeted_followup",
+      "text": "Does it have any odor?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "parent_field": "vaginal_discharge",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "detail_field": "discharge_odor_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "discharge_odor",
+      "question_category": "qualifier",
+      "sensitive_topic": true,
+      "canonical_question_key": "discharge_odor",
+      "question_role": "detail"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "dehydration": {
+      "id": "dehydration",
+      "field": "dehydration",
+      "code": "CON-011A",
+      "ui_label": "Dehydration",
+      "phase": "high_priority_followup",
+      "text": "Have you been very dry, dizzy when standing, or unable to keep fluids down?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dehydration",
+      "question_category": "symptom",
+      "question_role": "qualifier"
+    },
+    "low_urine_output": {
+      "id": "low_urine_output",
+      "field": "low_urine_output",
+      "code": "CON-011B",
+      "ui_label": "Low urine output",
+      "phase": "high_priority_followup",
+      "text": "Have you been passing much less urine than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "low_urine_output",
+      "question_category": "symptom",
+      "dedup_family": "ros:low_urine_output",
+      "dedup_families": [
+        "ros:low_urine_output"
+      ],
+      "question_role": "red_flag_subtype"
+    }
+  },
+  "escalation_rules": [
+    {
+      "name": "possible_aortic_catastrophe_abdominal_pain",
+      "escalation_level": "immediate_alert",
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.abdominal_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.tearing_pain",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.abdominal_pulsation",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "possible_bowel_obstruction_abdominal_pain",
+      "escalation_level": "urgent_escalation",
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.abdominal_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.vomiting",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.unable_to_pass_stool_or_flatus",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "possible_gi_bleeding_abdominal_pain",
+      "escalation_level": "urgent_escalation",
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.abdominal_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.blood_in_stool",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.melena",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "possible_pregnancy_emergency_abdominal_pain",
+      "escalation_level": "urgent_escalation",
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.abdominal_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.pregnancy_context",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.fainting",
+            "op": "field_equals",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "possible_intra_abdominal_infection_abdominal_pain",
+      "escalation_level": "urgent_escalation",
+      "condition": {
+        "op": "all",
+        "conditions": [
+          {
+            "field_ref": "$state.abdominal_pain",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "field_ref": "$state.fever",
+            "op": "field_equals",
+            "value": "yes"
+          },
+          {
+            "op": "any",
+            "conditions": [
+              {
+                "field_ref": "$state.abdominal_distension",
+                "op": "field_equals",
+                "value": "yes"
+              },
+              {
+                "field_ref": "$state.vomiting",
+                "op": "field_equals",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "targeted_ros_plan": {
+    "primary_system": "gastrointestinal",
+    "high_yield_systems": [
+      "gastrointestinal",
+      "genitourinary",
+      "constitutional"
+    ],
+    "cross_system_systems": [],
+    "policy_note": "Finish unresolved concepts in gastrointestinal, then genitourinary and constitutional."
+  },
+  "acuity_tier": "medium",
+  "file_name": "abdominal_pain.json",
+  "shared_escalation_rules_expected": [
+    "aortic_pain_screen",
+    "gi_bleed_screen",
+    "bowel_obstruction_screen",
+    "pregnancy_abdominal_pain_bleeding_screen"
+  ]
+}

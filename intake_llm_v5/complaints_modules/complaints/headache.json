@@ -1,0 +1,858 @@
+{
+  "complaint_id": "headache",
+  "version": "1.1.0",
+  "primary_system": "neurological",
+  "parent_symptom": "pain",
+  "ui_label": "Headache",
+  "display_name": "Headache",
+  "ui_name": "Headache",
+  "canonical_concept": "headache",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['headache'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 24,
+      "target_question_budget": 36,
+      "max_questions": 45,
+      "early_danger_reserve": 6,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Headache requires early screening for thunderclap, focal neurologic, meningeal, traumatic, and anticoagulant-related red flags while preserving budget for subtype-defining follow-up. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "severity",
+        "sudden_onset",
+        "worst_headache_of_life",
+        "confusion"
+      ],
+      "selection_rule": "If headache is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "neurological"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "duration",
+      "severity",
+      "location",
+      "radiation",
+      "character",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "sudden_onset",
+      "maximal_at_onset",
+      "worst_headache_of_life",
+      "confusion",
+      "fever",
+      "neck_stiffness",
+      "photophobia",
+      "weakness",
+      "numbness",
+      "speech_difficulty",
+      "vision_changes",
+      "seizure",
+      "recent_head_trauma",
+      "anticoagulant_use"
+    ],
+    "targeted_followup": [
+      "nausea",
+      "vomiting",
+      "dizziness",
+      "fainting",
+      "transient_visual_obscurations",
+      "jaw_pain_with_chewing",
+      "scalp_tenderness",
+      "ocular_redness_pain",
+      "rash"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "thunderclap_branch": {
+      "triggers": [
+        "sudden_onset",
+        "maximal_at_onset",
+        "worst_headache_of_life"
+      ]
+    },
+    "focal_neuro_branch": {
+      "triggers": [
+        "weakness",
+        "speech_difficulty",
+        "vision_changes",
+        "numbness",
+        "seizure"
+      ]
+    },
+    "meningeal_branch": {
+      "triggers": [
+        "neck_stiffness",
+        "fever",
+        "photophobia",
+        "confusion"
+      ]
+    },
+    "trauma_anticoagulant_branch": {
+      "triggers": [
+        "recent_head_trauma",
+        "anticoagulant_use"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "confusion_or_ams",
+      "replace_with": [
+        "confusion"
+      ]
+    },
+    {
+      "old_concept": "light_sensitivity",
+      "replace_with": [
+        "photophobia"
+      ]
+    },
+    {
+      "old_concept": "speech_change",
+      "replace_with": [
+        "speech_difficulty"
+      ]
+    },
+    {
+      "old_concept": "visual_loss",
+      "replace_with": [
+        "vision_changes"
+      ]
+    },
+    {
+      "old_concept": "nausea_or_vomiting",
+      "replace_with": [
+        "nausea",
+        "vomiting"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_subarachnoid_pattern_headache",
+    "possible_meningeal_pattern_headache",
+    "possible_focal_neuro_pattern_headache",
+    "meningitis_screen",
+    "severe_headache_with_fever",
+    "thunderclap_headache_screen",
+    "focal_neurologic_deficit_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the headache start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is it there all the time, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this headache been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "On a scale of 0 to 10, how severe is it?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "location": {
+      "id": "location",
+      "field": "location",
+      "code": "PAIN-014",
+      "ui_label": "Location",
+      "phase": "core_characterization",
+      "text": "Where is the headache located?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "location",
+      "question_category": "qualifier",
+      "canonical_question_key": "location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "radiation": {
+      "id": "radiation",
+      "field": "radiation",
+      "code": "PAIN-017",
+      "ui_label": "Radiation",
+      "phase": "core_characterization",
+      "text": "Does the pain travel anywhere else, such as the back, groin, chest, shoulder, or leg? If yes, where?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "radiation",
+      "question_category": "qualifier",
+      "canonical_question_key": "radiation",
+      "question_role": "qualifier"
+    },
+    "character": {
+      "id": "character",
+      "field": "character",
+      "code": "PAIN-016",
+      "ui_label": "Character",
+      "phase": "core_characterization",
+      "text": "What does the headache feel like, for example throbbing, sharp, dull, burning, cramping, pressure-like, stabbing, or aching?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "character",
+      "question_category": "qualifier",
+      "canonical_question_key": "character",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What makes the headache worse, such as light, sound, movement, coughing, bending, screen use, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What makes it better, such as rest, sleep, dark room, fluids, pain medicine, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is it affecting what you can do, such as walking, standing, eating, sleeping, breathing, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "sudden_onset": {
+      "id": "sudden_onset",
+      "field": "sudden_onset",
+      "code": "HEADQ-001",
+      "ui_label": "Sudden onset",
+      "phase": "high_priority_followup",
+      "text": "Did the headache start suddenly?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "sudden_onset_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "sudden_onset",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_subarachnoid_pattern_headache"
+      ],
+      "canonical_question_key": "sudden_onset",
+      "question_role": "qualifier"
+    },
+    "maximal_at_onset": {
+      "id": "maximal_at_onset",
+      "field": "maximal_at_onset",
+      "code": "HEADQ-002",
+      "ui_label": "Maximal at onset",
+      "phase": "high_priority_followup",
+      "text": "Was it at its worst right when it started?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "maximal_at_onset_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "maximal_at_onset",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_subarachnoid_pattern_headache"
+      ],
+      "canonical_question_key": "maximal_at_onset",
+      "question_role": "qualifier"
+    },
+    "worst_headache_of_life": {
+      "id": "worst_headache_of_life",
+      "field": "worst_headache_of_life",
+      "code": "HEADQ-003",
+      "ui_label": "Worst headache of life",
+      "phase": "high_priority_followup",
+      "text": "Is this the worst headache you have ever had?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "worst_headache_of_life_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "worst_headache_of_life",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_subarachnoid_pattern_headache"
+      ],
+      "canonical_question_key": "worst_headache_of_life",
+      "question_role": "qualifier"
+    },
+    "confusion": {
+      "id": "confusion",
+      "field": "confusion",
+      "code": "NEU-004",
+      "ui_label": "Confusion",
+      "phase": "high_priority_followup",
+      "text": "Have you been confused or not thinking clearly?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "confusion_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "confusion",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_meningeal_pattern_headache"
+      ],
+      "canonical_question_key": "confusion",
+      "dedup_family": "ros:confusion",
+      "dedup_families": [
+        "ros:confusion"
+      ],
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_meningeal_pattern_headache"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "neck_stiffness": {
+      "id": "neck_stiffness",
+      "field": "neck_stiffness",
+      "code": "NEU-012",
+      "ui_label": "Neck stiffness",
+      "phase": "high_priority_followup",
+      "text": "Is your neck stiff or painful to bend?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "neck_stiffness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "neck_stiffness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_meningeal_pattern_headache"
+      ],
+      "canonical_question_key": "neck_stiffness",
+      "dedup_family": "ros:neck_stiffness",
+      "dedup_families": [
+        "ros:neck_stiffness"
+      ],
+      "question_role": "qualifier"
+    },
+    "photophobia": {
+      "id": "photophobia",
+      "field": "photophobia",
+      "code": "NEU-013",
+      "ui_label": "Sensitivity to light",
+      "phase": "high_priority_followup",
+      "text": "Is bright light bothering your eyes more than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "photophobia_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "photophobia",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_meningeal_pattern_headache"
+      ],
+      "canonical_question_key": "photophobia",
+      "dedup_family": "ros:photophobia",
+      "dedup_families": [
+        "ros:photophobia"
+      ],
+      "question_role": "qualifier"
+    },
+    "weakness": {
+      "id": "weakness",
+      "field": "weakness",
+      "code": "CON-006",
+      "ui_label": "Weakness",
+      "phase": "high_priority_followup",
+      "text": "Have you had any weakness in your face, arm, or leg?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_focal_neuro_pattern_headache"
+      ],
+      "canonical_question_key": "weakness",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "qualifier"
+    },
+    "numbness": {
+      "id": "numbness",
+      "field": "numbness",
+      "code": "NEURO-004",
+      "ui_label": "Numbness",
+      "phase": "high_priority_followup",
+      "text": "Have you had numbness or loss of feeling anywhere?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "numbness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "numbness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_focal_neuro_pattern_headache"
+      ],
+      "canonical_question_key": "numbness",
+      "dedup_family": "ros:numbness",
+      "dedup_families": [
+        "ros:numbness"
+      ],
+      "question_role": "qualifier"
+    },
+    "speech_difficulty": {
+      "id": "speech_difficulty",
+      "field": "speech_difficulty",
+      "code": "NEU-010",
+      "ui_label": "Speech difficulty",
+      "phase": "high_priority_followup",
+      "text": "Have you had trouble speaking or getting your words out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "speech_difficulty_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "speech_difficulty",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_focal_neuro_pattern_headache"
+      ],
+      "canonical_question_key": "speech_difficulty",
+      "dedup_family": "ros:speech_difficulty",
+      "dedup_families": [
+        "ros:speech_difficulty"
+      ],
+      "question_role": "qualifier"
+    },
+    "vision_changes": {
+      "id": "vision_changes",
+      "field": "vision_changes",
+      "code": "NEU-011",
+      "ui_label": "Vision changes",
+      "phase": "high_priority_followup",
+      "text": "Have you had any change in your vision?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "vision_changes_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "vision_changes",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_focal_neuro_pattern_headache"
+      ],
+      "canonical_question_key": "vision_changes",
+      "dedup_family": "ros:vision_changes",
+      "dedup_families": [
+        "ros:vision_changes"
+      ],
+      "question_role": "qualifier"
+    },
+    "seizure": {
+      "id": "seizure",
+      "field": "seizure",
+      "code": "NEU-008",
+      "ui_label": "Seizures",
+      "phase": "high_priority_followup",
+      "text": "Have you had any seizure or shaking episode?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "seizure_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "seizure",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_focal_neuro_pattern_headache"
+      ],
+      "canonical_question_key": "seizure",
+      "dedup_family": "ros:seizure",
+      "dedup_families": [
+        "ros:seizure"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_head_trauma": {
+      "id": "recent_head_trauma",
+      "field": "recent_head_trauma",
+      "code": "TRAUMA-001",
+      "ui_label": "Recent head trauma",
+      "phase": "high_priority_followup",
+      "text": "Have you had any recent hit or injury to the head?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_head_trauma_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_head_trauma",
+      "question_category": "context_history",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "recent_head_trauma",
+      "question_role": "qualifier"
+    },
+    "anticoagulant_use": {
+      "id": "anticoagulant_use",
+      "field": "anticoagulant_use",
+      "code": "MED-003",
+      "ui_label": "Anticoagulant use",
+      "phase": "high_priority_followup",
+      "text": "Are you taking blood thinners?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "anticoagulant_use_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "anticoagulant_use",
+      "question_category": "context_history",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "anticoagulant_use",
+      "question_role": "qualifier"
+    },
+    "nausea": {
+      "id": "nausea",
+      "field": "nausea",
+      "code": "GI-007",
+      "ui_label": "Nausea",
+      "phase": "targeted_followup",
+      "text": "Have you been nauseated?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "nausea_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "nausea",
+      "question_category": "symptom",
+      "canonical_question_key": "nausea",
+      "dedup_family": "ros:nausea",
+      "dedup_families": [
+        "ros:nausea"
+      ],
+      "question_role": "qualifier"
+    },
+    "vomiting": {
+      "id": "vomiting",
+      "field": "vomiting",
+      "code": "GI-002",
+      "ui_label": "Vomiting",
+      "phase": "targeted_followup",
+      "text": "Have you vomited?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "vomiting_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "vomiting",
+      "question_category": "symptom",
+      "canonical_question_key": "vomiting",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "dizziness": {
+      "id": "dizziness",
+      "field": "dizziness",
+      "code": "NEU-001",
+      "ui_label": "Dizziness or lightheadedness",
+      "phase": "targeted_followup",
+      "text": "Have you felt dizzy or lightheaded?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "dizziness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dizziness",
+      "question_category": "symptom",
+      "canonical_question_key": "dizziness",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "fainting": {
+      "id": "fainting",
+      "field": "fainting",
+      "code": "NEU-002",
+      "ui_label": "Fainting",
+      "phase": "targeted_followup",
+      "text": "Have you fainted or nearly fainted?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "fainting_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "fainting",
+      "question_category": "symptom",
+      "canonical_question_key": "fainting",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "transient_visual_obscurations": {
+      "id": "transient_visual_obscurations",
+      "field": "transient_visual_obscurations",
+      "code": "HEADQ-006",
+      "ui_label": "Transient visual obscurations",
+      "phase": "targeted_followup",
+      "text": "Have you had brief episodes where your vision goes dim or blacks out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "transient_visual_obscurations_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "transient_visual_obscurations",
+      "question_category": "symptom",
+      "canonical_question_key": "transient_visual_obscurations",
+      "question_role": "qualifier"
+    },
+    "jaw_pain_with_chewing": {
+      "id": "jaw_pain_with_chewing",
+      "field": "jaw_pain_with_chewing",
+      "code": "HEADQ-007",
+      "ui_label": "Jaw pain with chewing",
+      "phase": "targeted_followup",
+      "text": "Do you get jaw pain when chewing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "jaw_pain_with_chewing_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "jaw_pain_with_chewing",
+      "question_category": "symptom",
+      "canonical_question_key": "jaw_pain_with_chewing",
+      "question_role": "qualifier"
+    },
+    "scalp_tenderness": {
+      "id": "scalp_tenderness",
+      "field": "scalp_tenderness",
+      "code": "HEADQ-008",
+      "ui_label": "Scalp tenderness",
+      "phase": "targeted_followup",
+      "text": "Is your scalp tender to touch?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "scalp_tenderness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "scalp_tenderness",
+      "question_category": "symptom",
+      "canonical_question_key": "scalp_tenderness",
+      "question_role": "qualifier"
+    },
+    "ocular_redness_pain": {
+      "id": "ocular_redness_pain",
+      "field": "ocular_redness_pain",
+      "code": "HEADQ-009",
+      "ui_label": "Ocular redness or pain",
+      "phase": "targeted_followup",
+      "text": "Do you have eye redness or eye pain with the headache?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "red_eye_or_eye_pain_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "ocular_redness_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "ocular_redness_pain",
+      "dedup_family": "ros:eye_symptoms",
+      "dedup_families": [
+        "ros:eye_symptoms"
+      ],
+      "question_role": "qualifier"
+    },
+    "rash": {
+      "id": "rash",
+      "field": "rash",
+      "code": "SKIN-001",
+      "ui_label": "Rash",
+      "phase": "targeted_followup",
+      "text": "Do you have any rash or new skin spots?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "rash_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "rash",
+      "question_category": "symptom",
+      "canonical_question_key": "rash",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "headache.json"
+}

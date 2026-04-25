@@ -1,0 +1,584 @@
+{
+  "complaint_id": "swelling_or_lump",
+  "version": "1.1.0",
+  "primary_system": "skin",
+  "parent_symptom": null,
+  "ui_label": "Swelling or lump",
+  "display_name": "Swelling or lump",
+  "ui_name": "Swelling or lump",
+  "canonical_concept": "lump_swelling",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['lump_swelling'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 22,
+      "target_question_budget": 34,
+      "max_questions": 42,
+      "early_danger_reserve": 8,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Swelling or lump complaints require mass characterization plus early screening for inflammatory, infectious, or concerning-mass features. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 9,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "lump_site",
+        "rapid_enlargement",
+        "redness",
+        "fever",
+        "weight_loss"
+      ],
+      "selection_rule": "If swelling or lump is secondary, ask only the listed priority questions unless red-flag branches activate."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": false,
+      "pathological_system": "constitutional"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "duration",
+      "lump_swelling",
+      "lump_site",
+      "lump_specific_location",
+      "growth_pattern",
+      "painful_lump",
+      "multiple_lumps"
+    ],
+    "high_priority_followup": [
+      "rapid_enlargement",
+      "redness",
+      "warmth",
+      "fever",
+      "discharge",
+      "weight_loss",
+      "night_sweats",
+      "recent_trauma"
+    ],
+    "targeted_followup": [
+      "tenderness",
+      "mobility",
+      "recent_insect_bite",
+      "recent_infection"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "inflammatory_or_infectious_branch": {
+      "triggers": [
+        "redness",
+        "warmth",
+        "fever",
+        "discharge",
+        "recent_infection"
+      ]
+    },
+    "concerning_mass_branch": {
+      "triggers": [
+        "rapid_enlargement",
+        "weight_loss",
+        "night_sweats"
+      ]
+    },
+    "local_reactive_branch": {
+      "triggers": [
+        "painful_lump",
+        "tenderness",
+        "recent_insect_bite",
+        "recent_trauma"
+      ]
+    },
+    "distribution_branch": {
+      "triggers": [
+        "multiple_lumps",
+        "lump_site",
+        "lump_specific_location"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "lump_location",
+      "replace_with": [
+        "lump_site",
+        "lump_specific_location"
+      ]
+    },
+    {
+      "old_concept": "painful_swelling",
+      "replace_with": [
+        "painful_lump"
+      ]
+    },
+    {
+      "old_concept": "growing_mass",
+      "replace_with": [
+        "growth_pattern"
+      ]
+    },
+    {
+      "old_concept": "trauma_history",
+      "replace_with": [
+        "recent_trauma"
+      ]
+    },
+    {
+      "old_concept": "red_or_warm",
+      "replace_with": [
+        "redness",
+        "warmth"
+      ]
+    },
+    {
+      "old_concept": "weight_loss_or_night_sweats",
+      "replace_with": [
+        "weight_loss",
+        "night_sweats"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_inflammatory_or_infectious_mass_pattern_swelling_or_lump",
+    "possible_concerning_mass_pattern_swelling_or_lump"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did you first notice the swelling or lump?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has it been there?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "lump_site": {
+      "id": "lump_site",
+      "field": "lump_site",
+      "code": "MASS-002",
+      "ui_label": "Lump site",
+      "phase": "core_characterization",
+      "text": "Where is the swelling or lump located?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "lump_site",
+      "question_category": "qualifier",
+      "canonical_question_key": "lump_site",
+      "dedup_family": "ros:swelling",
+      "dedup_families": [
+        "ros:swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "lump_specific_location": {
+      "id": "lump_specific_location",
+      "field": "lump_specific_location",
+      "code": "MASS-003",
+      "ui_label": "Lump specific location",
+      "phase": "core_characterization",
+      "text": "Can you point to the exact spot of the swelling or lump?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "lump_specific_location",
+      "question_category": "qualifier",
+      "canonical_question_key": "lump_specific_location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "growth_pattern": {
+      "id": "growth_pattern",
+      "field": "growth_pattern",
+      "code": "MASS-004",
+      "ui_label": "Growth pattern",
+      "phase": "core_characterization",
+      "text": "Has it been growing or changing in size?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "growth_pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "growth_pattern",
+      "question_role": "qualifier"
+    },
+    "painful_lump": {
+      "id": "painful_lump",
+      "field": "painful_lump",
+      "code": "MASS-005",
+      "ui_label": "Painful lump",
+      "phase": "core_characterization",
+      "text": "Is the swelling or lump painful?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "painful_lump_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "painful_lump",
+      "question_category": "symptom",
+      "canonical_question_key": "painful_lump",
+      "question_role": "qualifier"
+    },
+    "multiple_lumps": {
+      "id": "multiple_lumps",
+      "field": "multiple_lumps",
+      "code": "MASS-006",
+      "ui_label": "Multiple lumps",
+      "phase": "core_characterization",
+      "text": "Is there more than one swelling or lump?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "multiple_lumps_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "multiple_lumps",
+      "question_category": "qualifier",
+      "canonical_question_key": "multiple_lumps",
+      "question_role": "qualifier"
+    },
+    "rapid_enlargement": {
+      "id": "rapid_enlargement",
+      "field": "rapid_enlargement",
+      "code": "MASS-007",
+      "ui_label": "Rapid enlargement",
+      "phase": "high_priority_followup",
+      "text": "Has it enlarged quickly?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "rapid_enlargement_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "rapid_enlargement",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_concerning_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "rapid_enlargement",
+      "question_role": "qualifier"
+    },
+    "redness": {
+      "id": "redness",
+      "field": "redness",
+      "code": "SKIN-010",
+      "ui_label": "Redness",
+      "phase": "high_priority_followup",
+      "text": "Is there redness around it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "redness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "redness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_inflammatory_or_infectious_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "redness",
+      "question_role": "qualifier"
+    },
+    "warmth": {
+      "id": "warmth",
+      "field": "warmth",
+      "code": "SKIN-011",
+      "ui_label": "Warmth",
+      "phase": "high_priority_followup",
+      "text": "Does it feel warm?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "warmth_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "warmth",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_inflammatory_or_infectious_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "warmth",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_inflammatory_or_infectious_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "discharge": {
+      "id": "discharge",
+      "field": "discharge",
+      "code": "SKIN-009",
+      "ui_label": "Discharge",
+      "phase": "high_priority_followup",
+      "text": "Any discharge or pus from it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "discharge_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "discharge",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_inflammatory_or_infectious_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "discharge",
+      "question_role": "qualifier"
+    },
+    "weight_loss": {
+      "id": "weight_loss",
+      "field": "weight_loss",
+      "code": "CON-007",
+      "ui_label": "Weight loss",
+      "phase": "high_priority_followup",
+      "text": "Any unexplained weight loss?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "weight_loss_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "weight_loss",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_concerning_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "weight_loss",
+      "dedup_family": "ros:weight_loss",
+      "dedup_families": [
+        "ros:weight_loss"
+      ],
+      "question_role": "qualifier"
+    },
+    "night_sweats": {
+      "id": "night_sweats",
+      "field": "night_sweats",
+      "code": "CON-004",
+      "ui_label": "Night sweats",
+      "phase": "high_priority_followup",
+      "text": "Any night sweats?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "night_sweats_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "night_sweats",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_concerning_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "night_sweats",
+      "dedup_family": "ros:night_sweats",
+      "dedup_families": [
+        "ros:night_sweats"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_trauma": {
+      "id": "recent_trauma",
+      "field": "recent_trauma",
+      "code": "CTX-004",
+      "ui_label": "Recent trauma",
+      "phase": "high_priority_followup",
+      "text": "Did this start after any recent trauma or injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_trauma_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_trauma",
+      "question_category": "context_history",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "recent_trauma",
+      "question_role": "qualifier"
+    },
+    "tenderness": {
+      "id": "tenderness",
+      "field": "tenderness",
+      "code": "MASS-009",
+      "ui_label": "Tenderness",
+      "phase": "targeted_followup",
+      "text": "Is it tender to touch?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "tenderness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "tenderness",
+      "question_category": "symptom",
+      "canonical_question_key": "tenderness",
+      "question_role": "qualifier"
+    },
+    "mobility": {
+      "id": "mobility",
+      "field": "mobility",
+      "code": "MASS-008",
+      "ui_label": "Mobility",
+      "phase": "targeted_followup",
+      "text": "Does it move under the skin or feel fixed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "mobility",
+      "question_category": "qualifier",
+      "canonical_question_key": "mobility",
+      "question_role": "qualifier"
+    },
+    "recent_insect_bite": {
+      "id": "recent_insect_bite",
+      "field": "recent_insect_bite",
+      "code": "CTX-014",
+      "ui_label": "Recent insect bite",
+      "phase": "targeted_followup",
+      "text": "Was there a recent insect bite there?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_insect_bite_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_insect_bite",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_insect_bite",
+      "question_role": "qualifier"
+    },
+    "recent_infection": {
+      "id": "recent_infection",
+      "field": "recent_infection",
+      "code": "CTX-016",
+      "ui_label": "Recent infection",
+      "phase": "targeted_followup",
+      "text": "Have you had a recent infection nearby or elsewhere?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_infection_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_infection",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_infection",
+      "dedup_family": "ros:recent_infection",
+      "dedup_families": [
+        "ros:recent_infection"
+      ],
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "lump_swelling": {
+      "id": "lump_swelling",
+      "field": "lump_swelling",
+      "code": "MASS-000",
+      "ui_label": "Lump or swelling",
+      "phase": "core_characterization",
+      "text": "Have you noticed a swelling or lump?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "swelling_or_lump_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "lump_swelling",
+      "question_category": "symptom",
+      "canonical_question_key": "lump_swelling",
+      "dedup_family": "ros:swelling",
+      "dedup_families": [
+        "ros:swelling"
+      ],
+      "question_role": "parent_symptom"
+    }
+  },
+  "file_name": "swelling_or_lump.json"
+}

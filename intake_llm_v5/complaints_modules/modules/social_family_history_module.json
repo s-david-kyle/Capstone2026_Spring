@@ -1,0 +1,335 @@
+{
+  "module_name": "social_family_history_module",
+  "version": "1.1.0",
+  "description": "Generalized social history, sexual history, travel/exposure history, and family history module. Ask once per session after complaint clerking and ROS unless an urgent complaint-specific safety question already captured the same concept earlier.",
+  "ui_render_rule": "Use ui_label or text in the UI. Never show raw backend field ids.",
+  "session_cap_questions": 10,
+  "session_non_repeat_required": true,
+  "load_once_per_session": true,
+  "owned_fields": [
+    "smoking_current",
+    "smoking_past",
+    "alcohol_current",
+    "recreational_drug_use",
+    "occupation",
+    "living_situation",
+    "recent_travel",
+    "occupational_exposures",
+    "family_history",
+    "sexual_history",
+    "new_partner",
+    "partner_symptoms",
+    "known_sti_exposure",
+    "recent_unprotected_sex"
+  ],
+  "module_ownership_principle": "Generalized social, sexual, travel/exposure, and family history are captured here first. Complaint files may ask only targeted follow-up when clinically necessary.",
+  "activation_rules": [
+    "Run once per session after complaint clerking and ROS unless an emergent safety path requires earlier targeted history.",
+    "If an owned field was already captured earlier in the session, skip the matching question here.",
+    "Ask sexual-history-related items only when SEXUAL_HISTORY_RELEVANT_SESSION or SEXUALLY_ACTIVE is true.",
+    "Ask recent_travel and occupational_exposures when the complaint or ROS pattern makes exposure history relevant."
+  ],
+  "questions": [
+    {
+      "id": "smoking_current",
+      "field": "smoking_current",
+      "code": "SOC-001",
+      "ui_label": "Current smoking",
+      "phase": "context_and_history",
+      "text": "Do you currently smoke or use tobacco or nicotine products?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "smoking_current_details",
+      "canonical_concept": "smoking_current",
+      "question_category": "context_history",
+      "canonical_question_key": "smoking_current",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "smoking_past",
+      "field": "smoking_past",
+      "code": "SOC-002",
+      "ui_label": "Past smoking",
+      "phase": "context_and_history",
+      "text": "Have you smoked or used tobacco regularly in the past?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "smoking_past_details",
+      "canonical_concept": "smoking_past",
+      "question_category": "context_history",
+      "canonical_question_key": "smoking_past",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "alcohol_current",
+      "field": "alcohol_current",
+      "code": "SOC-003",
+      "ui_label": "Current alcohol use",
+      "phase": "context_and_history",
+      "text": "Do you currently drink alcohol?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "alcohol_current_details",
+      "canonical_concept": "alcohol_current",
+      "question_category": "context_history",
+      "canonical_question_key": "alcohol_current",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "recreational_drug_use",
+      "field": "recreational_drug_use",
+      "code": "SOC-004",
+      "ui_label": "Recreational drug use",
+      "phase": "context_and_history",
+      "text": "Do you use any recreational or non-prescribed drugs?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_PEDIATRIC"
+      ],
+      "detail_field": "recreational_drug_use_details",
+      "canonical_concept": "recreational_drug_use",
+      "question_category": "context_history",
+      "canonical_question_key": "recreational_drug_use",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    {
+      "id": "occupation",
+      "field": "occupation",
+      "code": "SOC-005",
+      "ui_label": "Occupation",
+      "phase": "context_and_history",
+      "text": "What kind of work do you do?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "occupation",
+      "question_category": "context_history",
+      "canonical_question_key": "occupation",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "living_situation",
+      "field": "living_situation",
+      "code": "SOC-006",
+      "ui_label": "Living situation",
+      "phase": "context_and_history",
+      "text": "Who do you live with, and what is your living situation like?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "living_situation",
+      "question_category": "context_history",
+      "canonical_question_key": "living_situation",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "recent_travel",
+      "field": "recent_travel",
+      "code": "SOC-007",
+      "ui_label": "Recent travel",
+      "phase": "context_and_history",
+      "text": "Have you traveled anywhere recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_travel_details",
+      "canonical_concept": "recent_travel",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_travel",
+      "dedup_family": "ros:recent_travel",
+      "dedup_families": [
+        "ros:recent_travel"
+      ],
+      "question_role": "qualifier"
+    },
+    {
+      "id": "occupational_exposures",
+      "field": "occupational_exposures",
+      "code": "SOC-008",
+      "ui_label": "Occupational exposures",
+      "phase": "context_and_history",
+      "text": "At work or in your usual activities, are you exposed to dust, chemicals, fumes, blood, animals, or other hazards?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "occupational_exposures_details",
+      "canonical_concept": "occupational_exposures",
+      "question_category": "context_history",
+      "canonical_question_key": "occupational_exposures",
+      "dedup_family": "ros:occupational_exposures",
+      "dedup_families": [
+        "ros:occupational_exposures"
+      ],
+      "question_role": "qualifier"
+    },
+    {
+      "id": "family_history",
+      "field": "family_history",
+      "code": "FH-001",
+      "ui_label": "Family history",
+      "phase": "context_and_history",
+      "text": "Are there any medical conditions that run in your family that we should know about?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "family_history",
+      "question_category": "context_history",
+      "canonical_question_key": "family_history",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "sexual_history",
+      "field": "sexual_history",
+      "code": "SOC-009",
+      "ui_label": "Sexual history",
+      "phase": "context_and_history",
+      "text": "Would it be okay to ask a few questions about your sexual history because it may help explain your symptoms?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEXUAL_HISTORY_RELEVANT_SESSION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_PEDIATRIC"
+      ],
+      "detail_field": "sexual_history_details",
+      "canonical_concept": "sexual_history",
+      "question_category": "context_history",
+      "canonical_question_key": "sexual_history",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    {
+      "id": "new_partner",
+      "field": "new_partner",
+      "code": "SOC-010",
+      "ui_label": "New partner",
+      "phase": "context_and_history",
+      "text": "Have you had a new sexual partner recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEXUAL_HISTORY_RELEVANT_SESSION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_PEDIATRIC"
+      ],
+      "detail_field": "new_partner_details",
+      "canonical_concept": "new_partner",
+      "question_category": "context_history",
+      "canonical_question_key": "new_partner",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    {
+      "id": "partner_symptoms",
+      "field": "partner_symptoms",
+      "code": "SOC-011",
+      "ui_label": "Partner symptoms",
+      "phase": "context_and_history",
+      "text": "Has a sexual partner had symptoms or been told they may have an infection?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEXUAL_HISTORY_RELEVANT_SESSION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_PEDIATRIC"
+      ],
+      "detail_field": "partner_symptoms_details",
+      "canonical_concept": "partner_symptoms",
+      "question_category": "context_history",
+      "canonical_question_key": "partner_symptoms",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    {
+      "id": "known_sti_exposure",
+      "field": "known_sti_exposure",
+      "code": "SOC-012",
+      "ui_label": "Known STI exposure",
+      "phase": "context_and_history",
+      "text": "Do you know of any recent exposure to a sexually transmitted infection?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEXUAL_HISTORY_RELEVANT_SESSION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_PEDIATRIC"
+      ],
+      "detail_field": "known_sti_exposure_details",
+      "canonical_concept": "known_sti_exposure",
+      "question_category": "context_history",
+      "canonical_question_key": "known_sti_exposure",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    {
+      "id": "recent_unprotected_sex",
+      "field": "recent_unprotected_sex",
+      "code": "SOC-013",
+      "ui_label": "Recent unprotected sex",
+      "phase": "context_and_history",
+      "text": "Have you had unprotected sex recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEXUAL_HISTORY_RELEVANT_SESSION",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_PEDIATRIC"
+      ],
+      "detail_field": "recent_unprotected_sex_details",
+      "canonical_concept": "recent_unprotected_sex",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_unprotected_sex",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    }
+  ],
+  "field_order": [
+    "smoking_current",
+    "smoking_past",
+    "alcohol_current",
+    "recreational_drug_use",
+    "occupation",
+    "living_situation",
+    "recent_travel",
+    "occupational_exposures",
+    "family_history",
+    "sexual_history",
+    "new_partner",
+    "partner_symptoms",
+    "known_sti_exposure",
+    "recent_unprotected_sex"
+  ],
+  "summary_rendering": {
+    "smoking_current": "Current smoking",
+    "smoking_past": "Past smoking",
+    "alcohol_current": "Current alcohol use",
+    "recreational_drug_use": "Recreational drug use",
+    "occupation": "Occupation",
+    "living_situation": "Living situation",
+    "recent_travel": "Recent travel",
+    "occupational_exposures": "Occupational exposures",
+    "family_history": "Family history",
+    "sexual_history": "Sexual history",
+    "new_partner": "New partner",
+    "partner_symptoms": "Partner symptoms",
+    "known_sti_exposure": "Known STI exposure",
+    "recent_unprotected_sex": "Recent unprotected sex"
+  },
+  "followup_guidance": {
+    "principle": "Keep this module generalized. Complaint files should ask targeted social, sexual, travel, or exposure follow-up only when the complaint, red flags, or earlier answers make that detail decision-relevant.",
+    "examples": [
+      "cough or fever may ask more specifically about TB or travel exposure after recent_travel or occupational_exposures is positive",
+      "vaginal discharge or dysuria may ask STI-specific follow-up after sexual history fields are positive",
+      "palpitations or seizures may ask targeted alcohol or drug timing follow-up if substance use is relevant"
+    ]
+  },
+  "file_name": "social_family_history_module.json"
+}

@@ -1,0 +1,1436 @@
+{
+  "version": "1.1.0",
+  "complaint_id": "weight_loss",
+  "display_name": "Weight Loss",
+  "ui_name": "Weight Loss",
+  "ui_label": "Weight Loss",
+  "can_be_primary": true,
+  "can_be_secondary": true,
+  "primary_system": "constitutional",
+  "related_systems": {
+    "high_yield": [
+      "gastrointestinal",
+      "respiratory",
+      "endocrine"
+    ],
+    "selective_cross_system": [
+      "hematologic_malignancy",
+      "psychiatric",
+      "infectious"
+    ],
+    "contextual": [
+      "dietary_social",
+      "medication_substance"
+    ]
+  },
+  "pivot_triggers": {
+    "anaemia_fatigue": "malignancy_pattern",
+    "cough": "malignancy_or_tb_pattern"
+  },
+  "start_sequence_contract": {
+    "approved_start_sequence": [
+      "presenting_complaint_narrative",
+      "amount_lost",
+      "timeframe",
+      "weight_loss_intent",
+      "loss_of_appetite"
+    ],
+    "sequence_mode": "complaint_owned",
+    "default_rule": "Run the complaint-defined start sequence, then follow question_schedule.default_profile in listed order."
+  },
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 30,
+      "target_question_budget": 39,
+      "max_questions": 48,
+      "early_danger_reserve": 3,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Weight loss requires thorough malignancy, GI, respiratory, and endocrine screening. Increased budget to ensure danger follow-ups and modules are completed. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 4,
+      "secondary_question_budget_override_if_red_flag": 7,
+      "priority_question_ids_if_secondary": [
+        "amount_lost",
+        "timeframe",
+        "intentional_or_unintentional",
+        "appetite_change"
+      ],
+      "selection_rule": "If this complaint is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 4,
+      "pathological_system_first": true,
+      "pathological_system": "constitutional"
+    },
+    "context_mode": {
+      "target_context_questions": 3,
+      "max_context_questions": 4
+    },
+    "reallocation_rules": [
+      "If urgent red flags are active, borrow from extended_characterize and high_priority_followup before borrowing from context history.",
+      "If the complaint is secondary and no danger trigger is active, remain within secondary_question_budget."
+    ]
+  },
+  "question_schedule": [
+    "opening",
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "questions_by_id": {
+    "presenting_complaint_narrative": {
+      "field": "presenting_complaint_narrative",
+      "phase": "opening",
+      "text": "Please provide information about presenting complaint narrative.",
+      "response_type": "NARRATIVE_FREE_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "compound_question": true,
+      "extract_entities_if_positive": true,
+      "ui_label": "Presenting Complaint Narrative",
+      "canonical_question_key": "presenting_complaint_narrative",
+      "canonical_concept": "presenting_complaint_narrative",
+      "id": "presenting_complaint_narrative",
+      "code": "NARR-001",
+      "question_role": "qualifier"
+    },
+    "amount_lost": {
+      "field": "amount_lost",
+      "phase": "core_characterization",
+      "text": "How much weight have you lost?",
+      "response_type": "NUMERIC_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Amount lost",
+      "canonical_question_key": "amount_lost",
+      "canonical_concept": "amount_lost",
+      "id": "amount_lost",
+      "code": "WL-001",
+      "question_role": "qualifier"
+    },
+    "rapid_loss": {
+      "field": "rapid_loss",
+      "phase": "high_priority_followup",
+      "text": "Did the weight come off quickly over days to weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "rapid_loss_details",
+      "if_positive_ask": [
+        "rapid_loss_details"
+      ],
+      "ui_label": "Rapid loss",
+      "canonical_question_key": "rapid_loss",
+      "canonical_concept": "rapid_loss",
+      "id": "rapid_loss",
+      "code": "WL-004",
+      "question_role": "qualifier"
+    },
+    "rapid_loss_details": {
+      "field": "rapid_loss_details",
+      "phase": "high_priority_followup",
+      "text": "How much weight in what period?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "rapid_loss",
+      "ui_label": "Rapid loss details",
+      "canonical_question_key": "rapid_loss_details",
+      "canonical_concept": "rapid_loss",
+      "id": "rapid_loss_details",
+      "code": "DETAIL-RAPID_LOSS",
+      "question_role": "detail"
+    },
+    "dysphagia": {
+      "field": "dysphagia",
+      "phase": "high_priority_followup",
+      "text": "Have you had trouble swallowing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "dysphagia_details",
+      "if_positive_ask": [
+        "dysphagia_details"
+      ],
+      "ui_label": "Dysphagia",
+      "canonical_question_key": "dysphagia",
+      "canonical_concept": "dysphagia",
+      "id": "dysphagia",
+      "code": "GI-025",
+      "dedup_family": "ros:dysphagia",
+      "dedup_families": [
+        "ros:dysphagia"
+      ],
+      "question_role": "qualifier"
+    },
+    "dysphagia_details": {
+      "field": "dysphagia_details",
+      "phase": "high_priority_followup",
+      "text": "Solids, liquids, or both? Any pain?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "dysphagia",
+      "ui_label": "Dysphagia details",
+      "canonical_question_key": "dysphagia_details",
+      "canonical_concept": "dysphagia",
+      "id": "dysphagia_details",
+      "code": "DETAIL-DYSPHAGIA",
+      "dedup_family": "ros:dysphagia",
+      "dedup_families": [
+        "ros:dysphagia"
+      ],
+      "question_role": "detail"
+    },
+    "vomiting": {
+      "id": "vomiting",
+      "field": "vomiting",
+      "code": "GI-002",
+      "ui_label": "Vomiting",
+      "phase": "high_priority_followup",
+      "text": "Have you been vomiting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "vomiting_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "vomiting",
+      "question_category": "symptom",
+      "canonical_question_key": "vomiting",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "vomiting_details"
+      ]
+    },
+    "vomiting_details": {
+      "id": "vomiting_details",
+      "field": "vomiting_details",
+      "phase": "high_priority_followup",
+      "code": "DETAIL-VOMITING",
+      "ui_label": "Vomiting details",
+      "text": "What does the vomit look like, and have you noticed blood or dark coffee-ground material?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "vomiting",
+      "canonical_question_key": "vomiting_details",
+      "canonical_concept": "vomiting",
+      "dedup_family": "ros:vomiting",
+      "question_role": "detail"
+    },
+    "vomiting_frequency": {
+      "id": "vomiting_frequency",
+      "field": "vomiting_frequency",
+      "code": "GIQ-001",
+      "ui_label": "Vomiting frequency",
+      "phase": "high_priority_followup",
+      "text": "How often are you vomiting?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "vomiting",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "vomiting_frequency",
+      "question_category": "qualifier",
+      "canonical_question_key": "vomiting_frequency",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "detail"
+    },
+    "blood_in_stool": {
+      "id": "blood_in_stool",
+      "field": "blood_in_stool",
+      "code": "GI-004B",
+      "ui_label": "Blood in stool",
+      "phase": "high_priority_followup",
+      "text": "Have you noticed blood in your stool?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "blood_in_stool_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "blood_in_stool",
+      "question_category": "symptom",
+      "canonical_question_key": "blood_in_stool",
+      "dedup_family": "ros:blood_in_stool",
+      "dedup_families": [
+        "ros:blood_in_stool"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "blood_in_stool_details"
+      ]
+    },
+    "blood_in_stool_details": {
+      "id": "blood_in_stool_details",
+      "field": "blood_in_stool_details",
+      "phase": "high_priority_followup",
+      "code": "DETAIL-BLOOD_IN_STOOL",
+      "ui_label": "Blood in stool details",
+      "text": "Is it bright red, dark, or mixed into the stool? How much?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "blood_in_stool",
+      "canonical_question_key": "blood_in_stool_details",
+      "canonical_concept": "blood_in_stool",
+      "dedup_family": "ros:blood_in_stool",
+      "question_role": "detail"
+    },
+    "melena": {
+      "id": "melena",
+      "field": "melena",
+      "code": "GIQ-021",
+      "ui_label": "Black or tarry stool",
+      "phase": "high_priority_followup",
+      "text": "Has your stool been black or tarry?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "melena_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "melena",
+      "question_category": "symptom",
+      "canonical_question_key": "melena",
+      "dedup_family": "ros:melena",
+      "dedup_families": [
+        "ros:melena"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "melena_details"
+      ]
+    },
+    "melena_details": {
+      "id": "melena_details",
+      "field": "melena_details",
+      "phase": "high_priority_followup",
+      "code": "DETAIL-MELENA",
+      "ui_label": "Black or tarry stool details",
+      "text": "When did the black or tarry stool start, and how often has it happened?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "melena",
+      "canonical_question_key": "melena_details",
+      "canonical_concept": "melena",
+      "dedup_family": "ros:melena",
+      "question_role": "detail"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "targeted_followup",
+      "text": "Do you have functional impact?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "hemoptysis": {
+      "id": "hemoptysis",
+      "field": "hemoptysis",
+      "code": "RESP-004",
+      "ui_label": "Coughing up blood",
+      "phase": "high_priority_followup",
+      "text": "Have you coughed up blood?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "hemoptysis_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "hemoptysis",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_shortness_of_breath"
+      ],
+      "canonical_question_key": "hemoptysis",
+      "dedup_family": "ros:hemoptysis",
+      "dedup_families": [
+        "ros:hemoptysis"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "hemoptysis_details"
+      ]
+    },
+    "hemoptysis_details": {
+      "id": "hemoptysis_details",
+      "field": "hemoptysis_details",
+      "phase": "high_priority_followup",
+      "code": "DETAIL-HEMOPTYSIS",
+      "ui_label": "Coughing up blood details",
+      "text": "How much blood did you cough up — streaks, teaspoons, or clots — and when did it happen?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "hemoptysis",
+      "canonical_question_key": "hemoptysis_details",
+      "canonical_concept": "hemoptysis",
+      "dedup_family": "ros:hemoptysis",
+      "question_role": "detail"
+    },
+    "night_sweats": {
+      "id": "night_sweats",
+      "field": "night_sweats",
+      "code": "CON-004",
+      "ui_label": "Night sweats",
+      "phase": "high_priority_followup",
+      "text": "Have you had drenching night sweats?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "night_sweats_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "night_sweats",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_concerning_mass_pattern_swelling_or_lump"
+      ],
+      "canonical_question_key": "night_sweats",
+      "dedup_family": "ros:night_sweats",
+      "dedup_families": [
+        "ros:night_sweats"
+      ],
+      "question_role": "qualifier",
+      "if_positive_ask": [
+        "night_sweats_details"
+      ]
+    },
+    "night_sweats_details": {
+      "field": "night_sweats_details",
+      "phase": "high_priority_followup",
+      "text": "How often are the night sweats, are they drenching, and do you need to change clothes or sheets?",
+      "response_type": "SHORT_TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Night sweats — details",
+      "canonical_question_key": "night_sweats_details",
+      "parent_field": "night_sweats",
+      "canonical_concept": "night_sweats",
+      "id": "night_sweats_details",
+      "code": "DETAIL-NIGHT_SWEATS",
+      "dedup_family": "ros:night_sweats",
+      "dedup_families": [
+        "ros:night_sweats"
+      ],
+      "question_role": "detail",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ]
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "fever_details"
+      ]
+    },
+    "fever_details": {
+      "field": "fever_details",
+      "phase": "high_priority_followup",
+      "text": "What was the highest temperature, when did the fever start, and did anything bring it down?",
+      "response_type": "SHORT_TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Fever — details",
+      "canonical_question_key": "fever_details",
+      "parent_field": "fever",
+      "canonical_concept": "fever",
+      "id": "fever_details",
+      "code": "DETAIL-FEVER",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "detail",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ]
+    },
+    "dehydration": {
+      "id": "dehydration",
+      "field": "dehydration",
+      "code": "CON-011A",
+      "ui_label": "Dehydration",
+      "phase": "high_priority_followup",
+      "text": "Have you felt very dry, very thirsty, or unable to stay hydrated?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dehydration",
+      "question_category": "symptom",
+      "question_role": "qualifier",
+      "canonical_question_key": "dehydration",
+      "capture_detail_if_positive": true,
+      "detail_field": "dehydration_details",
+      "if_positive_ask": [
+        "dehydration_details"
+      ]
+    },
+    "dehydration_details": {
+      "id": "dehydration_details",
+      "field": "dehydration_details",
+      "code": "CON-011A-D",
+      "ui_label": "Dehydration details",
+      "phase": "high_priority_followup",
+      "text": "Please give more details about dehydration.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "detail_field": "dehydration_or_low_urine_output_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dehydration",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_dehydration_pattern_vomiting"
+      ],
+      "canonical_question_key": "dehydration_details",
+      "parent_field": "dehydration",
+      "question_role": "detail"
+    },
+    "low_urine_output": {
+      "id": "low_urine_output",
+      "field": "low_urine_output",
+      "code": "CON-011B",
+      "ui_label": "Low urine output",
+      "phase": "high_priority_followup",
+      "text": "Are you passing much less urine than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "low_urine_output",
+      "question_category": "symptom",
+      "dedup_family": "ros:low_urine_output",
+      "dedup_families": [
+        "ros:low_urine_output"
+      ],
+      "question_role": "red_flag_subtype",
+      "canonical_question_key": "low_urine_output",
+      "capture_detail_if_positive": true,
+      "detail_field": "low_urine_output_details",
+      "if_positive_ask": [
+        "low_urine_output_details"
+      ]
+    },
+    "low_urine_output_details": {
+      "id": "low_urine_output_details",
+      "field": "low_urine_output_details",
+      "code": "CON-011B-D",
+      "ui_label": "Low urine output details",
+      "phase": "high_priority_followup",
+      "text": "Please give more details about low urine output.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "detail_field": "dehydration_or_low_urine_output_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "low_urine_output",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_dehydration_pattern_vomiting"
+      ],
+      "canonical_question_key": "low_urine_output_details",
+      "parent_field": "low_urine_output",
+      "dedup_family": "ros:low_urine_output",
+      "dedup_families": [
+        "ros:low_urine_output"
+      ],
+      "question_role": "detail"
+    },
+    "associated_symptoms": {
+      "field": "associated_symptoms",
+      "phase": "targeted_followup",
+      "text": "Have any other symptoms come with it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "associated_symptoms_details",
+      "if_positive_ask": [
+        "associated_symptoms_details"
+      ],
+      "ui_label": "Associated symptoms",
+      "canonical_question_key": "associated_symptoms",
+      "canonical_concept": "associated_symptoms",
+      "id": "associated_symptoms",
+      "code": "ASSOC-001",
+      "question_role": "qualifier"
+    },
+    "associated_symptoms_details": {
+      "field": "associated_symptoms_details",
+      "phase": "targeted_followup",
+      "text": "What other symptoms have come with the fatigue?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "associated_symptoms",
+      "ui_label": "Associated symptoms details",
+      "canonical_question_key": "associated_symptoms_details",
+      "canonical_concept": "associated_symptoms",
+      "id": "associated_symptoms_details",
+      "code": "DETAIL-ASSOCIATED_SYMPTOM",
+      "question_role": "detail"
+    },
+    "diarrhea": {
+      "id": "diarrhea",
+      "field": "diarrhea",
+      "code": "GI-003",
+      "ui_label": "Loose stool or diarrhea",
+      "phase": "targeted_followup",
+      "text": "Have you had diarrhea or loose stool?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "diarrhea_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "diarrhea",
+      "question_category": "symptom",
+      "canonical_question_key": "diarrhea",
+      "dedup_family": "ros:diarrhea",
+      "dedup_families": [
+        "ros:diarrhea"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "diarrhea_details"
+      ]
+    },
+    "diarrhea_details": {
+      "field": "diarrhea_details",
+      "phase": "targeted_followup",
+      "text": "Watery or bloody? How many times per day?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "diarrhea",
+      "ui_label": "Diarrhea details",
+      "canonical_question_key": "diarrhea_details",
+      "canonical_concept": "diarrhea",
+      "id": "diarrhea_details",
+      "code": "DETAIL-DIARRHEA",
+      "dedup_family": "ros:diarrhea",
+      "dedup_families": [
+        "ros:diarrhea"
+      ],
+      "question_role": "detail"
+    },
+    "abdominal_pain": {
+      "id": "abdominal_pain",
+      "field": "abdominal_pain",
+      "code": "GI-008",
+      "ui_label": "Abdominal pain",
+      "phase": "targeted_followup",
+      "text": "Have you had abdominal pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "abdominal_pain_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "abdominal_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "abdominal_pain",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "abdominal_pain_details"
+      ]
+    },
+    "abdominal_pain_details": {
+      "field": "abdominal_pain_details",
+      "phase": "targeted_followup",
+      "text": "Where exactly? How severe?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "abdominal_pain",
+      "ui_label": "Abdominal pain details",
+      "canonical_question_key": "abdominal_pain_details",
+      "canonical_concept": "abdominal_pain",
+      "id": "abdominal_pain_details",
+      "code": "DETAIL-ABDOMINAL_PAIN",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ],
+      "question_role": "detail"
+    },
+    "change_in_bowel_habit": {
+      "id": "change_in_bowel_habit",
+      "field": "change_in_bowel_habit",
+      "code": "GI-024",
+      "ui_label": "Change in bowel habit",
+      "phase": "targeted_followup",
+      "text": "Have you noticed a lasting change in your bowel habits?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "change_in_bowel_habit_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "change_in_bowel_habit",
+      "question_category": "qualifier",
+      "canonical_question_key": "change_in_bowel_habit",
+      "dedup_family": "ros:change_in_bowel_habit",
+      "dedup_families": [
+        "ros:change_in_bowel_habit"
+      ],
+      "question_role": "qualifier",
+      "if_positive_ask": [
+        "change_in_bowel_habit_details"
+      ]
+    },
+    "change_in_bowel_habit_details": {
+      "field": "change_in_bowel_habit_details",
+      "phase": "targeted_followup",
+      "text": "Constipation or diarrhoea? How long?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "change_in_bowel_habit",
+      "ui_label": "Bowel habit details",
+      "canonical_question_key": "change_in_bowel_habit_details",
+      "canonical_concept": "change_in_bowel_habit",
+      "id": "change_in_bowel_habit_details",
+      "code": "DETAIL-CHANGE_IN_BOWEL_HA",
+      "dedup_family": "ros:change_in_bowel_habit",
+      "dedup_families": [
+        "ros:change_in_bowel_habit"
+      ],
+      "question_role": "detail"
+    },
+    "cough": {
+      "id": "cough",
+      "field": "cough",
+      "code": "RESP-005",
+      "ui_label": "Cough",
+      "phase": "targeted_followup",
+      "text": "Have you had a cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "cough_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "cough",
+      "question_category": "symptom",
+      "canonical_question_key": "cough",
+      "dedup_family": "ros:cough",
+      "dedup_families": [
+        "ros:cough"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "cough_details"
+      ]
+    },
+    "cough_details": {
+      "field": "cough_details",
+      "phase": "targeted_followup",
+      "text": "Dry or productive? How long?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "cough",
+      "ui_label": "Cough details",
+      "canonical_question_key": "cough_details",
+      "canonical_concept": "cough",
+      "id": "cough_details",
+      "code": "DETAIL-COUGH",
+      "dedup_family": "ros:cough",
+      "dedup_families": [
+        "ros:cough"
+      ],
+      "question_role": "detail"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Shortness of breath",
+      "phase": "targeted_followup",
+      "text": "Have you had shortness of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "shortness_of_breath_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_allergic_or_airway_pattern_rash"
+      ],
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom",
+      "if_positive_ask": [
+        "shortness_of_breath_details"
+      ]
+    },
+    "shortness_of_breath_details": {
+      "field": "shortness_of_breath_details",
+      "phase": "targeted_followup",
+      "text": "Is it at rest, on exertion, or lying flat? How severe?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "shortness_of_breath",
+      "ui_label": "Shortness of breath details",
+      "canonical_question_key": "shortness_of_breath_details",
+      "canonical_concept": "shortness_of_breath",
+      "id": "shortness_of_breath_details",
+      "code": "DETAIL-SHORTNESS_OF_BREAT",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "detail"
+    },
+    "excessive_thirst": {
+      "field": "excessive_thirst",
+      "phase": "targeted_followup",
+      "text": "Have you been unusually thirsty?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "excessive_thirst_details",
+      "if_positive_ask": [
+        "excessive_thirst_details"
+      ],
+      "ui_label": "Excessive thirst",
+      "canonical_question_key": "excessive_thirst",
+      "canonical_concept": "excessive_thirst",
+      "id": "excessive_thirst",
+      "code": "ENDO-003",
+      "dedup_family": "ros:excessive_thirst",
+      "dedup_families": [
+        "ros:excessive_thirst"
+      ],
+      "question_role": "qualifier"
+    },
+    "excessive_thirst_details": {
+      "field": "excessive_thirst_details",
+      "phase": "targeted_followup",
+      "text": "Please give more details about excessive thirst.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "capture_detail_if_positive": true,
+      "ui_label": "Excessive thirst details",
+      "canonical_question_key": "excessive_thirst_details",
+      "canonical_concept": "excessive_thirst",
+      "id": "excessive_thirst_details",
+      "parent_field": "excessive_thirst",
+      "code": "ENDO-003D",
+      "dedup_family": "ros:excessive_thirst",
+      "dedup_families": [
+        "ros:excessive_thirst"
+      ],
+      "question_role": "detail"
+    },
+    "excessive_urination": {
+      "field": "excessive_urination",
+      "phase": "targeted_followup",
+      "text": "Are you passing urine more often or in larger amounts than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "excessive_urination_details",
+      "if_positive_ask": [
+        "excessive_urination_details"
+      ],
+      "ui_label": "Excessive urination",
+      "canonical_question_key": "excessive_urination",
+      "canonical_concept": "excessive_urination",
+      "id": "excessive_urination",
+      "code": "ENDO-004",
+      "dedup_family": "ros:excessive_urination",
+      "dedup_families": [
+        "ros:excessive_urination"
+      ],
+      "question_role": "qualifier"
+    },
+    "excessive_urination_details": {
+      "field": "excessive_urination_details",
+      "phase": "targeted_followup",
+      "text": "Please give more details about excessive urination.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "capture_detail_if_positive": true,
+      "ui_label": "Excessive urination details",
+      "canonical_question_key": "excessive_urination_details",
+      "canonical_concept": "excessive_urination",
+      "id": "excessive_urination_details",
+      "parent_field": "excessive_urination",
+      "code": "ENDO-004D",
+      "dedup_family": "ros:excessive_urination",
+      "dedup_families": [
+        "ros:excessive_urination"
+      ],
+      "question_role": "detail"
+    },
+    "low_mood_anhedonia": {
+      "field": "low_mood_anhedonia",
+      "phase": "targeted_followup",
+      "text": "Have you felt low, lost interest, or stopped enjoying things?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "low_mood_anhedonia_details",
+      "if_positive_ask": [
+        "low_mood_anhedonia_details"
+      ],
+      "ui_label": "Low mood anhedonia",
+      "canonical_question_key": "low_mood_anhedonia",
+      "canonical_concept": "low_mood_anhedonia",
+      "id": "low_mood_anhedonia",
+      "code": "PSY-002",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    "low_mood_anhedonia_details": {
+      "field": "low_mood_anhedonia_details",
+      "phase": "targeted_followup",
+      "text": "How long have you felt this way? Is it affecting your daily life?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "low_mood_anhedonia",
+      "ui_label": "Low mood details",
+      "canonical_question_key": "low_mood_anhedonia_details",
+      "canonical_concept": "low_mood_anhedonia",
+      "id": "low_mood_anhedonia_details",
+      "code": "PSY-002D",
+      "question_role": "detail"
+    },
+    "nutrition_status": {
+      "field": "nutrition_status",
+      "phase": "targeted_followup",
+      "text": "How is your usual diet and nutrition, including restricted eating, food avoidance, or poor access to food?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Nutrition status",
+      "canonical_question_key": "nutrition_status",
+      "canonical_concept": "nutrition_status",
+      "id": "nutrition_status",
+      "code": "NUT-001",
+      "dedup_family": "ros:nutrition_status",
+      "dedup_families": [
+        "ros:nutrition_status"
+      ],
+      "question_role": "qualifier"
+    },
+    "lymph_node_swelling": {
+      "field": "lymph_node_swelling",
+      "phase": "targeted_followup",
+      "text": "Have you noticed swollen glands or lumps in the neck, armpit, or groin?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "lymph_node_swelling_details",
+      "if_positive_ask": [
+        "lymph_node_swelling_details"
+      ],
+      "ui_label": "Lymph node swelling",
+      "canonical_question_key": "lymph_node_swelling",
+      "canonical_concept": "lymph_node_swelling",
+      "id": "lymph_node_swelling",
+      "code": "HEME-003",
+      "dedup_family": "ros:lymph_node_swelling",
+      "dedup_families": [
+        "ros:lymph_node_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "lymph_node_swelling_details": {
+      "field": "lymph_node_swelling_details",
+      "phase": "targeted_followup",
+      "text": "Where are they? Are they tender?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "lymph_node_swelling",
+      "ui_label": "Lymph node details",
+      "canonical_question_key": "lymph_node_swelling_details",
+      "canonical_concept": "lymph_node_swelling",
+      "id": "lymph_node_swelling_details",
+      "code": "DETAIL-LYMPH_NODE_SWELLIN",
+      "dedup_family": "ros:lymph_node_swelling",
+      "dedup_families": [
+        "ros:lymph_node_swelling"
+      ],
+      "question_role": "detail"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "weight_loss_intentionality": {
+      "field": "weight_loss_intentionality",
+      "phase": "core_characterization",
+      "text": "Were you trying to lose weight, or did it happen without trying?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "weight_loss_intentionality_details",
+      "if_positive_ask": [
+        "weight_loss_intentionality_details"
+      ],
+      "ui_label": "Weight loss intentionality",
+      "canonical_question_key": "weight_loss_intentionality",
+      "canonical_concept": "weight_loss_intentionality",
+      "id": "weight_loss_intentionality",
+      "code": "WL-003",
+      "question_role": "qualifier"
+    },
+    "weight_loss_intentionality_details": {
+      "id": "weight_loss_intentionality_details",
+      "field": "weight_loss_intentionality_details",
+      "phase": "core_characterization",
+      "code": "DETAIL-WL_INTENTIONALITY",
+      "ui_label": "Weight loss intentionality details",
+      "text": "What were you doing to lose weight, such as diet, exercise, medication, or another change?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "weight_loss_intentionality",
+      "canonical_question_key": "weight_loss_intentionality_details",
+      "canonical_concept": "weight_loss_intentionality",
+      "question_role": "detail"
+    },
+    "weight_loss_timeframe": {
+      "field": "weight_loss_timeframe",
+      "phase": "core_characterization",
+      "text": "Over what period of time did you lose that weight?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "ui_label": "Weight loss timeframe",
+      "canonical_question_key": "weight_loss_timeframe",
+      "canonical_concept": "weight_loss_timeframe",
+      "id": "weight_loss_timeframe",
+      "code": "WL-002",
+      "question_role": "qualifier"
+    },
+    "appetite_change": {
+      "id": "appetite_change",
+      "field": "appetite_change",
+      "code": "GI-006B",
+      "ui_label": "Appetite change",
+      "phase": "core_characterization",
+      "text": "Has your appetite changed?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "appetite_change_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "appetite_change",
+      "question_category": "symptom",
+      "canonical_question_key": "appetite_change",
+      "dedup_family": "ros:loss_of_appetite",
+      "dedup_families": [
+        "ros:loss_of_appetite"
+      ],
+      "question_role": "qualifier",
+      "if_positive_ask": [
+        "appetite_change_details"
+      ]
+    },
+    "appetite_change_details": {
+      "id": "appetite_change_details",
+      "field": "appetite_change_details",
+      "phase": "core_characterization",
+      "code": "DETAIL-APPETITE_CHANGE",
+      "ui_label": "Loss of appetite details",
+      "text": "How much has your appetite changed and for how long?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "appetite_change",
+      "canonical_question_key": "appetite_change_details",
+      "canonical_concept": "appetite_change",
+      "dedup_family": "ros:loss_of_appetite",
+      "question_role": "detail"
+    },
+    "hyperthyroid_symptoms": {
+      "field": "hyperthyroid_symptoms",
+      "phase": "targeted_followup",
+      "text": "Have you had heat intolerance, tremor, sweating, anxiety, or a racing heartbeat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "capture_detail_if_positive": true,
+      "detail_field": "hyperthyroid_symptoms_details",
+      "if_positive_ask": [
+        "hyperthyroid_symptoms_details"
+      ],
+      "ui_label": "Hyperthyroid symptoms",
+      "canonical_question_key": "hyperthyroid_symptoms",
+      "canonical_concept": "hyperthyroid_symptoms",
+      "id": "hyperthyroid_symptoms",
+      "code": "ENDO-006",
+      "question_role": "qualifier"
+    },
+    "hyperthyroid_symptoms_details": {
+      "field": "hyperthyroid_symptoms_details",
+      "phase": "targeted_followup",
+      "text": "Which symptoms have you noticed?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "parent_field": "hyperthyroid_symptoms",
+      "ui_label": "Thyroid symptoms details",
+      "canonical_question_key": "hyperthyroid_symptoms_details",
+      "canonical_concept": "hyperthyroid_symptoms",
+      "id": "hyperthyroid_symptoms_details",
+      "code": "DETAIL-HYPERTHYROID_SYMPTOMS",
+      "question_role": "detail"
+    },
+    "severe_weakness": {
+      "id": "severe_weakness",
+      "field": "severe_weakness",
+      "code": "CON-006S",
+      "ui_label": "Severe weakness",
+      "phase": "high_priority_followup",
+      "text": "Have you felt severely weak or unable to do normal activities?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "severe_weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "severe_weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_dehydration_pattern_vomiting"
+      ],
+      "canonical_question_key": "severe_weakness",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "qualifier",
+      "if_positive_ask": [
+        "severe_weakness_details"
+      ]
+    },
+    "severe_weakness_details": {
+      "field": "severe_weakness_details",
+      "phase": "high_priority_followup",
+      "text": "Can you stand and walk normally, or are you too weak to do usual activities?",
+      "response_type": "SHORT_TEXT",
+      "options": [],
+      "skip_conditions": [
+        "PARENT_NEGATIVE"
+      ],
+      "required": false,
+      "extraction_strategy": "TEXT_EXTRACTION",
+      "ui_label": "Weakness — details",
+      "canonical_question_key": "severe_weakness_details",
+      "parent_field": "severe_weakness",
+      "canonical_concept": "severe_weakness",
+      "id": "severe_weakness_details",
+      "code": "DETAIL-SEVERE_WEAKNESS",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "detail",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ]
+    }
+  },
+  "derived_red_flag_patterns": {
+    "malignancy_pattern": [
+      "rapid_loss",
+      "lymph_node_swelling",
+      "night_sweats"
+    ],
+    "gi_obstruction_or_upper_gi_pattern": [
+      "dysphagia",
+      "vomiting",
+      "vomiting_frequency"
+    ],
+    "infectious_systemic_pattern": [
+      "night_sweats",
+      "cough",
+      "diarrhea"
+    ],
+    "metabolic_endocrine_pattern": [
+      "polyuria_polydipsia",
+      "loss_of_appetite"
+    ]
+  },
+  "targeted_ros_plan": {
+    "primary_system": "constitutional",
+    "high_yield_systems": [
+      "gastrointestinal",
+      "respiratory",
+      "endocrine"
+    ],
+    "cross_system_systems": [
+      "hematologic_malignancy",
+      "psychiatric",
+      "infectious",
+      "dietary_social",
+      "medication_substance"
+    ],
+    "policy_note": "Finish unresolved concepts in the pathological system before borrowing from cross-system ROS."
+  },
+  "summary_contract": {
+    "missing_clarifications": {
+      "source": [
+        "unanswered_core_questions",
+        "unanswered_critical_followups",
+        "unanswered_high_priority_followups"
+      ]
+    },
+    "flags": {
+      "source": [
+        "derived_red_flag_patterns",
+        "EscalationLevel"
+      ]
+    }
+  },
+  "acuity_tier": "high",
+  "file_name": "weight_loss.json",
+  "canonical_concept": "weight_loss",
+  "document_status": "rebuilt_from_uploaded_v2_8_source_and_standardized",
+  "question_phase_map": {
+    "opening": [
+      "presenting_complaint_narrative"
+    ],
+    "core_characterization": [
+      "amount_lost",
+      "weight_loss_timeframe",
+      "weight_loss_intentionality",
+      "appetite_change"
+    ],
+    "high_priority_followup": [
+      "rapid_loss",
+      "dysphagia",
+      "vomiting",
+      "vomiting_frequency",
+      "blood_in_stool",
+      "melena",
+      "hemoptysis",
+      "night_sweats",
+      "fever",
+      "severe_weakness",
+      "dehydration",
+      "low_urine_output"
+    ],
+    "targeted_followup": [
+      "functional_impact",
+      "associated_symptoms",
+      "diarrhea",
+      "abdominal_pain",
+      "change_in_bowel_habit",
+      "cough",
+      "shortness_of_breath",
+      "excessive_thirst",
+      "excessive_urination",
+      "low_mood_anhedonia",
+      "nutrition_status",
+      "lymph_node_swelling",
+      "hyperthyroid_symptoms"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "legacy_question_schedule_original": {
+    "enforced_phase_order": [
+      "opening",
+      "core_characterize",
+      "early_danger_screen",
+      "extended_characterize",
+      "critical_followup",
+      "high_priority_followup",
+      "context_and_history"
+    ],
+    "default_profile": {
+      "opening": [
+        "presenting_complaint_narrative"
+      ],
+      "core_characterize": [
+        "amount_lost",
+        "timeframe",
+        "intentional_or_unintentional",
+        "appetite_change"
+      ],
+      "early_danger_screen": [
+        "rapid_loss",
+        "dysphagia",
+        "persistent_vomiting",
+        "blood_in_stool_or_melena"
+      ],
+      "extended_characterize": [
+        "functional_impact"
+      ],
+      "critical_followup": [
+        "hemoptysis",
+        "night_sweats",
+        "fever",
+        "severe_weakness_or_dehydration"
+      ],
+      "high_priority_followup": [
+        "associated_symptoms",
+        "diarrhea",
+        "abdominal_pain",
+        "change_in_bowel_habit",
+        "cough",
+        "shortness_of_breath",
+        "polyuria_polydipsia",
+        "low_mood_or_food_restriction",
+        "lymph_node_swelling",
+        "drug_or_alcohol_use",
+        "thyroid_symptoms_weight_loss"
+      ],
+      "context_and_history": []
+    }
+  },
+  "source_rebuild_note": "Rebuilt from uploaded older v2(8) source while preserving v5 runtime standards: clean phases, unique codes, ROS-owned dedup families, retired live fields removed, and compound concepts split.",
+  "opening_state_note": "Selecting this complaint should set state['weight_loss'] = 'yes' before questioning begins.",
+  "shared_escalation_rules_expected": [
+    "gi_bleed_screen",
+    "sepsis_or_systemic_instability_screen"
+  ]
+}

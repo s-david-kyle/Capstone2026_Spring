@@ -1,0 +1,2670 @@
+{
+  "file_name": "ros_question_bank.json",
+  "version": "1.1.0",
+  "description": "Complete ROS question bank with canonical codes, response types, and gating rules.",
+  "ros_policy": {
+    "ros_is_not_hpi": true,
+    "dedup_against_complaint_flow": true,
+    "dedup_against_modules": true,
+    "dedup_against_prior_ros": true,
+    "dedup_against_overlapping_complaints": true,
+    "rule": "ROS should review body systems without re-asking complaint-specific characterization already captured elsewhere in session state.",
+    "batch_mode_default": true,
+    "batch_cap_per_system": 12
+  },
+  "ros_modes": {
+    "problem_pertinent": {
+      "target_systems": 1,
+      "description": "Review the complaint-related system and document key positives and pertinent negatives."
+    },
+    "extended": {
+      "target_systems": "2_to_9",
+      "description": "Review the complaint-related system plus a limited number of additional relevant systems."
+    },
+    "complete": {
+      "target_systems": "10_plus",
+      "description": "Review the complaint-related system plus all additional systems as needed for a complete ROS."
+    }
+  },
+  "system_order_default": [
+    "constitutional",
+    "cardiovascular",
+    "respiratory",
+    "gastrointestinal",
+    "genitourinary",
+    "neurological",
+    "musculoskeletal",
+    "skin",
+    "endocrine",
+    "hematologic_lymphatic",
+    "psychiatric"
+  ],
+  "rendering_rules": {
+    "system_display_order": [
+      "Constitutional",
+      "Cardiovascular",
+      "Respiratory",
+      "Gastrointestinal",
+      "Genitourinary",
+      "Neurological",
+      "Musculoskeletal",
+      "Skin",
+      "Endocrine",
+      "Hematologic or Lymphatic",
+      "Psychiatric"
+    ]
+  },
+  "normalized_mappings": {
+    "chest pressure/tightness": "chest_pain",
+    "near syncope": "dizziness",
+    "syncope": "loss_of_consciousness",
+    "lightheadedness": "dizziness",
+    "pleuritic component": "pleuritic_pain",
+    "orthopnea/pnd": "orthopnea"
+  },
+  "questions_by_system": {
+    "constitutional": [
+      "fever",
+      "chills",
+      "night_sweats",
+      "fatigue",
+      "weakness",
+      "weight_loss",
+      "weight_gain",
+      "loss_of_appetite",
+      "malaise",
+      "rigors"
+    ],
+    "cardiovascular": [
+      "chest_pain",
+      "palpitations",
+      "irregular_heartbeat",
+      "fainting",
+      "dizziness",
+      "orthopnea",
+      "paroxysmal_nocturnal_dyspnea",
+      "exertional_dyspnea",
+      "leg_swelling",
+      "claudication"
+    ],
+    "respiratory": [
+      "shortness_of_breath",
+      "cough",
+      "hemoptysis",
+      "wheeze",
+      "pleuritic_pain",
+      "stridor",
+      "runny_nose"
+    ],
+    "gastrointestinal": [
+      "abdominal_pain",
+      "nausea",
+      "vomiting",
+      "diarrhea",
+      "constipation",
+      "blood_in_stool",
+      "heartburn",
+      "bloating",
+      "loss_of_appetite",
+      "dysphagia",
+      "jaundice",
+      "change_in_bowel_habit"
+    ],
+    "genitourinary": [
+      "dysuria",
+      "urinary_frequency",
+      "urinary_urgency",
+      "hematuria",
+      "flank_pain",
+      "incontinence",
+      "vaginal_bleeding",
+      "vaginal_discharge",
+      "testicular_pain"
+    ],
+    "neurological": [
+      "headache",
+      "dizziness",
+      "fainting",
+      "weakness",
+      "numbness",
+      "tingling",
+      "seizure",
+      "confusion",
+      "memory_loss",
+      "speech_difficulty",
+      "vision_changes",
+      "neck_stiffness",
+      "photophobia",
+      "diplopia",
+      "dysarthria",
+      "gait_balance_problem"
+    ],
+    "musculoskeletal": [
+      "joint_pain",
+      "muscle_pain",
+      "back_pain",
+      "neck_pain",
+      "joint_swelling",
+      "stiffness",
+      "limited_range_of_motion",
+      "inability_to_bear_weight",
+      "sciatica"
+    ],
+    "skin": [
+      "rash",
+      "itching",
+      "lesions",
+      "bruising",
+      "changes_in_moles",
+      "hair_loss",
+      "severe_skin_blistering",
+      "mucosal_involvement"
+    ],
+    "endocrine": [
+      "heat_intolerance",
+      "cold_intolerance",
+      "excessive_thirst",
+      "excessive_urination",
+      "excessive_hunger"
+    ],
+    "hematologic_lymphatic": [
+      "easy_bruising",
+      "easy_bleeding",
+      "anemia_symptoms",
+      "lymph_node_swelling"
+    ],
+    "psychiatric": [
+      "anxiety",
+      "depression",
+      "mood_changes",
+      "sleep_disturbance",
+      "suicidal_ideation",
+      "hallucinations"
+    ]
+  },
+  "questions": {
+    "fever": {
+      "field": "fever",
+      "code": "CON-001",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "fever",
+      "clinical_priority": "high",
+      "id": "fever",
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "ros_question"
+    },
+    "chills": {
+      "field": "chills",
+      "code": "CON-003",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Have you felt cold or shivery without uncontrollable shaking?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "chills",
+      "clinical_priority": "medium",
+      "id": "chills",
+      "canonical_question_key": "chills",
+      "dedup_family": "ros:chills",
+      "dedup_families": [
+        "ros:chills"
+      ],
+      "question_role": "ros_question"
+    },
+    "night_sweats": {
+      "field": "night_sweats",
+      "code": "CON-004",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Have you had night sweats?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "night_sweats",
+      "clinical_priority": "medium",
+      "id": "night_sweats",
+      "canonical_question_key": "night_sweats",
+      "dedup_family": "ros:night_sweats",
+      "dedup_families": [
+        "ros:night_sweats"
+      ],
+      "question_role": "ros_question"
+    },
+    "fatigue": {
+      "field": "fatigue",
+      "code": "CON-005",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Have you been unusually tired?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "fatigue",
+      "clinical_priority": "medium",
+      "id": "fatigue",
+      "canonical_question_key": "fatigue",
+      "dedup_family": "ros:fatigue",
+      "dedup_families": [
+        "ros:fatigue"
+      ],
+      "question_role": "ros_question"
+    },
+    "weakness": {
+      "field": "weakness",
+      "code": "CON-006",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Have you felt unusually weak?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "weakness",
+      "clinical_priority": "medium",
+      "id": "weakness",
+      "canonical_question_key": "weakness",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "ros_question"
+    },
+    "weight_loss": {
+      "field": "weight_loss",
+      "code": "CON-007",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Any unexplained weight loss?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "weight_loss",
+      "clinical_priority": "medium",
+      "id": "weight_loss",
+      "canonical_question_key": "weight_loss",
+      "dedup_family": "ros:weight_loss",
+      "dedup_families": [
+        "ros:weight_loss"
+      ],
+      "question_role": "ros_question"
+    },
+    "weight_gain": {
+      "field": "weight_gain",
+      "code": "CON-008",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Any unexpected weight gain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "weight_gain",
+      "clinical_priority": "low",
+      "id": "weight_gain",
+      "canonical_question_key": "weight_gain",
+      "dedup_family": "ros:weight_gain",
+      "dedup_families": [
+        "ros:weight_gain"
+      ],
+      "question_role": "ros_question"
+    },
+    "loss_of_appetite": {
+      "field": "loss_of_appetite",
+      "code": "GI-006",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Has your appetite gone down?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "loss_of_appetite",
+      "clinical_priority": "medium",
+      "id": "loss_of_appetite",
+      "canonical_question_key": "loss_of_appetite",
+      "dedup_family": "ros:loss_of_appetite",
+      "dedup_families": [
+        "ros:loss_of_appetite"
+      ],
+      "question_role": "ros_question"
+    },
+    "malaise": {
+      "field": "malaise",
+      "code": "CON-009",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Have you generally felt unwell or weak all over?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "malaise",
+      "clinical_priority": "medium",
+      "id": "malaise",
+      "canonical_question_key": "malaise",
+      "dedup_family": "ros:malaise",
+      "dedup_families": [
+        "ros:malaise"
+      ],
+      "question_role": "ros_question"
+    },
+    "rigors": {
+      "field": "rigors",
+      "code": "CON-010",
+      "system": "constitutional",
+      "display_system": "Constitutional",
+      "text": "Have you had shaking chills or rigors that made your body shake?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "rigors",
+      "clinical_priority": "high",
+      "id": "rigors",
+      "canonical_question_key": "rigors",
+      "dedup_family": "ros:chills",
+      "dedup_families": [
+        "ros:chills"
+      ],
+      "question_role": "ros_question"
+    },
+    "chest_pain": {
+      "field": "chest_pain",
+      "code": "CV-002",
+      "system": "cardiovascular",
+      "display_system": "Cardiovascular",
+      "text": "Do you have any chest pain or tightness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "chest_pain",
+      "clinical_priority": "high",
+      "id": "chest_pain",
+      "canonical_question_key": "chest_pain",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "palpitations": {
+      "field": "palpitations",
+      "code": "CV-003",
+      "system": "cardiovascular",
+      "display_system": "Cardiovascular",
+      "text": "Have you felt your heart racing or beating irregularly?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "palpitations",
+      "clinical_priority": "high",
+      "id": "palpitations",
+      "canonical_question_key": "palpitations",
+      "dedup_family": "ros:palpitations",
+      "dedup_families": [
+        "ros:palpitations"
+      ],
+      "question_role": "ros_question"
+    },
+    "irregular_heartbeat": {
+      "field": "irregular_heartbeat",
+      "code": "CV-004",
+      "system": "cardiovascular",
+      "display_system": "Cardiovascular",
+      "text": "Has your heartbeat felt irregular?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "irregular_heartbeat",
+      "clinical_priority": "high",
+      "id": "irregular_heartbeat",
+      "canonical_question_key": "irregular_heartbeat",
+      "dedup_family": "ros:irregular_heartbeat",
+      "dedup_families": [
+        "ros:irregular_heartbeat"
+      ],
+      "question_role": "ros_question"
+    },
+    "fainting": {
+      "field": "fainting",
+      "code": "NEU-002",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you fainted or passed out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "fainting",
+      "clinical_priority": "high",
+      "id": "fainting",
+      "canonical_question_key": "fainting",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "ros_question"
+    },
+    "dizziness": {
+      "field": "dizziness",
+      "code": "NEU-001",
+      "system": "cardiovascular",
+      "display_system": "Cardiovascular",
+      "text": "Have you felt dizzy or lightheaded?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "dizziness",
+      "clinical_priority": "high",
+      "id": "dizziness",
+      "canonical_question_key": "dizziness",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "ros_question"
+    },
+    "orthopnea": {
+      "field": "orthopnea",
+      "code": "RESPQ-002",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Do you get short of breath when lying flat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "orthopnea",
+      "clinical_priority": "high",
+      "id": "orthopnea",
+      "canonical_question_key": "orthopnea",
+      "dedup_family": "ros:orthopnea",
+      "dedup_families": [
+        "ros:orthopnea"
+      ],
+      "question_role": "ros_question"
+    },
+    "paroxysmal_nocturnal_dyspnea": {
+      "field": "paroxysmal_nocturnal_dyspnea",
+      "code": "RESPQ-003",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Do you wake from sleep short of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "paroxysmal_nocturnal_dyspnea",
+      "clinical_priority": "high",
+      "id": "paroxysmal_nocturnal_dyspnea",
+      "canonical_question_key": "paroxysmal_nocturnal_dyspnea",
+      "dedup_family": "ros:paroxysmal_nocturnal_dyspnea",
+      "dedup_families": [
+        "ros:paroxysmal_nocturnal_dyspnea"
+      ],
+      "question_role": "ros_question"
+    },
+    "exertional_dyspnea": {
+      "field": "exertional_dyspnea",
+      "code": "RESP-009",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Do you get short of breath with physical activity?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "exertional_dyspnea",
+      "clinical_priority": "high",
+      "id": "exertional_dyspnea",
+      "canonical_question_key": "exertional_dyspnea",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "ros_question"
+    },
+    "leg_swelling": {
+      "field": "leg_swelling",
+      "code": "CV-001",
+      "system": "cardiovascular",
+      "display_system": "Cardiovascular",
+      "text": "Have you had swelling in one or both legs?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "leg_swelling",
+      "clinical_priority": "high",
+      "id": "leg_swelling",
+      "canonical_question_key": "leg_swelling",
+      "dedup_family": "ros:leg_swelling",
+      "dedup_families": [
+        "ros:leg_swelling"
+      ],
+      "question_role": "ros_question"
+    },
+    "claudication": {
+      "field": "claudication",
+      "code": "CV-005",
+      "system": "cardiovascular",
+      "display_system": "Cardiovascular",
+      "text": "Do you get leg pain when walking?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "claudication",
+      "clinical_priority": "medium",
+      "id": "claudication",
+      "canonical_question_key": "claudication",
+      "dedup_family": "ros:claudication",
+      "dedup_families": [
+        "ros:claudication"
+      ],
+      "question_role": "ros_question"
+    },
+    "shortness_of_breath": {
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Have you had any difficulty in breathing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "shortness_of_breath",
+      "clinical_priority": "high",
+      "id": "shortness_of_breath",
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "ros_question"
+    },
+    "cough": {
+      "field": "cough",
+      "code": "RESP-005",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Do you have a cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "cough",
+      "clinical_priority": "high",
+      "id": "cough",
+      "canonical_question_key": "cough",
+      "dedup_family": "ros:cough",
+      "dedup_families": [
+        "ros:cough"
+      ],
+      "question_role": "ros_question"
+    },
+    "hemoptysis": {
+      "field": "hemoptysis",
+      "code": "RESP-004",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Have you coughed up blood?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "hemoptysis",
+      "clinical_priority": "high",
+      "id": "hemoptysis",
+      "canonical_question_key": "hemoptysis",
+      "dedup_family": "ros:hemoptysis",
+      "dedup_families": [
+        "ros:hemoptysis"
+      ],
+      "question_role": "ros_question"
+    },
+    "wheeze": {
+      "field": "wheeze",
+      "code": "RESPQ-004",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Do you hear a whistling sound when you breathe?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "wheeze",
+      "clinical_priority": "high",
+      "id": "wheeze",
+      "canonical_question_key": "wheeze",
+      "dedup_family": "ros:wheeze",
+      "dedup_families": [
+        "ros:wheeze"
+      ],
+      "question_role": "ros_question"
+    },
+    "pleuritic_pain": {
+      "field": "pleuritic_pain",
+      "code": "RESP-008",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Do you have pain that gets worse with deep breathing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "pleuritic_pain",
+      "clinical_priority": "high",
+      "id": "pleuritic_pain",
+      "canonical_question_key": "pleuritic_pain",
+      "dedup_family": "ros:pleuritic_pain",
+      "dedup_families": [
+        "ros:pleuritic_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "stridor": {
+      "field": "stridor",
+      "code": "RESPQ-005",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Is your breathing noisy or harsh?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "stridor",
+      "clinical_priority": "high",
+      "id": "stridor",
+      "canonical_question_key": "stridor",
+      "dedup_family": "ros:stridor",
+      "dedup_families": [
+        "ros:stridor"
+      ],
+      "question_role": "ros_question"
+    },
+    "runny_nose": {
+      "field": "runny_nose",
+      "code": "RESP-010",
+      "system": "respiratory",
+      "display_system": "Respiratory",
+      "text": "Do you have a runny nose?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "runny_nose",
+      "clinical_priority": "medium",
+      "id": "runny_nose",
+      "canonical_question_key": "runny_nose",
+      "dedup_family": "ros:runny_nose",
+      "dedup_families": [
+        "ros:runny_nose"
+      ],
+      "question_role": "ros_question"
+    },
+    "sore_throat": {
+      "field": "sore_throat",
+      "code": "ENT-000",
+      "system": "ent",
+      "display_system": "Respiratory",
+      "text": "Do you have a sore throat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "sore_throat",
+      "clinical_priority": "medium",
+      "id": "sore_throat",
+      "canonical_question_key": "sore_throat",
+      "dedup_family": "ros:sore_throat",
+      "dedup_families": [
+        "ros:sore_throat"
+      ],
+      "question_role": "ros_question"
+    },
+    "abdominal_pain": {
+      "field": "abdominal_pain",
+      "code": "GI-008",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Do you have abdominal pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "abdominal_pain",
+      "clinical_priority": "high",
+      "id": "abdominal_pain",
+      "canonical_question_key": "abdominal_pain",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "nausea": {
+      "field": "nausea",
+      "code": "GI-007",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Have you felt nauseated?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "nausea",
+      "clinical_priority": "high",
+      "id": "nausea",
+      "canonical_question_key": "nausea",
+      "dedup_family": "ros:nausea",
+      "dedup_families": [
+        "ros:nausea"
+      ],
+      "question_role": "ros_question"
+    },
+    "vomiting": {
+      "field": "vomiting",
+      "code": "GI-002",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Have you been vomiting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "vomiting",
+      "clinical_priority": "high",
+      "id": "vomiting",
+      "canonical_question_key": "vomiting",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "ros_question"
+    },
+    "diarrhea": {
+      "field": "diarrhea",
+      "code": "GI-003",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Have you had loose stool or diarrhea?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "diarrhea",
+      "clinical_priority": "high",
+      "id": "diarrhea",
+      "canonical_question_key": "diarrhea",
+      "dedup_family": "ros:diarrhea",
+      "dedup_families": [
+        "ros:diarrhea"
+      ],
+      "question_role": "ros_question"
+    },
+    "constipation": {
+      "field": "constipation",
+      "code": "GI-011",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Have you been constipated?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "constipation",
+      "clinical_priority": "medium",
+      "id": "constipation",
+      "canonical_question_key": "constipation",
+      "dedup_family": "ros:constipation",
+      "dedup_families": [
+        "ros:constipation"
+      ],
+      "question_role": "ros_question"
+    },
+    "blood_in_stool": {
+      "field": "blood_in_stool",
+      "code": "GI-004B",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Have you seen blood in the stool?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "blood_in_stool",
+      "clinical_priority": "high",
+      "id": "blood_in_stool",
+      "canonical_question_key": "blood_in_stool",
+      "dedup_family": "ros:blood_in_stool",
+      "dedup_families": [
+        "ros:blood_in_stool"
+      ],
+      "question_role": "ros_question"
+    },
+    "melena": {
+      "field": "melena",
+      "code": "GIQ-021",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Has the stool been black or tarry?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "melena",
+      "clinical_priority": "high",
+      "id": "melena",
+      "canonical_question_key": "melena",
+      "dedup_family": "ros:melena",
+      "dedup_families": [
+        "ros:melena"
+      ],
+      "question_role": "ros_question"
+    },
+    "heartburn": {
+      "field": "heartburn",
+      "code": "GI-009",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Do you have heartburn?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "heartburn",
+      "clinical_priority": "low",
+      "id": "heartburn",
+      "canonical_question_key": "heartburn",
+      "dedup_family": "ros:heartburn",
+      "dedup_families": [
+        "ros:heartburn"
+      ],
+      "question_role": "ros_question"
+    },
+    "bloating": {
+      "field": "bloating",
+      "code": "GI-010",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Do you feel bloated?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "bloating",
+      "clinical_priority": "medium",
+      "id": "bloating",
+      "canonical_question_key": "bloating",
+      "dedup_family": "ros:bloating",
+      "dedup_families": [
+        "ros:bloating"
+      ],
+      "question_role": "ros_question"
+    },
+    "dysphagia": {
+      "field": "dysphagia",
+      "code": "GI-025",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Do you have difficulty swallowing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "dysphagia",
+      "clinical_priority": "high",
+      "id": "dysphagia",
+      "canonical_question_key": "dysphagia",
+      "dedup_family": "ros:dysphagia",
+      "dedup_families": [
+        "ros:dysphagia"
+      ],
+      "question_role": "ros_question"
+    },
+    "jaundice": {
+      "field": "jaundice",
+      "code": "GI-012",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Have you noticed yellowing of your eyes or skin?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "jaundice",
+      "clinical_priority": "high",
+      "id": "jaundice",
+      "canonical_question_key": "jaundice",
+      "dedup_family": "ros:jaundice",
+      "dedup_families": [
+        "ros:jaundice"
+      ],
+      "question_role": "ros_question"
+    },
+    "change_in_bowel_habit": {
+      "field": "change_in_bowel_habit",
+      "code": "GI-024",
+      "system": "gastrointestinal",
+      "display_system": "Gastrointestinal",
+      "text": "Have your bowel movements changed recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "change_in_bowel_habit",
+      "clinical_priority": "medium",
+      "id": "change_in_bowel_habit",
+      "canonical_question_key": "change_in_bowel_habit",
+      "dedup_family": "ros:change_in_bowel_habit",
+      "dedup_families": [
+        "ros:change_in_bowel_habit"
+      ],
+      "question_role": "ros_question"
+    },
+    "dysuria": {
+      "field": "dysuria",
+      "code": "GU-001",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Do you have pain or burning when you pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "dysuria",
+      "clinical_priority": "high",
+      "id": "dysuria",
+      "canonical_question_key": "dysuria",
+      "dedup_family": "ros:dysuria",
+      "dedup_families": [
+        "ros:dysuria"
+      ],
+      "question_role": "ros_question"
+    },
+    "urinary_frequency": {
+      "field": "urinary_frequency",
+      "code": "GU-002",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Are you passing urine more often than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "urinary_frequency",
+      "clinical_priority": "high",
+      "id": "urinary_frequency",
+      "canonical_question_key": "urinary_frequency",
+      "dedup_family": "ros:urinary_frequency",
+      "dedup_families": [
+        "ros:urinary_frequency"
+      ],
+      "question_role": "ros_question"
+    },
+    "urinary_urgency": {
+      "field": "urinary_urgency",
+      "code": "GU-003",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Do you get a sudden strong urge to pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "urinary_urgency",
+      "clinical_priority": "high",
+      "id": "urinary_urgency",
+      "canonical_question_key": "urinary_urgency",
+      "dedup_family": "ros:urinary_urgency",
+      "dedup_families": [
+        "ros:urinary_urgency"
+      ],
+      "question_role": "ros_question"
+    },
+    "hematuria": {
+      "field": "hematuria",
+      "code": "GU-006",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Have you noticed blood in your urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "hematuria",
+      "clinical_priority": "high",
+      "id": "hematuria",
+      "canonical_question_key": "hematuria",
+      "dedup_family": "ros:hematuria",
+      "dedup_families": [
+        "ros:hematuria"
+      ],
+      "question_role": "ros_question"
+    },
+    "flank_pain": {
+      "field": "flank_pain",
+      "code": "GU-007",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Do you have pain in your side or back near the kidneys?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "flank_pain",
+      "clinical_priority": "high",
+      "id": "flank_pain",
+      "canonical_question_key": "flank_pain",
+      "dedup_family": "ros:flank_pain",
+      "dedup_families": [
+        "ros:flank_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "incontinence": {
+      "field": "incontinence",
+      "code": "GU-008",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Have you had any loss of bladder control?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "incontinence",
+      "clinical_priority": "medium",
+      "id": "incontinence",
+      "canonical_question_key": "incontinence",
+      "dedup_family": "ros:incontinence",
+      "dedup_families": [
+        "ros:incontinence"
+      ],
+      "question_role": "ros_question"
+    },
+    "vaginal_bleeding": {
+      "field": "vaginal_bleeding",
+      "code": "GYN-001",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Have you had any bleeding from the vagina?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "vaginal_bleeding",
+      "clinical_priority": "high",
+      "sensitive_topic": true,
+      "ask_if": "SEX_FEMALE",
+      "id": "vaginal_bleeding",
+      "canonical_question_key": "vaginal_bleeding",
+      "dedup_family": "ros:vaginal_bleeding",
+      "dedup_families": [
+        "ros:vaginal_bleeding"
+      ],
+      "question_role": "ros_question"
+    },
+    "vaginal_discharge": {
+      "field": "vaginal_discharge",
+      "code": "GYN-002",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Have you noticed any vaginal discharge?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "vaginal_discharge",
+      "clinical_priority": "high",
+      "sensitive_topic": true,
+      "ask_if": "SEX_FEMALE",
+      "id": "vaginal_discharge",
+      "canonical_question_key": "vaginal_discharge",
+      "dedup_family": "ros:vaginal_discharge",
+      "dedup_families": [
+        "ros:vaginal_discharge"
+      ],
+      "question_role": "ros_question"
+    },
+    "testicular_pain": {
+      "field": "testicular_pain",
+      "code": "GU-009",
+      "system": "genitourinary",
+      "display_system": "Genitourinary",
+      "text": "Have you had pain in a testicle or the scrotum?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "testicular_pain",
+      "clinical_priority": "high",
+      "ask_if": "SEX_MALE",
+      "id": "testicular_pain",
+      "canonical_question_key": "testicular_pain",
+      "dedup_family": "ros:testicular_pain",
+      "dedup_families": [
+        "ros:testicular_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "headache": {
+      "field": "headache",
+      "code": "NEU-005",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Do you have a headache?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "headache",
+      "clinical_priority": "high",
+      "id": "headache",
+      "canonical_question_key": "headache",
+      "dedup_family": "ros:headache",
+      "dedup_families": [
+        "ros:headache"
+      ],
+      "question_role": "ros_question"
+    },
+    "numbness": {
+      "field": "numbness",
+      "code": "NEURO-004",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you had numbness or loss of feeling anywhere?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "numbness",
+      "clinical_priority": "high",
+      "id": "numbness",
+      "canonical_question_key": "numbness",
+      "dedup_family": "ros:numbness",
+      "dedup_families": [
+        "ros:numbness"
+      ],
+      "question_role": "ros_question"
+    },
+    "tingling": {
+      "field": "tingling",
+      "code": "NEURO-005",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you had tingling or pins-and-needles?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "tingling",
+      "clinical_priority": "medium",
+      "id": "tingling",
+      "canonical_question_key": "tingling",
+      "dedup_family": "ros:tingling",
+      "dedup_families": [
+        "ros:tingling"
+      ],
+      "question_role": "ros_question"
+    },
+    "seizure": {
+      "field": "seizure",
+      "code": "NEU-008",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you had a seizure or fit?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "seizure",
+      "clinical_priority": "high",
+      "id": "seizure",
+      "canonical_question_key": "seizure",
+      "dedup_family": "ros:seizure",
+      "dedup_families": [
+        "ros:seizure"
+      ],
+      "question_role": "ros_question"
+    },
+    "confusion": {
+      "field": "confusion",
+      "code": "NEU-004",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you felt confused or not yourself?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "confusion",
+      "clinical_priority": "high",
+      "id": "confusion",
+      "canonical_question_key": "confusion",
+      "dedup_family": "ros:confusion",
+      "dedup_families": [
+        "ros:confusion"
+      ],
+      "question_role": "ros_question"
+    },
+    "memory_loss": {
+      "field": "memory_loss",
+      "code": "NEU-009",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you had any memory problems?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "memory_loss",
+      "clinical_priority": "medium",
+      "id": "memory_loss",
+      "canonical_question_key": "memory_loss",
+      "dedup_family": "ros:memory_loss",
+      "dedup_families": [
+        "ros:memory_loss"
+      ],
+      "question_role": "ros_question"
+    },
+    "speech_difficulty": {
+      "field": "speech_difficulty",
+      "code": "NEU-010",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you had trouble speaking or getting your words out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "speech_difficulty",
+      "clinical_priority": "high",
+      "id": "speech_difficulty",
+      "canonical_question_key": "speech_difficulty",
+      "dedup_family": "ros:speech_difficulty",
+      "dedup_families": [
+        "ros:speech_difficulty"
+      ],
+      "question_role": "ros_question"
+    },
+    "vision_changes": {
+      "field": "vision_changes",
+      "code": "NEU-011",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you had any change in your vision?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "vision_changes",
+      "clinical_priority": "high",
+      "id": "vision_changes",
+      "canonical_question_key": "vision_changes",
+      "dedup_family": "ros:vision_changes",
+      "dedup_families": [
+        "ros:vision_changes"
+      ],
+      "question_role": "ros_question"
+    },
+    "neck_stiffness": {
+      "field": "neck_stiffness",
+      "code": "NEU-012",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Is your neck stiff or painful to bend?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "neck_stiffness",
+      "clinical_priority": "high",
+      "id": "neck_stiffness",
+      "canonical_question_key": "neck_stiffness",
+      "dedup_family": "ros:neck_stiffness",
+      "dedup_families": [
+        "ros:neck_stiffness"
+      ],
+      "question_role": "ros_question"
+    },
+    "photophobia": {
+      "field": "photophobia",
+      "code": "NEU-013",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Is bright light bothering your eyes more than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "photophobia",
+      "clinical_priority": "high",
+      "id": "photophobia",
+      "canonical_question_key": "photophobia",
+      "dedup_family": "ros:photophobia",
+      "dedup_families": [
+        "ros:photophobia"
+      ],
+      "question_role": "ros_question"
+    },
+    "diplopia": {
+      "field": "diplopia",
+      "code": "NEU-014",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Have you had double vision?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "diplopia",
+      "clinical_priority": "high",
+      "id": "diplopia",
+      "canonical_question_key": "diplopia",
+      "dedup_family": "ros:diplopia",
+      "dedup_families": [
+        "ros:diplopia"
+      ],
+      "question_role": "ros_question"
+    },
+    "dysarthria": {
+      "field": "dysarthria",
+      "code": "NEU-015",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Has your speech become slurred?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "dysarthria",
+      "clinical_priority": "high",
+      "id": "dysarthria",
+      "canonical_question_key": "dysarthria",
+      "dedup_family": "ros:dysarthria",
+      "dedup_families": [
+        "ros:dysarthria"
+      ],
+      "question_role": "ros_question"
+    },
+    "gait_balance_problem": {
+      "field": "gait_balance_problem",
+      "code": "NEU-016",
+      "system": "neurological",
+      "display_system": "Neurological",
+      "text": "Do you have any balance or walking problems?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "gait_balance_problem",
+      "clinical_priority": "high",
+      "id": "gait_balance_problem",
+      "canonical_question_key": "gait_balance_problem",
+      "ui_label": "Gait or balance problem",
+      "dedup_family": "ros:gait_or_balance_problem",
+      "dedup_families": [
+        "ros:gait_or_balance_problem"
+      ],
+      "question_role": "ros_question"
+    },
+    "joint_pain": {
+      "field": "joint_pain",
+      "code": "MSK-001",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Do you have joint pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "joint_pain",
+      "clinical_priority": "high",
+      "id": "joint_pain",
+      "canonical_question_key": "joint_pain",
+      "dedup_family": "ros:joint_pain",
+      "dedup_families": [
+        "ros:joint_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "muscle_pain": {
+      "field": "muscle_pain",
+      "code": "MSK-002",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Do you have muscle pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "muscle_pain",
+      "clinical_priority": "medium",
+      "id": "muscle_pain",
+      "canonical_question_key": "muscle_pain",
+      "dedup_family": "ros:muscle_pain",
+      "dedup_families": [
+        "ros:muscle_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "back_pain": {
+      "field": "back_pain",
+      "code": "MSK-003",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Do you have back pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "back_pain",
+      "clinical_priority": "high",
+      "id": "back_pain",
+      "canonical_question_key": "back_pain",
+      "dedup_family": "ros:back_pain",
+      "dedup_families": [
+        "ros:back_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "neck_pain": {
+      "field": "neck_pain",
+      "code": "MSK-004",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Do you have neck pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "neck_pain",
+      "clinical_priority": "medium",
+      "id": "neck_pain",
+      "canonical_question_key": "neck_pain",
+      "dedup_family": "ros:neck_pain",
+      "dedup_families": [
+        "ros:neck_pain"
+      ],
+      "question_role": "ros_question"
+    },
+    "joint_swelling": {
+      "field": "joint_swelling",
+      "code": "MSK-005",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Have any of your joints become swollen?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "joint_swelling",
+      "clinical_priority": "high",
+      "id": "joint_swelling",
+      "canonical_question_key": "joint_swelling",
+      "dedup_family": "ros:joint_swelling",
+      "dedup_families": [
+        "ros:joint_swelling"
+      ],
+      "question_role": "ros_question"
+    },
+    "stiffness": {
+      "field": "stiffness",
+      "code": "MSK-010",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Have you felt stiffness in your muscles or joints?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "stiffness",
+      "clinical_priority": "medium",
+      "id": "stiffness",
+      "canonical_question_key": "stiffness",
+      "dedup_family": "ros:stiffness",
+      "dedup_families": [
+        "ros:stiffness"
+      ],
+      "question_role": "ros_question"
+    },
+    "limited_range_of_motion": {
+      "field": "limited_range_of_motion",
+      "code": "MSK-006",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Do you have limited movement in any joint?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "limited_range_of_motion",
+      "clinical_priority": "medium",
+      "id": "limited_range_of_motion",
+      "canonical_question_key": "limited_range_of_motion",
+      "dedup_family": "ros:limited_range_of_motion",
+      "dedup_families": [
+        "ros:limited_range_of_motion"
+      ],
+      "question_role": "ros_question"
+    },
+    "inability_to_bear_weight": {
+      "field": "inability_to_bear_weight",
+      "code": "MSK-007",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Are you unable to bear weight on it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "inability_to_bear_weight",
+      "clinical_priority": "high",
+      "id": "inability_to_bear_weight",
+      "canonical_question_key": "inability_to_bear_weight",
+      "dedup_family": "ros:inability_to_bear_weight",
+      "dedup_families": [
+        "ros:inability_to_bear_weight"
+      ],
+      "question_role": "ros_question"
+    },
+    "sciatica": {
+      "field": "sciatica",
+      "code": "MSK-008",
+      "system": "musculoskeletal",
+      "display_system": "Musculoskeletal",
+      "text": "Do you have pain shooting down your leg?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "sciatica",
+      "clinical_priority": "medium",
+      "id": "sciatica",
+      "canonical_question_key": "sciatica",
+      "dedup_family": "ros:sciatica",
+      "dedup_families": [
+        "ros:sciatica"
+      ],
+      "question_role": "ros_question"
+    },
+    "rash": {
+      "field": "rash",
+      "code": "SKIN-001",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Do you have any rash or new skin spots?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "rash",
+      "clinical_priority": "high",
+      "id": "rash",
+      "canonical_question_key": "rash",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "ros_question"
+    },
+    "itching": {
+      "field": "itching",
+      "code": "SKIN-002",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Have you had any itching?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "itching",
+      "clinical_priority": "medium",
+      "id": "itching",
+      "canonical_question_key": "itching",
+      "dedup_family": "ros:itching",
+      "dedup_families": [
+        "ros:itching"
+      ],
+      "question_role": "ros_question"
+    },
+    "lesions": {
+      "field": "lesions",
+      "code": "SKIN-003",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Have you noticed any skin lesions or sores?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "lesions",
+      "clinical_priority": "medium",
+      "id": "lesions",
+      "canonical_question_key": "lesions",
+      "dedup_family": "ros:lesions",
+      "dedup_families": [
+        "ros:lesions"
+      ],
+      "question_role": "ros_question"
+    },
+    "bruising": {
+      "field": "bruising",
+      "code": "SKIN-004",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Have you noticed easy bruising?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "bruising",
+      "clinical_priority": "medium",
+      "id": "bruising",
+      "canonical_question_key": "bruising",
+      "dedup_family": "ros:bruising",
+      "dedup_families": [
+        "ros:bruising"
+      ],
+      "question_role": "ros_question"
+    },
+    "changes_in_moles": {
+      "field": "changes_in_moles",
+      "code": "SKIN-014",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Have any moles changed in size, shape, or color?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "changes_in_moles",
+      "clinical_priority": "medium",
+      "id": "changes_in_moles",
+      "canonical_question_key": "changes_in_moles",
+      "dedup_family": "ros:changes_in_moles",
+      "dedup_families": [
+        "ros:changes_in_moles"
+      ],
+      "question_role": "ros_question"
+    },
+    "hair_loss": {
+      "field": "hair_loss",
+      "code": "SKIN-015",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Have you noticed unusual hair loss?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "hair_loss",
+      "clinical_priority": "low",
+      "id": "hair_loss",
+      "canonical_question_key": "hair_loss",
+      "dedup_family": "ros:hair_loss",
+      "dedup_families": [
+        "ros:hair_loss"
+      ],
+      "question_role": "ros_question"
+    },
+    "severe_skin_blistering": {
+      "field": "severe_skin_blistering",
+      "code": "SKIN-007",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Have you had blistering or peeling of the skin?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "severe_skin_blistering",
+      "clinical_priority": "high",
+      "id": "severe_skin_blistering",
+      "canonical_question_key": "severe_skin_blistering",
+      "ui_label": "Severe skin blistering or peeling",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "ros_question"
+    },
+    "mucosal_involvement": {
+      "field": "mucosal_involvement",
+      "code": "SKIN-006",
+      "system": "skin",
+      "display_system": "Skin",
+      "text": "Have you had sores or rash in your mouth or other moist areas?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "mucosal_involvement",
+      "clinical_priority": "high",
+      "id": "mucosal_involvement",
+      "canonical_question_key": "mucosal_involvement",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "ros_question"
+    },
+    "heat_intolerance": {
+      "field": "heat_intolerance",
+      "code": "ENDO-001",
+      "system": "endocrine",
+      "display_system": "Endocrine",
+      "text": "Do you feel unusually hot or intolerant to heat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "heat_intolerance",
+      "clinical_priority": "low",
+      "id": "heat_intolerance",
+      "canonical_question_key": "heat_intolerance",
+      "dedup_family": "ros:heat_intolerance",
+      "dedup_families": [
+        "ros:heat_intolerance"
+      ],
+      "question_role": "ros_question"
+    },
+    "cold_intolerance": {
+      "field": "cold_intolerance",
+      "code": "ENDO-002",
+      "system": "endocrine",
+      "display_system": "Endocrine",
+      "text": "Do you feel unusually cold?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "cold_intolerance",
+      "clinical_priority": "low",
+      "id": "cold_intolerance",
+      "canonical_question_key": "cold_intolerance",
+      "dedup_family": "ros:cold_intolerance",
+      "dedup_families": [
+        "ros:cold_intolerance"
+      ],
+      "question_role": "ros_question"
+    },
+    "excessive_thirst": {
+      "field": "excessive_thirst",
+      "code": "ENDO-003",
+      "system": "endocrine",
+      "display_system": "Endocrine",
+      "text": "Have you been feeling unusually thirsty?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "excessive_thirst",
+      "clinical_priority": "medium",
+      "id": "excessive_thirst",
+      "canonical_question_key": "excessive_thirst",
+      "dedup_family": "ros:excessive_thirst",
+      "dedup_families": [
+        "ros:excessive_thirst"
+      ],
+      "question_role": "ros_question"
+    },
+    "excessive_urination": {
+      "field": "excessive_urination",
+      "code": "ENDO-004",
+      "system": "endocrine",
+      "display_system": "Endocrine",
+      "text": "Are you passing urine more than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "excessive_urination",
+      "clinical_priority": "medium",
+      "id": "excessive_urination",
+      "canonical_question_key": "excessive_urination",
+      "dedup_family": "ros:excessive_urination",
+      "dedup_families": [
+        "ros:excessive_urination"
+      ],
+      "question_role": "ros_question"
+    },
+    "excessive_hunger": {
+      "field": "excessive_hunger",
+      "code": "ENDO-005",
+      "system": "endocrine",
+      "display_system": "Endocrine",
+      "text": "Do you feel unusually hungry?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "excessive_hunger",
+      "clinical_priority": "low",
+      "id": "excessive_hunger",
+      "canonical_question_key": "excessive_hunger",
+      "dedup_family": "ros:excessive_hunger",
+      "dedup_families": [
+        "ros:excessive_hunger"
+      ],
+      "question_role": "ros_question"
+    },
+    "easy_bruising": {
+      "field": "easy_bruising",
+      "code": "HEME-001",
+      "system": "hematologic_lymphatic",
+      "display_system": "Hematologic or Lymphatic",
+      "text": "Do you bruise easily?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "easy_bruising",
+      "clinical_priority": "medium",
+      "id": "easy_bruising",
+      "canonical_question_key": "easy_bruising",
+      "dedup_family": "ros:easy_bruising",
+      "dedup_families": [
+        "ros:easy_bruising"
+      ],
+      "question_role": "ros_question"
+    },
+    "easy_bleeding": {
+      "field": "easy_bleeding",
+      "code": "HEME-002",
+      "system": "hematologic_lymphatic",
+      "display_system": "Hematologic or Lymphatic",
+      "text": "Do you bleed easily?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "easy_bleeding",
+      "clinical_priority": "medium",
+      "id": "easy_bleeding",
+      "canonical_question_key": "easy_bleeding",
+      "dedup_family": "ros:easy_bleeding",
+      "dedup_families": [
+        "ros:easy_bleeding"
+      ],
+      "question_role": "ros_question"
+    },
+    "lymph_node_swelling": {
+      "field": "lymph_node_swelling",
+      "code": "HEME-003",
+      "system": "hematologic_lymphatic",
+      "display_system": "Hematologic or Lymphatic",
+      "text": "Have you noticed any swollen glands or lymph nodes?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "lymph_node_swelling",
+      "clinical_priority": "high",
+      "id": "lymph_node_swelling",
+      "canonical_question_key": "lymph_node_swelling",
+      "dedup_family": "ros:lymph_node_swelling",
+      "dedup_families": [
+        "ros:lymph_node_swelling"
+      ],
+      "question_role": "ros_question"
+    },
+    "anemia_symptoms": {
+      "field": "anemia_symptoms",
+      "code": "HEME-004",
+      "system": "hematologic_lymphatic",
+      "display_system": "Hematologic or Lymphatic",
+      "text": "Have you felt pale, tired, or short of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "anemia_symptoms",
+      "clinical_priority": "medium",
+      "id": "anemia_symptoms",
+      "canonical_question_key": "anemia_symptoms",
+      "dedup_family": "ros:anemia_symptoms",
+      "dedup_families": [
+        "ros:anemia_symptoms"
+      ],
+      "question_role": "ros_question"
+    },
+    "anxiety": {
+      "field": "anxiety",
+      "code": "PSY-001",
+      "system": "psychiatric",
+      "display_system": "Psychiatric",
+      "text": "Have you felt anxious or worried?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "anxiety",
+      "clinical_priority": "medium",
+      "id": "anxiety",
+      "canonical_question_key": "anxiety",
+      "dedup_family": "ros:anxiety",
+      "dedup_families": [
+        "ros:anxiety"
+      ],
+      "question_role": "ros_question"
+    },
+    "depression": {
+      "field": "depression",
+      "code": "PSY-003",
+      "system": "psychiatric",
+      "display_system": "Psychiatric",
+      "text": "Have you felt down, depressed, or hopeless?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "depression",
+      "clinical_priority": "medium",
+      "id": "depression",
+      "canonical_question_key": "depression",
+      "dedup_family": "ros:depression",
+      "dedup_families": [
+        "ros:depression"
+      ],
+      "question_role": "ros_question"
+    },
+    "mood_changes": {
+      "field": "mood_changes",
+      "code": "PSY-004",
+      "system": "psychiatric",
+      "display_system": "Psychiatric",
+      "text": "Have you noticed any changes in your mood?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "mood_changes",
+      "clinical_priority": "low",
+      "id": "mood_changes",
+      "canonical_question_key": "mood_changes",
+      "dedup_family": "ros:mood_changes",
+      "dedup_families": [
+        "ros:mood_changes"
+      ],
+      "question_role": "ros_question"
+    },
+    "sleep_disturbance": {
+      "field": "sleep_disturbance",
+      "code": "PSY-005",
+      "system": "psychiatric",
+      "display_system": "Psychiatric",
+      "text": "Have you had trouble sleeping?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "sleep_disturbance",
+      "clinical_priority": "medium",
+      "id": "sleep_disturbance",
+      "canonical_question_key": "sleep_disturbance",
+      "dedup_family": "ros:sleep_disturbance",
+      "dedup_families": [
+        "ros:sleep_disturbance"
+      ],
+      "question_role": "ros_question"
+    },
+    "suicidal_ideation": {
+      "field": "suicidal_ideation",
+      "code": "PSY-006",
+      "system": "psychiatric",
+      "display_system": "Psychiatric",
+      "text": "Have you had thoughts of harming yourself?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "suicidal_ideation",
+      "clinical_priority": "high",
+      "sensitive_topic": true,
+      "id": "suicidal_ideation",
+      "canonical_question_key": "suicidal_ideation",
+      "dedup_family": "ros:suicidal_ideation",
+      "dedup_families": [
+        "ros:suicidal_ideation"
+      ],
+      "question_role": "ros_question"
+    },
+    "hallucinations": {
+      "field": "hallucinations",
+      "code": "PSY-007",
+      "system": "psychiatric",
+      "display_system": "Psychiatric",
+      "text": "Have you seen or heard things that others do not?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "canonical_concept": "hallucinations",
+      "clinical_priority": "high",
+      "id": "hallucinations",
+      "canonical_question_key": "hallucinations",
+      "dedup_family": "ros:hallucinations",
+      "dedup_families": [
+        "ros:hallucinations"
+      ],
+      "question_role": "ros_question"
+    }
+  },
+  "registry_resolution_rule": "Each ROS field listed here must resolve through canonical_code_registry in shared_v2.json.",
+  "clinical_priority_source": "Use ros_clinical_priority_defaults by system unless a concept-specific override is defined.",
+  "selection_guidance": {
+    "non_repeat_rule": "If a complaint question, derived field, shared history item, or previously rendered ROS question already covered the concept, do not render it again in the session.",
+    "do_not_repeat_rule": "If a symptom clerking question already captured the concept directly or by derived equivalent, keep the ROS item available in the bank but skip it for that session."
+  },
+  "session_non_repeat_required": true,
+  "dedup_family_registry": {
+    "ros:fever": {
+      "ros_field": "fever",
+      "ros_code": "CON-001",
+      "covered_by_fields": [
+        "fever",
+        "fever_details",
+        "local_inflammation_over_swelling"
+      ]
+    },
+    "ros:chills": {
+      "ros_field": "rigors",
+      "ros_code": "CON-010",
+      "covered_by_fields": [
+        "chills",
+        "rigors"
+      ]
+    },
+    "ros:night_sweats": {
+      "ros_field": "night_sweats",
+      "ros_code": "CON-004",
+      "covered_by_fields": [
+        "night_sweats"
+      ]
+    },
+    "ros:fatigue": {
+      "ros_field": "fatigue",
+      "ros_code": "CON-005",
+      "covered_by_fields": [
+        "fatigue"
+      ]
+    },
+    "ros:weakness": {
+      "ros_field": "weakness",
+      "ros_code": "CON-006",
+      "covered_by_fields": [
+        "weakness"
+      ]
+    },
+    "ros:weight_loss": {
+      "ros_field": "weight_loss",
+      "ros_code": "CON-007",
+      "covered_by_fields": [
+        "weight_loss",
+        "weight_loss_intent",
+        "weight_loss_intent_details"
+      ]
+    },
+    "ros:weight_gain": {
+      "ros_field": "weight_gain",
+      "ros_code": "CON-008",
+      "covered_by_fields": [
+        "weight_gain"
+      ]
+    },
+    "ros:loss_of_appetite": {
+      "ros_field": "loss_of_appetite",
+      "ros_code": "GI-006",
+      "covered_by_fields": [
+        "loss_of_appetite"
+      ]
+    },
+    "ros:malaise": {
+      "ros_field": "malaise",
+      "ros_code": "CON-009",
+      "covered_by_fields": [
+        "malaise"
+      ]
+    },
+    "ros:chest_pain": {
+      "ros_field": "chest_pain",
+      "ros_code": "CV-002",
+      "covered_by_fields": [
+        "chest_pain",
+        "upper_body_radiation"
+      ]
+    },
+    "ros:palpitations": {
+      "ros_field": "palpitations",
+      "ros_code": "CV-003",
+      "covered_by_fields": [
+        "palpitations"
+      ]
+    },
+    "ros:irregular_heartbeat": {
+      "ros_field": "irregular_heartbeat",
+      "ros_code": "CV-004",
+      "covered_by_fields": [
+        "irregular_heartbeat"
+      ]
+    },
+    "ros:fainting": {
+      "ros_field": "fainting",
+      "ros_code": "NEU-002",
+      "covered_by_fields": [
+        "complete_blackout",
+        "fainting",
+        "loss_of_consciousness",
+        "witnessed_collapse"
+      ]
+    },
+    "ros:dizziness": {
+      "ros_field": "dizziness",
+      "ros_code": "NEU-001",
+      "covered_by_fields": [
+        "dizziness",
+        "dizziness_type",
+        "lightheadedness"
+      ]
+    },
+    "ros:orthopnea": {
+      "ros_field": "orthopnea",
+      "ros_code": "RESPQ-002",
+      "covered_by_fields": [
+        "orthopnea"
+      ]
+    },
+    "ros:paroxysmal_nocturnal_dyspnea": {
+      "ros_field": "paroxysmal_nocturnal_dyspnea",
+      "ros_code": "RESPQ-003",
+      "covered_by_fields": [
+        "paroxysmal_nocturnal_dyspnea"
+      ]
+    },
+    "ros:shortness_of_breath": {
+      "ros_field": "shortness_of_breath",
+      "ros_code": "RESP-001",
+      "covered_by_fields": [
+        "breathlessness_at_rest",
+        "exertional_dyspnea",
+        "shortness_of_breath",
+        "unable_to_speak_full_sentences"
+      ]
+    },
+    "ros:leg_swelling": {
+      "ros_field": "leg_swelling",
+      "ros_code": "CV-001",
+      "covered_by_fields": [
+        "leg_swelling"
+      ]
+    },
+    "ros:claudication": {
+      "ros_field": "claudication",
+      "ros_code": "CV-005",
+      "covered_by_fields": [
+        "claudication"
+      ]
+    },
+    "ros:cough": {
+      "ros_field": "cough",
+      "ros_code": "RESP-005",
+      "covered_by_fields": [
+        "cough"
+      ]
+    },
+    "ros:hemoptysis": {
+      "ros_field": "hemoptysis",
+      "ros_code": "RESP-004",
+      "covered_by_fields": [
+        "hemoptysis"
+      ]
+    },
+    "ros:wheeze": {
+      "ros_field": "wheeze",
+      "ros_code": "RESPQ-004",
+      "covered_by_fields": [
+        "wheeze"
+      ]
+    },
+    "ros:pleuritic_pain": {
+      "ros_field": "pleuritic_pain",
+      "ros_code": "RESP-008",
+      "covered_by_fields": [
+        "pleuritic_pain"
+      ]
+    },
+    "ros:stridor": {
+      "ros_field": "stridor",
+      "ros_code": "RESPQ-005",
+      "covered_by_fields": [
+        "stridor"
+      ]
+    },
+    "ros:runny_nose": {
+      "ros_field": "runny_nose",
+      "ros_code": "RESP-010",
+      "covered_by_fields": [
+        "runny_nose"
+      ]
+    },
+    "ros:sore_throat": {
+      "ros_field": "sore_throat",
+      "ros_code": "ENT-000",
+      "covered_by_fields": [
+        "muffled_voice",
+        "pain_with_swallowing",
+        "sore_throat",
+        "voice_change"
+      ]
+    },
+    "ros:abdominal_pain": {
+      "ros_field": "abdominal_pain",
+      "ros_code": "GI-008",
+      "covered_by_fields": [
+        "abdominal_pain"
+      ]
+    },
+    "ros:nausea": {
+      "ros_field": "nausea",
+      "ros_code": "GI-007",
+      "covered_by_fields": [
+        "nausea"
+      ]
+    },
+    "ros:vomiting": {
+      "ros_field": "vomiting",
+      "ros_code": "GI-002",
+      "covered_by_fields": [
+        "coffee_ground_vomit",
+        "hematemesis",
+        "post_tussive_vomiting",
+        "projectile_vomiting",
+        "vomit_amount",
+        "vomit_content",
+        "vomiting",
+        "vomiting_frequency"
+      ],
+      "retired_live_fields": [
+        "inability_to_keep_fluids_down",
+        "inability_to_keep_fluids_down_details",
+        "persistent_vomiting",
+        "persistent_vomiting_details"
+      ]
+    },
+    "ros:diarrhea": {
+      "ros_field": "diarrhea",
+      "ros_code": "GI-003",
+      "covered_by_fields": [
+        "diarrhea"
+      ]
+    },
+    "ros:constipation": {
+      "ros_field": "constipation",
+      "ros_code": "GI-011",
+      "covered_by_fields": [
+        "constipation",
+        "difficulty_passing_stool",
+        "last_bowel_movement",
+        "stool_hardness",
+        "straining"
+      ]
+    },
+    "ros:blood_in_stool": {
+      "ros_field": "blood_in_stool",
+      "ros_code": "GI-004B",
+      "covered_by_fields": [
+        "blood_in_stool"
+      ]
+    },
+    "ros:melena": {
+      "ros_field": "melena",
+      "ros_code": "GIQ-021",
+      "covered_by_fields": [
+        "melena"
+      ]
+    },
+    "ros:heartburn": {
+      "ros_field": "heartburn",
+      "ros_code": "GI-009",
+      "covered_by_fields": [
+        "heartburn"
+      ]
+    },
+    "ros:bloating": {
+      "ros_field": "bloating",
+      "ros_code": "GI-010",
+      "covered_by_fields": [
+        "bloating"
+      ]
+    },
+    "ros:dysphagia": {
+      "ros_field": "dysphagia",
+      "ros_code": "GI-025",
+      "covered_by_fields": [
+        "difficulty_swallowing",
+        "dysphagia"
+      ]
+    },
+    "ros:jaundice": {
+      "ros_field": "jaundice",
+      "ros_code": "GI-012",
+      "covered_by_fields": [
+        "jaundice"
+      ]
+    },
+    "ros:change_in_bowel_habit": {
+      "ros_field": "change_in_bowel_habit",
+      "ros_code": "GI-024",
+      "covered_by_fields": [
+        "change_in_bowel_habit"
+      ]
+    },
+    "ros:dysuria": {
+      "ros_field": "dysuria",
+      "ros_code": "GU-001",
+      "covered_by_fields": [
+        "dysuria"
+      ]
+    },
+    "ros:urinary_frequency": {
+      "ros_field": "urinary_frequency",
+      "ros_code": "GU-002",
+      "covered_by_fields": [
+        "urinary_frequency"
+      ]
+    },
+    "ros:urinary_urgency": {
+      "ros_field": "urinary_urgency",
+      "ros_code": "GU-003",
+      "covered_by_fields": [
+        "urinary_urgency"
+      ]
+    },
+    "ros:hematuria": {
+      "ros_field": "hematuria",
+      "ros_code": "GU-006",
+      "covered_by_fields": [
+        "family_history_urologic_cancer",
+        "hematuria"
+      ]
+    },
+    "ros:flank_pain": {
+      "ros_field": "flank_pain",
+      "ros_code": "GU-007",
+      "covered_by_fields": [
+        "flank_pain"
+      ]
+    },
+    "ros:incontinence": {
+      "ros_field": "incontinence",
+      "ros_code": "GU-008",
+      "covered_by_fields": [
+        "incontinence"
+      ]
+    },
+    "ros:vaginal_bleeding": {
+      "ros_field": "vaginal_bleeding",
+      "ros_code": "GYN-001",
+      "covered_by_fields": [
+        "abnormal_vaginal_bleeding",
+        "vaginal_bleeding"
+      ]
+    },
+    "ros:vaginal_discharge": {
+      "ros_field": "vaginal_discharge",
+      "ros_code": "GYN-002",
+      "covered_by_fields": [
+        "vaginal_discharge",
+        "vulvovaginal_irritation"
+      ]
+    },
+    "ros:testicular_pain": {
+      "ros_field": "testicular_pain",
+      "ros_code": "GU-009",
+      "covered_by_fields": [
+        "testicular_pain"
+      ]
+    },
+    "ros:headache": {
+      "ros_field": "headache",
+      "ros_code": "NEU-005",
+      "covered_by_fields": [
+        "headache"
+      ]
+    },
+    "ros:numbness": {
+      "ros_field": "numbness",
+      "ros_code": "NEURO-004",
+      "covered_by_fields": [
+        "numbness"
+      ]
+    },
+    "ros:tingling": {
+      "ros_field": "tingling",
+      "ros_code": "NEURO-005",
+      "covered_by_fields": [
+        "tingling"
+      ]
+    },
+    "ros:seizure": {
+      "ros_field": "seizure",
+      "ros_code": "NEU-008",
+      "covered_by_fields": [
+        "seizure"
+      ]
+    },
+    "ros:confusion": {
+      "ros_field": "confusion",
+      "ros_code": "NEU-004",
+      "covered_by_fields": [
+        "confusion"
+      ]
+    },
+    "ros:memory_loss": {
+      "ros_field": "memory_loss",
+      "ros_code": "NEU-009",
+      "covered_by_fields": [
+        "memory_loss"
+      ]
+    },
+    "ros:speech_difficulty": {
+      "ros_field": "speech_difficulty",
+      "ros_code": "NEU-010",
+      "covered_by_fields": [
+        "speech_difficulty"
+      ]
+    },
+    "ros:vision_changes": {
+      "ros_field": "vision_changes",
+      "ros_code": "NEU-011",
+      "covered_by_fields": [
+        "ocular_redness_pain",
+        "vision_changes"
+      ]
+    },
+    "ros:neck_stiffness": {
+      "ros_field": "neck_stiffness",
+      "ros_code": "NEU-012",
+      "covered_by_fields": [
+        "neck_stiffness"
+      ]
+    },
+    "ros:photophobia": {
+      "ros_field": "photophobia",
+      "ros_code": "NEU-013",
+      "covered_by_fields": [
+        "photophobia"
+      ]
+    },
+    "ros:diplopia": {
+      "ros_field": "diplopia",
+      "ros_code": "NEU-014",
+      "covered_by_fields": [
+        "diplopia"
+      ]
+    },
+    "ros:dysarthria": {
+      "ros_field": "dysarthria",
+      "ros_code": "NEU-015",
+      "covered_by_fields": [
+        "dysarthria"
+      ]
+    },
+    "ros:gait_or_balance_problem": {
+      "ros_field": "gait_balance_problem",
+      "ros_code": "NEU-016",
+      "covered_by_fields": [
+        "gait_balance_problem",
+        "imbalance"
+      ]
+    },
+    "ros:joint_pain": {
+      "ros_field": "joint_pain",
+      "ros_code": "MSK-001",
+      "covered_by_fields": [
+        "joint_pain"
+      ]
+    },
+    "ros:muscle_pain": {
+      "ros_field": "muscle_pain",
+      "ros_code": "MSK-002",
+      "covered_by_fields": [
+        "muscle_pain"
+      ]
+    },
+    "ros:back_pain": {
+      "ros_field": "back_pain",
+      "ros_code": "MSK-003",
+      "covered_by_fields": [
+        "back_pain",
+        "fracture_risk_history"
+      ]
+    },
+    "ros:neck_pain": {
+      "ros_field": "neck_pain",
+      "ros_code": "MSK-004",
+      "covered_by_fields": [
+        "neck_pain"
+      ]
+    },
+    "ros:joint_swelling": {
+      "ros_field": "joint_swelling",
+      "ros_code": "MSK-005",
+      "covered_by_fields": [
+        "joint_swelling"
+      ]
+    },
+    "ros:stiffness": {
+      "ros_field": "stiffness",
+      "ros_code": "MSK-010",
+      "covered_by_fields": [
+        "stiffness"
+      ]
+    },
+    "ros:limited_range_of_motion": {
+      "ros_field": "limited_range_of_motion",
+      "ros_code": "MSK-006",
+      "covered_by_fields": [
+        "limited_range_of_motion"
+      ]
+    },
+    "ros:inability_to_bear_weight": {
+      "ros_field": "inability_to_bear_weight",
+      "ros_code": "MSK-007",
+      "covered_by_fields": [
+        "inability_to_bear_weight"
+      ]
+    },
+    "ros:sciatica": {
+      "ros_field": "sciatica",
+      "ros_code": "MSK-008",
+      "covered_by_fields": [
+        "sciatica"
+      ]
+    },
+    "ros:rash": {
+      "ros_field": "mucosal_involvement",
+      "ros_code": "SKIN-006",
+      "covered_by_fields": [
+        "blistering",
+        "eye_involvement",
+        "mouth_involvement",
+        "mucosal_involvement",
+        "painful_rash",
+        "rash",
+        "severe_skin_blistering",
+        "skin_peeling"
+      ]
+    },
+    "ros:itching": {
+      "ros_field": "itching",
+      "ros_code": "SKIN-002",
+      "covered_by_fields": [
+        "itching"
+      ]
+    },
+    "ros:lesions": {
+      "ros_field": "lesions",
+      "ros_code": "SKIN-003",
+      "covered_by_fields": [
+        "lesions"
+      ]
+    },
+    "ros:bruising": {
+      "ros_field": "bruising",
+      "ros_code": "SKIN-004",
+      "covered_by_fields": [
+        "bruising"
+      ]
+    },
+    "ros:changes_in_moles": {
+      "ros_field": "changes_in_moles",
+      "ros_code": "SKIN-014",
+      "covered_by_fields": [
+        "changes_in_moles"
+      ]
+    },
+    "ros:hair_loss": {
+      "ros_field": "hair_loss",
+      "ros_code": "SKIN-015",
+      "covered_by_fields": [
+        "hair_loss"
+      ]
+    },
+    "ros:heat_intolerance": {
+      "ros_field": "heat_intolerance",
+      "ros_code": "ENDO-001",
+      "covered_by_fields": [
+        "heat_intolerance"
+      ]
+    },
+    "ros:cold_intolerance": {
+      "ros_field": "cold_intolerance",
+      "ros_code": "ENDO-002",
+      "covered_by_fields": [
+        "cold_intolerance"
+      ]
+    },
+    "ros:excessive_thirst": {
+      "ros_field": "excessive_thirst",
+      "ros_code": "ENDO-003",
+      "covered_by_fields": [
+        "excessive_thirst"
+      ]
+    },
+    "ros:excessive_urination": {
+      "ros_field": "excessive_urination",
+      "ros_code": "ENDO-004",
+      "covered_by_fields": [
+        "excessive_urination"
+      ]
+    },
+    "ros:excessive_hunger": {
+      "ros_field": "excessive_hunger",
+      "ros_code": "ENDO-005",
+      "covered_by_fields": [
+        "excessive_hunger"
+      ]
+    },
+    "ros:easy_bruising": {
+      "ros_field": "easy_bruising",
+      "ros_code": "HEME-001",
+      "covered_by_fields": [
+        "easy_bruising"
+      ]
+    },
+    "ros:easy_bleeding": {
+      "ros_field": "easy_bleeding",
+      "ros_code": "HEME-002",
+      "covered_by_fields": [
+        "easy_bleeding"
+      ]
+    },
+    "ros:lymph_node_swelling": {
+      "ros_field": "lymph_node_swelling",
+      "ros_code": "HEME-003",
+      "covered_by_fields": [
+        "lymph_node_swelling"
+      ]
+    },
+    "ros:anemia_symptoms": {
+      "ros_field": "anemia_symptoms",
+      "ros_code": "HEME-004",
+      "covered_by_fields": [
+        "anemia_symptoms"
+      ]
+    },
+    "ros:anxiety": {
+      "ros_field": "anxiety",
+      "ros_code": "PSY-001",
+      "covered_by_fields": [
+        "anxiety"
+      ]
+    },
+    "ros:depression": {
+      "ros_field": "depression",
+      "ros_code": "PSY-003",
+      "covered_by_fields": [
+        "depression",
+        "low_mood_reduced_intake"
+      ]
+    },
+    "ros:mood_changes": {
+      "ros_field": "mood_changes",
+      "ros_code": "PSY-004",
+      "covered_by_fields": [
+        "mood_changes"
+      ]
+    },
+    "ros:sleep_disturbance": {
+      "ros_field": "sleep_disturbance",
+      "ros_code": "PSY-005",
+      "covered_by_fields": [
+        "sleep_disturbance"
+      ]
+    },
+    "ros:suicidal_ideation": {
+      "ros_field": "suicidal_ideation",
+      "ros_code": "PSY-006",
+      "covered_by_fields": [
+        "suicidal_ideation"
+      ]
+    },
+    "ros:hallucinations": {
+      "ros_field": "hallucinations",
+      "ros_code": "PSY-007",
+      "covered_by_fields": [
+        "hallucinations"
+      ]
+    },
+    "ros:urinary_retention": {
+      "ros_field": "urinary_retention",
+      "ros_code": null,
+      "covered_by_fields": [
+        "inability_to_pass_urine",
+        "unable_to_pass_urine"
+      ]
+    },
+    "ros:low_urine_output": {
+      "ros_field": "low_urine_output",
+      "ros_code": null,
+      "covered_by_fields": [
+        "low_urine_output",
+        "reduced_urine_output"
+      ]
+    },
+    "ros:foamy_urine": {
+      "ros_field": "foamy_urine",
+      "ros_code": null,
+      "covered_by_fields": [
+        "foamy_urine"
+      ]
+    },
+    "ros:bowel_obstruction": {
+      "ros_field": "bowel_obstruction",
+      "ros_code": null,
+      "covered_by_fields": [
+        "bowel_obstruction_symptom"
+      ]
+    },
+    "ros:swelling": {
+      "ros_field": "swelling",
+      "ros_code": null,
+      "covered_by_fields": [
+        "local_inflammation_over_swelling",
+        "lump_site",
+        "lump_swelling",
+        "medication_induced_oedema",
+        "skin_changes_over_swelling",
+        "swelling"
+      ]
+    },
+    "ros:facial_swelling": {
+      "ros_field": "facial_swelling",
+      "ros_code": null,
+      "covered_by_fields": [
+        "facial_swelling"
+      ]
+    },
+    "ros:tongue_swelling": {
+      "ros_field": "tongue_swelling",
+      "ros_code": null,
+      "covered_by_fields": [
+        "tongue_swelling"
+      ]
+    },
+    "ros:neck_swelling": {
+      "ros_field": "neck_swelling",
+      "ros_code": null,
+      "covered_by_fields": [
+        "neck_swelling"
+      ]
+    },
+    "ros:location": {
+      "ros_field": "location",
+      "ros_code": null,
+      "covered_by_fields": [
+        "location",
+        "lump_specific_location",
+        "pain_specific_location",
+        "rash_site",
+        "rash_specific_location",
+        "site"
+      ]
+    },
+    "ros:recent_travel": {
+      "ros_field": "recent_travel",
+      "ros_code": null,
+      "covered_by_fields": [
+        "recent_travel"
+      ]
+    },
+    "ros:recent_immobility": {
+      "ros_field": "recent_immobility",
+      "ros_code": null,
+      "covered_by_fields": [
+        "recent_immobility"
+      ]
+    },
+    "ros:food_exposure": {
+      "ros_field": "food_exposure",
+      "ros_code": null,
+      "covered_by_fields": [
+        "food_exposure"
+      ]
+    },
+    "ros:contact_exposure": {
+      "ros_field": "contact_exposure",
+      "ros_code": null,
+      "covered_by_fields": [
+        "contact_exposure"
+      ]
+    },
+    "ros:sick_contact": {
+      "ros_field": "sick_contact",
+      "ros_code": null,
+      "covered_by_fields": [
+        "sick_contact"
+      ]
+    },
+    "ros:occupational_exposures": {
+      "ros_field": "occupational_exposures",
+      "ros_code": null,
+      "covered_by_fields": [
+        "occupational_exposures"
+      ]
+    },
+    "ros:recent_infection": {
+      "ros_field": "recent_infection",
+      "ros_code": null,
+      "covered_by_fields": [
+        "recent_infection"
+      ]
+    },
+    "ros:nutrition_status": {
+      "ros_field": "nutrition_status",
+      "ros_code": "NUT-001",
+      "covered_by_fields": [
+        "nutrition_status"
+      ]
+    },
+    "ros:prior_clot_history": {
+      "ros_field": "prior_clot_history",
+      "ros_code": "VASC-004",
+      "covered_by_fields": [
+        "prior_clot_history",
+        "prior_clot_history_details"
+      ]
+    },
+    "ros:allergy_or_irritant_exposure": {
+      "ros_field": "allergy_or_irritant_exposure",
+      "ros_code": null,
+      "covered_by_fields": [
+        "throat_irritant_exposure"
+      ]
+    },
+    "ros:bowel_dysfunction": {
+      "ros_field": "bowel_dysfunction",
+      "ros_code": "SPINE-001A",
+      "covered_by_fields": [
+        "bowel_dysfunction",
+        "bowel_dysfunction_details"
+      ]
+    },
+    "ros:bladder_dysfunction": {
+      "ros_field": "bladder_dysfunction",
+      "ros_code": "SPINE-001B",
+      "covered_by_fields": [
+        "bladder_dysfunction",
+        "bladder_dysfunction_details"
+      ]
+    },
+    "ros:immunization_history": {
+      "ros_field": "immunization_history",
+      "ros_code": null,
+      "covered_by_fields": [
+        "meningitis_vaccine_history"
+      ]
+    },
+    "ros:local_inflammation_over_swelling": {
+      "ros_field": "local_inflammation_over_swelling",
+      "ros_code": "OED-005",
+      "covered_by_fields": [
+        "local_inflammation_over_swelling",
+        "local_inflammation_over_swelling_details"
+      ]
+    },
+    "ros:eye_symptoms": {
+      "ros_field": "eye_symptoms",
+      "ros_code": "EYE-001",
+      "suppresses_ros_fields": [],
+      "covered_by_fields": [
+        "ocular_redness_pain",
+        "red_eye",
+        "eye_pain",
+        "eye_involvement"
+      ],
+      "notes": "Eye redness/pain family kept separate from neurologic vision-change deduplication."
+    }
+  }
+}

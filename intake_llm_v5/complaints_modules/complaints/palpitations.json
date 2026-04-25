@@ -1,0 +1,636 @@
+{
+  "complaint_id": "palpitations",
+  "version": "1.1.0",
+  "primary_system": "cardiovascular",
+  "parent_symptom": null,
+  "ui_label": "Palpitations",
+  "display_name": "Palpitations",
+  "ui_name": "Palpitations",
+  "canonical_concept": "palpitations",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['palpitations'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 22,
+      "target_question_budget": 34,
+      "max_questions": 42,
+      "early_danger_reserve": 6,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Palpitations requires early screening for chest pain, dyspnea, syncope, exertional risk, and structural/inherited risk while preserving budget for palpitation-character and trigger follow-up. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "pattern",
+        "episode_duration",
+        "chest_pain",
+        "fainting"
+      ],
+      "selection_rule": "If palpitations is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "cardiovascular"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "episode_duration",
+      "duration",
+      "frequency",
+      "palpitations_character",
+      "trigger_context",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "chest_pain",
+      "shortness_of_breath",
+      "fainting",
+      "dizziness",
+      "weakness",
+      "confusion",
+      "palpitations_at_rest",
+      "palpitations_with_exertion",
+      "prior_cardiac_history",
+      "family_history_sudden_death"
+    ],
+    "targeted_followup": [
+      "nausea",
+      "caffeine_trigger",
+      "energy_drink_trigger",
+      "decongestant_trigger"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "cardiac_instability_branch": {
+      "triggers": [
+        "chest_pain",
+        "shortness_of_breath",
+        "fainting",
+        "confusion"
+      ]
+    },
+    "exertional_high_risk_branch": {
+      "triggers": [
+        "palpitations_with_exertion",
+        "chest_pain",
+        "shortness_of_breath",
+        "dizziness",
+        "fainting"
+      ]
+    },
+    "structural_inherited_risk_branch": {
+      "triggers": [
+        "prior_cardiac_history",
+        "family_history_sudden_death"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "sob",
+      "replace_with": [
+        "shortness_of_breath"
+      ]
+    },
+    {
+      "old_concept": "syncope",
+      "replace_with": [
+        "fainting"
+      ]
+    },
+    {
+      "old_concept": "lightheadedness",
+      "replace_with": [
+        "dizziness"
+      ]
+    },
+    {
+      "old_concept": "chest_pain_or_shortness_of_breath",
+      "replace_with": [
+        "chest_pain",
+        "shortness_of_breath"
+      ]
+    },
+    {
+      "old_concept": "dizziness_or_syncope",
+      "replace_with": [
+        "dizziness",
+        "fainting"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_cardiac_instability_palpitations",
+    "possible_exertional_palpitations_high_risk",
+    "possible_structural_or_inherited_risk_palpitations",
+    "cardiac_chest_pain_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the palpitations start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is it there all the time, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "episode_duration": {
+      "id": "episode_duration",
+      "field": "episode_duration",
+      "code": "EVENT-004",
+      "ui_label": "Episode duration",
+      "phase": "core_characterization",
+      "text": "When it happens, how long does each episode last?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "parent_field": "pattern",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATTERN_NOT_EPISODIC"
+      ],
+      "canonical_concept": "episode_duration",
+      "question_category": "qualifier",
+      "ask_if_note": "Ask only when pattern indicates episodic/intermittent symptoms that come and go.",
+      "canonical_question_key": "episode_duration",
+      "question_role": "detail"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "frequency": {
+      "id": "frequency",
+      "field": "frequency",
+      "code": "EVENT-005",
+      "ui_label": "Frequency",
+      "phase": "core_characterization",
+      "text": "How often does it happen?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "frequency",
+      "question_category": "qualifier",
+      "canonical_question_key": "frequency",
+      "question_role": "qualifier"
+    },
+    "palpitations_character": {
+      "id": "palpitations_character",
+      "field": "palpitations_character",
+      "code": "PALP-001",
+      "ui_label": "Palpitations character",
+      "phase": "core_characterization",
+      "text": "What do the palpitations feel like?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "palpitations_character",
+      "question_category": "qualifier",
+      "canonical_question_key": "palpitations_character",
+      "question_role": "qualifier"
+    },
+    "trigger_context": {
+      "id": "trigger_context",
+      "field": "trigger_context",
+      "code": "CTX-013",
+      "ui_label": "Trigger context",
+      "phase": "core_characterization",
+      "text": "What were you doing when it started?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "trigger_context",
+      "question_category": "context_history",
+      "canonical_question_key": "trigger_context",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What seems to trigger or worsen the palpitations, such as exercise, stress, caffeine, energy drinks, alcohol, medicines, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What helps them settle, such as rest, breathing slowly, avoiding triggers, medicines, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How are the palpitations affecting you, such as exercise, work, sleep, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "chest_pain": {
+      "id": "chest_pain",
+      "field": "chest_pain",
+      "code": "CV-002",
+      "ui_label": "Chest pain or tightness",
+      "phase": "high_priority_followup",
+      "text": "Do you have chest pain or tightness with the palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "chest_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "chest_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_instability_palpitations",
+        "possible_exertional_palpitations_high_risk"
+      ],
+      "canonical_question_key": "chest_pain",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Difficulty in breathing",
+      "phase": "high_priority_followup",
+      "text": "Do you get short of breath with the palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "shortness_of_breath_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_instability_palpitations",
+        "possible_exertional_palpitations_high_risk"
+      ],
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "fainting": {
+      "id": "fainting",
+      "field": "fainting",
+      "code": "NEU-002",
+      "ui_label": "Fainting",
+      "phase": "high_priority_followup",
+      "text": "Have you fainted or nearly fainted with the palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fainting_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fainting",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_instability_palpitations",
+        "possible_exertional_palpitations_high_risk"
+      ],
+      "canonical_question_key": "fainting",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "dizziness": {
+      "id": "dizziness",
+      "field": "dizziness",
+      "code": "NEU-001",
+      "ui_label": "Dizziness or lightheadedness",
+      "phase": "high_priority_followup",
+      "text": "Do you get dizzy or lightheaded with the palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dizziness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dizziness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_exertional_palpitations_high_risk"
+      ],
+      "canonical_question_key": "dizziness",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "weakness": {
+      "id": "weakness",
+      "field": "weakness",
+      "code": "CON-006",
+      "ui_label": "Weakness",
+      "phase": "high_priority_followup",
+      "text": "Have you felt weak during the palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "weakness",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "qualifier"
+    },
+    "confusion": {
+      "id": "confusion",
+      "field": "confusion",
+      "code": "NEU-004",
+      "ui_label": "Confusion",
+      "phase": "high_priority_followup",
+      "text": "Have you felt confused or not thinking clearly during the palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "confusion_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "confusion",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_cardiac_instability_palpitations"
+      ],
+      "canonical_question_key": "confusion",
+      "dedup_family": "ros:confusion",
+      "dedup_families": [
+        "ros:confusion"
+      ],
+      "question_role": "qualifier"
+    },
+    "palpitations_at_rest": {
+      "id": "palpitations_at_rest",
+      "field": "palpitations_at_rest",
+      "code": "PALPQ-003",
+      "ui_label": "Palpitations at rest",
+      "phase": "high_priority_followup",
+      "text": "Do they happen while you are resting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "palpitations_at_rest_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "palpitations_at_rest",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "palpitations_at_rest",
+      "question_role": "qualifier"
+    },
+    "palpitations_with_exertion": {
+      "id": "palpitations_with_exertion",
+      "field": "palpitations_with_exertion",
+      "code": "PALPQ-004",
+      "ui_label": "Palpitations with exertion",
+      "phase": "high_priority_followup",
+      "text": "Do they happen or get worse with exertion?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "palpitations_with_exertion_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "palpitations_with_exertion",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_exertional_palpitations_high_risk"
+      ],
+      "canonical_question_key": "palpitations_with_exertion",
+      "question_role": "qualifier"
+    },
+    "prior_cardiac_history": {
+      "id": "prior_cardiac_history",
+      "field": "prior_cardiac_history",
+      "code": "CVHX-001",
+      "ui_label": "Known heart disease",
+      "phase": "high_priority_followup",
+      "text": "Have you ever been told you have a heart condition?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "known_heart_disease_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "prior_cardiac_history",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_structural_or_inherited_risk_palpitations"
+      ],
+      "canonical_question_key": "prior_cardiac_history",
+      "question_role": "qualifier"
+    },
+    "family_history_sudden_death": {
+      "id": "family_history_sudden_death",
+      "field": "family_history_sudden_death",
+      "code": "CVHX-002",
+      "ui_label": "Family history of sudden death",
+      "phase": "high_priority_followup",
+      "text": "Has anyone in your family died suddenly from a heart problem or unexpectedly at a young age?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "family_history_sudden_death_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "family_history_sudden_death",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_structural_or_inherited_risk_palpitations"
+      ],
+      "canonical_question_key": "family_history_sudden_death",
+      "question_role": "qualifier"
+    },
+    "nausea": {
+      "id": "nausea",
+      "field": "nausea",
+      "code": "GI-007",
+      "ui_label": "Nausea",
+      "phase": "targeted_followup",
+      "text": "Have you been nauseated with the palpitations?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "nausea_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "nausea",
+      "question_category": "symptom",
+      "canonical_question_key": "nausea",
+      "dedup_family": "ros:nausea",
+      "dedup_families": [
+        "ros:nausea"
+      ],
+      "question_role": "qualifier"
+    },
+    "caffeine_trigger": {
+      "id": "caffeine_trigger",
+      "field": "caffeine_trigger",
+      "code": "PALPQ-005",
+      "ui_label": "Triggered by caffeine",
+      "phase": "targeted_followup",
+      "text": "Do they seem triggered by coffee, tea, cola, or caffeine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "caffeine_trigger_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "caffeine_trigger",
+      "question_category": "context_history",
+      "canonical_question_key": "caffeine_trigger",
+      "question_role": "qualifier"
+    },
+    "energy_drink_trigger": {
+      "id": "energy_drink_trigger",
+      "field": "energy_drink_trigger",
+      "code": "PALPQ-006",
+      "ui_label": "Triggered by energy drinks",
+      "phase": "targeted_followup",
+      "text": "Do they seem triggered by energy drinks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "energy_drink_trigger_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "energy_drink_trigger",
+      "question_category": "context_history",
+      "canonical_question_key": "energy_drink_trigger",
+      "question_role": "qualifier"
+    },
+    "decongestant_trigger": {
+      "id": "decongestant_trigger",
+      "field": "decongestant_trigger",
+      "code": "PALPQ-007",
+      "ui_label": "Triggered by decongestants",
+      "phase": "targeted_followup",
+      "text": "Do they seem triggered by cold medicines or decongestants?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "decongestant_trigger_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "decongestant_trigger",
+      "question_category": "context_history",
+      "canonical_question_key": "decongestant_trigger",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "palpitations.json"
+}

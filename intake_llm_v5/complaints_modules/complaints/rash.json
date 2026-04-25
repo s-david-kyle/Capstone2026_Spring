@@ -1,0 +1,635 @@
+{
+  "complaint_id": "rash",
+  "version": "1.1.0",
+  "primary_system": "skin",
+  "parent_symptom": null,
+  "ui_label": "Rash",
+  "display_name": "Rash",
+  "ui_name": "Rash",
+  "canonical_concept": "rash",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['rash'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 24,
+      "target_question_budget": 36,
+      "max_questions": 45,
+      "early_danger_reserve": 8,
+      "ros_reserve": 3,
+      "context_history_reserve": 4,
+      "rationale": "Rash complaints require early screening for severe dermatologic, allergic/airway, infectious, and medication-related risk while preserving enough budget for rash characterization. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 10,
+      "priority_question_ids_if_secondary": [
+        "rash",
+        "onset",
+        "duration",
+        "rash_site",
+        "fever",
+        "blistering",
+        "skin_peeling",
+        "shortness_of_breath"
+      ],
+      "selection_rule": "If rash is secondary, ask only the listed priority questions unless a high-risk branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "skin"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "question_phase_map": {
+    "core_characterization": [
+      "rash",
+      "onset",
+      "duration",
+      "rash_site",
+      "rash_specific_location",
+      "spread_pattern",
+      "itching",
+      "painful_rash"
+    ],
+    "high_priority_followup": [
+      "fever",
+      "blistering",
+      "skin_peeling",
+      "mouth_involvement",
+      "eye_involvement",
+      "shortness_of_breath",
+      "facial_swelling",
+      "recent_medication_exposure"
+    ],
+    "targeted_followup": [
+      "redness",
+      "warmth",
+      "discharge",
+      "recent_illness",
+      "contact_exposure"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "severe_dermatologic_branch": {
+      "triggers": [
+        "blistering",
+        "skin_peeling",
+        "mouth_involvement",
+        "eye_involvement"
+      ]
+    },
+    "allergic_or_airway_branch": {
+      "triggers": [
+        "shortness_of_breath",
+        "facial_swelling"
+      ]
+    },
+    "infectious_or_drug_branch": {
+      "triggers": [
+        "fever",
+        "recent_medication_exposure",
+        "recent_illness"
+      ]
+    },
+    "contact_or_local_branch": {
+      "triggers": [
+        "contact_exposure",
+        "itching",
+        "redness",
+        "warmth",
+        "discharge"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "rash_location",
+      "replace_with": [
+        "rash_site",
+        "rash_specific_location"
+      ]
+    },
+    {
+      "old_concept": "itchy_rash",
+      "replace_with": [
+        "itching"
+      ]
+    },
+    {
+      "old_concept": "painful_skin_rash",
+      "replace_with": [
+        "painful_rash"
+      ]
+    },
+    {
+      "old_concept": "drug_exposure",
+      "replace_with": [
+        "recent_medication_exposure"
+      ]
+    },
+    {
+      "old_concept": "blistering_or_peeling",
+      "replace_with": [
+        "blistering",
+        "skin_peeling"
+      ]
+    },
+    {
+      "old_concept": "mouth_or_eye_involvement",
+      "replace_with": [
+        "mouth_involvement",
+        "eye_involvement"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_severe_dermatologic_pattern_rash",
+    "possible_allergic_or_airway_pattern_rash",
+    "possible_infectious_or_drug_related_pattern_rash",
+    "airway_or_anaphylaxis_screen",
+    "sepsis_or_systemic_instability_screen",
+    "severe_rash_screen"
+  ],
+  "questions_by_id": {
+    "rash": {
+      "id": "rash",
+      "field": "rash",
+      "code": "SKIN-001",
+      "ui_label": "Rash",
+      "phase": "core_characterization",
+      "text": "Have you noticed a rash?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "rash_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "rash",
+      "question_category": "symptom",
+      "canonical_question_key": "rash",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the rash start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has it been there?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "rash_site": {
+      "id": "rash_site",
+      "field": "rash_site",
+      "code": "DERM-001",
+      "ui_label": "Rash site",
+      "phase": "core_characterization",
+      "text": "Where is the rash located?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "rash_site",
+      "question_category": "qualifier",
+      "canonical_question_key": "rash_site",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "rash_specific_location": {
+      "id": "rash_specific_location",
+      "field": "rash_specific_location",
+      "code": "DERM-002",
+      "ui_label": "Rash specific location",
+      "phase": "core_characterization",
+      "text": "Can you point to the exact area?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "rash_specific_location",
+      "question_category": "qualifier",
+      "canonical_question_key": "rash_specific_location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "spread_pattern": {
+      "id": "spread_pattern",
+      "field": "spread_pattern",
+      "code": "DERM-003",
+      "ui_label": "Spread pattern",
+      "phase": "core_characterization",
+      "text": "Has the rash spread or changed area?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "spread_pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "spread_pattern",
+      "question_role": "qualifier"
+    },
+    "itching": {
+      "id": "itching",
+      "field": "itching",
+      "code": "SKIN-002",
+      "ui_label": "Itching",
+      "phase": "core_characterization",
+      "text": "Is it itchy?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "itching_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "itching",
+      "question_category": "symptom",
+      "canonical_question_key": "itching",
+      "dedup_family": "ros:itching",
+      "dedup_families": [
+        "ros:itching"
+      ],
+      "question_role": "qualifier"
+    },
+    "painful_rash": {
+      "id": "painful_rash",
+      "field": "painful_rash",
+      "code": "DERM-005",
+      "ui_label": "Painful rash",
+      "phase": "core_characterization",
+      "text": "Is the rash painful?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "painful_rash_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "painful_rash",
+      "question_category": "symptom",
+      "canonical_question_key": "painful_rash",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with the rash?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_infectious_or_drug_related_pattern_rash"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "blistering": {
+      "id": "blistering",
+      "field": "blistering",
+      "code": "SKIN-012",
+      "ui_label": "Blistering",
+      "phase": "high_priority_followup",
+      "text": "Are there blisters?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "blistering_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "blistering",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_dermatologic_pattern_rash"
+      ],
+      "canonical_question_key": "blistering",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "skin_peeling": {
+      "id": "skin_peeling",
+      "field": "skin_peeling",
+      "code": "SKIN-005",
+      "ui_label": "Skin peeling",
+      "phase": "high_priority_followup",
+      "text": "Is the skin peeling?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "skin_peeling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "skin_peeling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_dermatologic_pattern_rash"
+      ],
+      "canonical_question_key": "skin_peeling",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "mouth_involvement": {
+      "id": "mouth_involvement",
+      "field": "mouth_involvement",
+      "code": "SKIN-006B",
+      "ui_label": "Mouth involvement",
+      "phase": "high_priority_followup",
+      "text": "Are there sores or rash in the mouth?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "mouth_involvement_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "mouth_involvement",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_dermatologic_pattern_rash"
+      ],
+      "canonical_question_key": "mouth_involvement",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "eye_involvement": {
+      "id": "eye_involvement",
+      "field": "eye_involvement",
+      "code": "SKIN-008",
+      "ui_label": "Eye involvement",
+      "phase": "high_priority_followup",
+      "text": "Are the eyes involved or irritated?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "eye_involvement_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "eye_involvement",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_dermatologic_pattern_rash"
+      ],
+      "canonical_question_key": "eye_involvement",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Shortness of breath",
+      "phase": "high_priority_followup",
+      "text": "Are you short of breath or having trouble breathing with the rash?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "shortness_of_breath_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_allergic_or_airway_pattern_rash"
+      ],
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "facial_swelling": {
+      "id": "facial_swelling",
+      "field": "facial_swelling",
+      "code": "SKIN-013",
+      "ui_label": "Facial swelling",
+      "phase": "high_priority_followup",
+      "text": "Is there swelling of the face, lips, or tongue?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "facial_swelling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "facial_swelling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_allergic_or_airway_pattern_rash"
+      ],
+      "canonical_question_key": "facial_swelling",
+      "dedup_family": "ros:facial_swelling",
+      "dedup_families": [
+        "ros:facial_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_medication_exposure": {
+      "id": "recent_medication_exposure",
+      "field": "recent_medication_exposure",
+      "code": "MED-010",
+      "ui_label": "Recent medication exposure",
+      "phase": "high_priority_followup",
+      "text": "Did the rash start after a new medicine or treatment?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_medication_exposure_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_medication_exposure",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_infectious_or_drug_related_pattern_rash"
+      ],
+      "canonical_question_key": "recent_medication_exposure",
+      "question_role": "qualifier"
+    },
+    "redness": {
+      "id": "redness",
+      "field": "redness",
+      "code": "SKIN-010",
+      "ui_label": "Redness",
+      "phase": "targeted_followup",
+      "text": "Is the rash red?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "redness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "redness",
+      "question_category": "symptom",
+      "canonical_question_key": "redness",
+      "question_role": "qualifier"
+    },
+    "warmth": {
+      "id": "warmth",
+      "field": "warmth",
+      "code": "SKIN-011",
+      "ui_label": "Warmth",
+      "phase": "targeted_followup",
+      "text": "Does it feel warm?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "warmth_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "warmth",
+      "question_category": "symptom",
+      "canonical_question_key": "warmth",
+      "question_role": "qualifier"
+    },
+    "discharge": {
+      "id": "discharge",
+      "field": "discharge",
+      "code": "SKIN-009",
+      "ui_label": "Discharge",
+      "phase": "targeted_followup",
+      "text": "Any discharge or pus from it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "discharge_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "discharge",
+      "question_category": "symptom",
+      "canonical_question_key": "discharge",
+      "question_role": "qualifier"
+    },
+    "recent_illness": {
+      "id": "recent_illness",
+      "field": "recent_illness",
+      "code": "CTX-015",
+      "ui_label": "Recent illness",
+      "phase": "targeted_followup",
+      "text": "Have you had a recent illness before the rash started?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_illness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_illness",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_illness",
+      "question_role": "qualifier"
+    },
+    "contact_exposure": {
+      "id": "contact_exposure",
+      "field": "contact_exposure",
+      "code": "CTX-020",
+      "ui_label": "Contact exposure",
+      "phase": "targeted_followup",
+      "text": "Was there recent contact with a new soap, cream, plant, chemical, fabric, or other exposure?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "contact_exposure_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "contact_exposure",
+      "question_category": "context_history",
+      "canonical_question_key": "contact_exposure",
+      "dedup_family": "ros:contact_exposure",
+      "dedup_families": [
+        "ros:contact_exposure"
+      ],
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "rash.json"
+}

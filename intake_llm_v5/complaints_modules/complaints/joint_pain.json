@@ -1,0 +1,553 @@
+{
+  "complaint_id": "joint_pain",
+  "version": "1.1.0",
+  "primary_system": "musculoskeletal",
+  "parent_symptom": null,
+  "ui_label": "Joint pain",
+  "display_name": "Joint pain",
+  "ui_name": "Joint pain",
+  "canonical_concept": "joint_pain",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['joint_pain'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 20,
+      "target_question_budget": 32,
+      "max_questions": 42,
+      "early_danger_reserve": 6,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Joint pain requires pain-core characterization plus early infection and major-injury screening, followed by inflammatory/mechanical qualifiers. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 9,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "location",
+        "severity",
+        "recent_trauma",
+        "fever",
+        "inability_to_bear_weight",
+        "swelling"
+      ],
+      "selection_rule": "If joint pain is secondary, ask only the listed priority questions unless acute-joint red-flag branches activate."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "musculoskeletal"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "duration",
+      "location",
+      "pain_specific_location",
+      "character",
+      "severity",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "recent_trauma",
+      "fever",
+      "inability_to_bear_weight",
+      "swelling",
+      "warmth",
+      "redness"
+    ],
+    "targeted_followup": [
+      "stiffness",
+      "morning_stiffness",
+      "multiple_joints_involved",
+      "pain_worse_with_movement"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "septic_joint_branch": {
+      "triggers": [
+        "fever",
+        "swelling",
+        "warmth",
+        "redness",
+        "inability_to_bear_weight"
+      ]
+    },
+    "major_injury_branch": {
+      "triggers": [
+        "recent_trauma",
+        "inability_to_bear_weight",
+        "swelling"
+      ]
+    },
+    "inflammatory_branch": {
+      "triggers": [
+        "morning_stiffness",
+        "multiple_joints_involved",
+        "stiffness"
+      ]
+    },
+    "mechanical_branch": {
+      "triggers": [
+        "pain_worse_with_movement",
+        "recent_trauma"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "joint_location",
+      "replace_with": [
+        "pain_site",
+        "pain_specific_location"
+      ]
+    },
+    {
+      "old_concept": "pain_score",
+      "replace_with": [
+        "severity"
+      ]
+    },
+    {
+      "old_concept": "trauma_history",
+      "replace_with": [
+        "recent_trauma"
+      ]
+    },
+    {
+      "old_concept": "swelling_or_warmth",
+      "replace_with": [
+        "swelling",
+        "warmth"
+      ]
+    },
+    {
+      "old_concept": "red_swollen_joint",
+      "replace_with": [
+        "redness",
+        "swelling"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_septic_joint_pattern_joint_pain",
+    "possible_fracture_or_major_injury_pattern_joint_pain",
+    "septic_joint_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the joint pain start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is the pain constant, or does it come and go in episodes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "location": {
+      "id": "location",
+      "field": "location",
+      "code": "PAIN-014",
+      "ui_label": "Pain site",
+      "phase": "core_characterization",
+      "text": "Which joint is affected?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "location",
+      "question_category": "qualifier",
+      "canonical_question_key": "location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "pain_specific_location": {
+      "id": "pain_specific_location",
+      "field": "pain_specific_location",
+      "code": "PAIN-014B",
+      "ui_label": "Pain specific location",
+      "phase": "core_characterization",
+      "text": "Can you point to the exact spot within the joint area?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pain_specific_location",
+      "question_category": "qualifier",
+      "canonical_question_key": "pain_specific_location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "character": {
+      "id": "character",
+      "field": "character",
+      "code": "PAIN-016",
+      "ui_label": "Character",
+      "phase": "core_characterization",
+      "text": "What does the joint pain feel like, for example throbbing, sharp, dull, burning, cramping, pressure-like, stabbing, or aching?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "character",
+      "question_category": "qualifier",
+      "canonical_question_key": "character",
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "On a scale of 0 to 10, how severe is it?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What makes the joint pain worse, such as movement, weight-bearing, stairs, activity, or rest?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What makes it better, such as rest, ice, heat, elevation, pain medicine, or movement?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is it affecting what you can do, such as walking, standing, eating, sleeping, breathing, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "recent_trauma": {
+      "id": "recent_trauma",
+      "field": "recent_trauma",
+      "code": "CTX-004",
+      "ui_label": "Recent trauma",
+      "phase": "high_priority_followup",
+      "text": "Did this start after any recent trauma or injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_trauma_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_trauma",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_fracture_or_major_injury_pattern_joint_pain"
+      ],
+      "canonical_question_key": "recent_trauma",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with the joint pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_septic_joint_pattern_joint_pain"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "inability_to_bear_weight": {
+      "id": "inability_to_bear_weight",
+      "field": "inability_to_bear_weight",
+      "code": "MSK-007",
+      "ui_label": "Unable to bear weight",
+      "phase": "high_priority_followup",
+      "text": "Are you unable to bear weight on it?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "inability_to_bear_weight_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "inability_to_bear_weight",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_septic_joint_pattern_joint_pain",
+        "possible_fracture_or_major_injury_pattern_joint_pain"
+      ],
+      "canonical_question_key": "inability_to_bear_weight",
+      "dedup_family": "ros:inability_to_bear_weight",
+      "dedup_families": [
+        "ros:inability_to_bear_weight"
+      ],
+      "question_role": "qualifier"
+    },
+    "swelling": {
+      "id": "swelling",
+      "field": "swelling",
+      "code": "MASS-001",
+      "ui_label": "Swelling",
+      "phase": "high_priority_followup",
+      "text": "Any swelling of the joint?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "swelling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "swelling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_septic_joint_pattern_joint_pain",
+        "possible_fracture_or_major_injury_pattern_joint_pain"
+      ],
+      "canonical_question_key": "swelling",
+      "dedup_family": "ros:swelling",
+      "dedup_families": [
+        "ros:swelling"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "warmth": {
+      "id": "warmth",
+      "field": "warmth",
+      "code": "SKIN-011",
+      "ui_label": "Warmth",
+      "phase": "high_priority_followup",
+      "text": "Does the joint feel warm?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "warmth_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "warmth",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_septic_joint_pattern_joint_pain"
+      ],
+      "canonical_question_key": "warmth",
+      "question_role": "qualifier"
+    },
+    "redness": {
+      "id": "redness",
+      "field": "redness",
+      "code": "SKIN-010",
+      "ui_label": "Redness",
+      "phase": "high_priority_followup",
+      "text": "Is there redness around the joint?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "redness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "redness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_septic_joint_pattern_joint_pain"
+      ],
+      "canonical_question_key": "redness",
+      "question_role": "qualifier"
+    },
+    "stiffness": {
+      "id": "stiffness",
+      "field": "stiffness",
+      "code": "MSK-010",
+      "ui_label": "Stiffness",
+      "phase": "targeted_followup",
+      "text": "Any stiffness in the joint?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "stiffness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "stiffness",
+      "question_category": "symptom",
+      "canonical_question_key": "stiffness",
+      "dedup_family": "ros:stiffness",
+      "dedup_families": [
+        "ros:stiffness"
+      ],
+      "question_role": "qualifier"
+    },
+    "morning_stiffness": {
+      "id": "morning_stiffness",
+      "field": "morning_stiffness",
+      "code": "MSKQ-011",
+      "ui_label": "Morning stiffness",
+      "phase": "targeted_followup",
+      "text": "Is there stiffness in the morning?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "morning_stiffness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "morning_stiffness",
+      "question_category": "qualifier",
+      "canonical_question_key": "morning_stiffness",
+      "question_role": "qualifier"
+    },
+    "multiple_joints_involved": {
+      "id": "multiple_joints_involved",
+      "field": "multiple_joints_involved",
+      "code": "MSKQ-012",
+      "ui_label": "Multiple joints involved",
+      "phase": "targeted_followup",
+      "text": "Is it affecting more than one joint?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "multiple_joints_involved_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "multiple_joints_involved",
+      "question_category": "qualifier",
+      "canonical_question_key": "multiple_joints_involved",
+      "question_role": "qualifier"
+    },
+    "pain_worse_with_movement": {
+      "id": "pain_worse_with_movement",
+      "field": "pain_worse_with_movement",
+      "code": "MSKQ-010",
+      "ui_label": "Worse with movement",
+      "phase": "targeted_followup",
+      "text": "Is the pain worse with movement?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "pain_worse_with_movement_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pain_worse_with_movement",
+      "question_category": "qualifier",
+      "canonical_question_key": "pain_worse_with_movement",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "joint_pain.json"
+}

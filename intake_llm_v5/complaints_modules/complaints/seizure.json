@@ -1,0 +1,612 @@
+{
+  "complaint_id": "seizure",
+  "version": "1.1.0",
+  "primary_system": "neurological",
+  "parent_symptom": null,
+  "ui_label": "Seizure",
+  "display_name": "Seizure",
+  "ui_name": "Seizure",
+  "canonical_concept": "seizure",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['seizure'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 24,
+      "target_question_budget": 36,
+      "max_questions": 45,
+      "early_danger_reserve": 7,
+      "ros_reserve": 3,
+      "context_history_reserve": 4,
+      "rationale": "Seizure complaints require event characterization plus early screening for acute neurologic, febrile, traumatic, or pregnancy-related risk. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 10,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "loss_of_consciousness",
+        "head_injury",
+        "fever",
+        "focal_weakness",
+        "pregnancy_context"
+      ],
+      "selection_rule": "If seizure is secondary, ask only the listed priority questions unless a neurologic-risk branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "neurological"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "duration",
+      "seizure",
+      "witnessed_seizure_activity"
+    ],
+    "high_priority_followup": [
+      "loss_of_consciousness",
+      "head_injury",
+      "fever",
+      "focal_weakness",
+      "pregnancy_context",
+      "known_epilepsy",
+      "prior_seizure_history"
+    ],
+    "targeted_followup": [
+      "postictal_confusion",
+      "tongue_biting",
+      "urinary_incontinence",
+      "medication_nonadherence",
+      "substance_withdrawal_context",
+      "aura",
+      "seizure_type",
+      "trigger_context",
+      "return_to_baseline",
+      "recurrent_events",
+      "clustered_events"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "acute_neurologic_branch": {
+      "triggers": [
+        "head_injury",
+        "focal_weakness",
+        "pregnancy_context"
+      ]
+    },
+    "infectious_or_febrile_branch": {
+      "triggers": [
+        "fever"
+      ]
+    },
+    "known_seizure_branch": {
+      "triggers": [
+        "known_epilepsy",
+        "prior_seizure_history",
+        "medication_nonadherence"
+      ]
+    },
+    "witnessed_generalized_event_branch": {
+      "triggers": [
+        "witnessed_seizure_activity",
+        "postictal_confusion",
+        "tongue_biting",
+        "urinary_incontinence"
+      ]
+    },
+    "pattern_or_provoked_branch": {
+      "triggers": [
+        "aura",
+        "seizure_type",
+        "trigger_context",
+        "recurrent_events",
+        "clustered_events",
+        "return_to_baseline"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "convulsion",
+      "replace_with": [
+        "seizure"
+      ]
+    },
+    {
+      "old_concept": "bit_tongue",
+      "replace_with": [
+        "tongue_biting"
+      ]
+    },
+    {
+      "old_concept": "wet_self",
+      "replace_with": [
+        "urinary_incontinence"
+      ]
+    },
+    {
+      "old_concept": "post_ictal_confusion",
+      "replace_with": [
+        "postictal_confusion"
+      ]
+    },
+    {
+      "old_concept": "known_seizure_disorder",
+      "replace_with": [
+        "known_epilepsy"
+      ]
+    },
+    {
+      "old_concept": "head_injury_or_fall",
+      "replace_with": [
+        "head_injury"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_acute_neurologic_risk_pattern_seizure",
+    "possible_febrile_or_infectious_pattern_seizure",
+    "meningitis_screen",
+    "focal_neurologic_deficit_screen",
+    "high_risk_seizure_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the seizure happen?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "About how long did it last?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "seizure": {
+      "id": "seizure",
+      "field": "seizure",
+      "code": "NEU-008",
+      "ui_label": "Seizures",
+      "phase": "core_characterization",
+      "text": "Did you have a seizure or seizure-like event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "seizure_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "seizure",
+      "question_category": "symptom",
+      "canonical_question_key": "seizure",
+      "dedup_family": "ros:seizure",
+      "dedup_families": [
+        "ros:seizure"
+      ],
+      "question_role": "qualifier"
+    },
+    "witnessed_seizure_activity": {
+      "id": "witnessed_seizure_activity",
+      "field": "witnessed_seizure_activity",
+      "code": "NEURO-019",
+      "ui_label": "Witnessed seizure activity",
+      "phase": "core_characterization",
+      "text": "Did anyone witness seizure-like activity?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "witnessed_seizure_activity_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "witnessed_seizure_activity",
+      "question_category": "symptom",
+      "canonical_question_key": "witnessed_seizure_activity",
+      "question_role": "qualifier"
+    },
+    "loss_of_consciousness": {
+      "id": "loss_of_consciousness",
+      "field": "loss_of_consciousness",
+      "code": "NEURO-001",
+      "ui_label": "Loss of consciousness",
+      "phase": "high_priority_followup",
+      "text": "Did you lose consciousness during the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "loss_of_consciousness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "loss_of_consciousness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "loss_of_consciousness",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "head_injury": {
+      "id": "head_injury",
+      "field": "head_injury",
+      "code": "TRAUMA-002",
+      "ui_label": "Head injury",
+      "phase": "high_priority_followup",
+      "text": "Did you hit your head or have a head injury with the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "head_injury_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "head_injury",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_acute_neurologic_risk_pattern_seizure"
+      ],
+      "canonical_question_key": "head_injury",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with or before the seizure?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_febrile_or_infectious_pattern_seizure"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "focal_weakness": {
+      "id": "focal_weakness",
+      "field": "focal_weakness",
+      "code": "NEURO-023",
+      "ui_label": "Focal weakness",
+      "phase": "high_priority_followup",
+      "text": "Any weakness on one side afterward?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "focal_weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "focal_weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_acute_neurologic_risk_pattern_seizure"
+      ],
+      "canonical_question_key": "focal_weakness",
+      "question_role": "qualifier"
+    },
+    "pregnancy_context": {
+      "id": "pregnancy_context",
+      "field": "pregnancy_context",
+      "code": "GYNHX-001",
+      "ui_label": "Pregnancy context",
+      "phase": "high_priority_followup",
+      "text": "Could you be pregnant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "detail_field": "pregnancy_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pregnancy_context",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "linked_escalation_rules": [
+        "possible_acute_neurologic_risk_pattern_seizure"
+      ],
+      "canonical_question_key": "pregnancy_context",
+      "question_role": "qualifier"
+    },
+    "known_epilepsy": {
+      "id": "known_epilepsy",
+      "field": "known_epilepsy",
+      "code": "PMH-025",
+      "ui_label": "Known epilepsy",
+      "phase": "high_priority_followup",
+      "text": "Do you have a known seizure disorder or epilepsy?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "known_epilepsy_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "known_epilepsy",
+      "question_category": "context_history",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "known_epilepsy",
+      "question_role": "qualifier"
+    },
+    "prior_seizure_history": {
+      "id": "prior_seizure_history",
+      "field": "prior_seizure_history",
+      "code": "PMH-026",
+      "ui_label": "Prior seizure history",
+      "phase": "high_priority_followup",
+      "text": "Has this happened before?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "prior_seizure_history_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "prior_seizure_history",
+      "question_category": "context_history",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "prior_seizure_history",
+      "question_role": "qualifier"
+    },
+    "postictal_confusion": {
+      "id": "postictal_confusion",
+      "field": "postictal_confusion",
+      "code": "NEURO-020",
+      "ui_label": "Postictal confusion",
+      "phase": "targeted_followup",
+      "text": "Were you confused afterward?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "postictal_confusion_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "postictal_confusion",
+      "question_category": "symptom",
+      "canonical_question_key": "postictal_confusion",
+      "question_role": "qualifier"
+    },
+    "tongue_biting": {
+      "id": "tongue_biting",
+      "field": "tongue_biting",
+      "code": "NEURO-021",
+      "ui_label": "Tongue biting",
+      "phase": "targeted_followup",
+      "text": "Any tongue biting during the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "tongue_biting_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "tongue_biting",
+      "question_category": "symptom",
+      "canonical_question_key": "tongue_biting",
+      "question_role": "qualifier"
+    },
+    "urinary_incontinence": {
+      "id": "urinary_incontinence",
+      "field": "urinary_incontinence",
+      "code": "NEURO-022",
+      "ui_label": "Urinary incontinence",
+      "phase": "targeted_followup",
+      "text": "Any loss of bladder control during the event?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "urinary_incontinence_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "urinary_incontinence",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_incontinence",
+      "question_role": "qualifier"
+    },
+    "medication_nonadherence": {
+      "id": "medication_nonadherence",
+      "field": "medication_nonadherence",
+      "code": "MED-016",
+      "ui_label": "Medication nonadherence",
+      "phase": "targeted_followup",
+      "text": "Have you missed seizure or other important medicines recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "medication_nonadherence_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "medication_nonadherence",
+      "question_category": "context_history",
+      "canonical_question_key": "medication_nonadherence",
+      "question_role": "qualifier"
+    },
+    "substance_withdrawal_context": {
+      "id": "substance_withdrawal_context",
+      "field": "substance_withdrawal_context",
+      "code": "CTX-012",
+      "ui_label": "Substance withdrawal context",
+      "phase": "targeted_followup",
+      "text": "Has there been recent alcohol or substance withdrawal?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "substance_withdrawal_context_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "substance_withdrawal_context",
+      "question_category": "context_history",
+      "canonical_question_key": "substance_withdrawal_context",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "aura": {
+      "id": "aura",
+      "field": "aura",
+      "code": "NEURO-027",
+      "ui_label": "Aura",
+      "phase": "targeted_followup",
+      "text": "Was there any warning before the event, like a strange feeling, smell, or sensation?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "aura_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "aura",
+      "question_category": "qualifier",
+      "canonical_question_key": "aura",
+      "question_role": "qualifier"
+    },
+    "seizure_type": {
+      "id": "seizure_type",
+      "field": "seizure_type",
+      "code": "NEURO-028",
+      "ui_label": "Seizure type",
+      "phase": "targeted_followup",
+      "text": "What was the seizure like — shaking, staring, one-sided movements, or something else?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "seizure_type",
+      "question_category": "qualifier",
+      "canonical_question_key": "seizure_type",
+      "question_role": "qualifier"
+    },
+    "trigger_context": {
+      "id": "trigger_context",
+      "field": "trigger_context",
+      "code": "CTX-013",
+      "ui_label": "Trigger context",
+      "phase": "targeted_followup",
+      "text": "Was there anything that seemed to trigger it, such as missed sleep, missed medicines, alcohol withdrawal, flashing lights, or illness?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "trigger_context",
+      "question_category": "context_history",
+      "canonical_question_key": "trigger_context",
+      "question_role": "qualifier"
+    },
+    "return_to_baseline": {
+      "id": "return_to_baseline",
+      "field": "return_to_baseline",
+      "code": "NEURO-029",
+      "ui_label": "Return to baseline",
+      "phase": "targeted_followup",
+      "text": "Did you return fully to your usual self afterward?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "return_to_baseline_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "return_to_baseline",
+      "question_category": "qualifier",
+      "canonical_question_key": "return_to_baseline",
+      "question_role": "qualifier"
+    },
+    "recurrent_events": {
+      "id": "recurrent_events",
+      "field": "recurrent_events",
+      "code": "NEURO-030",
+      "ui_label": "Recurrent events",
+      "phase": "targeted_followup",
+      "text": "Have there been repeated similar events?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recurrent_events_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recurrent_events",
+      "question_category": "qualifier",
+      "canonical_question_key": "recurrent_events",
+      "question_role": "qualifier"
+    },
+    "clustered_events": {
+      "id": "clustered_events",
+      "field": "clustered_events",
+      "code": "NEURO-031",
+      "ui_label": "Clustered events",
+      "phase": "targeted_followup",
+      "text": "Did more than one event happen close together?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "clustered_events_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "clustered_events",
+      "question_category": "qualifier",
+      "canonical_question_key": "clustered_events",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "seizure.json"
+}

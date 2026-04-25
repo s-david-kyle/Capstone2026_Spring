@@ -1,0 +1,587 @@
+{
+  "complaint_id": "hematuria",
+  "version": "1.1.0",
+  "primary_system": "genitourinary",
+  "parent_symptom": null,
+  "ui_label": "Hematuria",
+  "display_name": "Hematuria",
+  "ui_name": "Hematuria",
+  "canonical_concept": "hematuria",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['hematuria'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 22,
+      "target_question_budget": 34,
+      "max_questions": 42,
+      "early_danger_reserve": 6,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Hematuria requires urinary characterization plus early screening for clot retention, upper-tract involvement, infection, trauma, and malignancy-risk context. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 9,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "hematuria",
+        "unable_to_pass_urine",
+        "clots_in_urine",
+        "flank_pain",
+        "fever"
+      ],
+      "selection_rule": "If hematuria is secondary, ask only the listed priority questions unless urinary red-flag branches activate."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "genitourinary"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "duration",
+      "hematuria",
+      "hematuria_visible"
+    ],
+    "high_priority_followup": [
+      "inability_to_pass_urine",
+      "clots_in_urine",
+      "flank_pain",
+      "fever",
+      "recent_trauma",
+      "anticoagulant_use"
+    ],
+    "targeted_followup": [
+      "dysuria",
+      "urinary_frequency",
+      "urinary_urgency",
+      "suprapubic_pain",
+      "recent_catheter",
+      "prior_uti",
+      "prior_stones",
+      "history_of_cancer",
+      "family_history_urologic_cancer"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "obstructive_branch": {
+      "triggers": [
+        "clots_in_urine"
+      ]
+    },
+    "upper_tract_or_infectious_branch": {
+      "triggers": [
+        "flank_pain",
+        "fever"
+      ]
+    },
+    "irritative_lower_tract_branch": {
+      "triggers": [
+        "dysuria",
+        "urinary_frequency",
+        "urinary_urgency",
+        "suprapubic_pain"
+      ]
+    },
+    "malignancy_risk_branch": {
+      "triggers": [
+        "history_of_cancer",
+        "family_history_urologic_cancer"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "blood_in_urine",
+      "replace_with": [
+        "hematuria"
+      ]
+    },
+    {
+      "old_concept": "gross_hematuria",
+      "replace_with": [
+        "hematuria_visible"
+      ]
+    },
+    {
+      "old_concept": "painful_urination",
+      "replace_with": [
+        "dysuria"
+      ]
+    },
+    {
+      "old_concept": "frequency_and_urgency",
+      "replace_with": [
+        "urinary_frequency",
+        "urinary_urgency"
+      ]
+    },
+    {
+      "old_concept": "blood_clots_in_urine",
+      "replace_with": [
+        "clots_in_urine"
+      ]
+    },
+    {
+      "old_concept": "trauma_history",
+      "replace_with": [
+        "recent_trauma"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_obstructive_clot_retention_pattern_hematuria",
+    "possible_upper_tract_or_infectious_pattern_hematuria",
+    "possible_malignancy_risk_pattern_hematuria",
+    "urinary_retention_screen",
+    "pyelonephritis_or_upper_uti_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did you first notice blood in the urine?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is it happening every time, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "hematuria": {
+      "id": "hematuria",
+      "field": "hematuria",
+      "code": "GU-006",
+      "ui_label": "Blood in urine",
+      "phase": "core_characterization",
+      "text": "Any blood in the urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "hematuria_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "hematuria",
+      "question_category": "symptom",
+      "canonical_question_key": "hematuria",
+      "dedup_family": "ros:hematuria",
+      "dedup_families": [
+        "ros:hematuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "hematuria_visible": {
+      "id": "hematuria_visible",
+      "field": "hematuria_visible",
+      "code": "GU-020",
+      "ui_label": "Visible blood in urine",
+      "phase": "core_characterization",
+      "text": "Can you actually see blood in the urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "hematuria_visible_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "hematuria_visible",
+      "question_category": "qualifier",
+      "canonical_question_key": "hematuria_visible",
+      "question_role": "qualifier"
+    },
+    "clots_in_urine": {
+      "id": "clots_in_urine",
+      "field": "clots_in_urine",
+      "code": "GU-021",
+      "ui_label": "Clots in urine",
+      "phase": "high_priority_followup",
+      "text": "Any clots in the urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "clots_in_urine_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "clots_in_urine",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_obstructive_clot_retention_pattern_hematuria"
+      ],
+      "canonical_question_key": "clots_in_urine",
+      "question_role": "qualifier"
+    },
+    "flank_pain": {
+      "id": "flank_pain",
+      "field": "flank_pain",
+      "code": "GU-007",
+      "ui_label": "Pain in the side or back near the kidney",
+      "phase": "high_priority_followup",
+      "text": "Any pain in the side or flank?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "flank_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "flank_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_upper_tract_or_infectious_pattern_hematuria"
+      ],
+      "canonical_question_key": "flank_pain",
+      "dedup_family": "ros:flank_pain",
+      "dedup_families": [
+        "ros:flank_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with the blood in the urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_upper_tract_or_infectious_pattern_hematuria"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "recent_trauma": {
+      "id": "recent_trauma",
+      "field": "recent_trauma",
+      "code": "CTX-004",
+      "ui_label": "Recent trauma",
+      "phase": "high_priority_followup",
+      "text": "Did this start after any recent trauma or injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_trauma_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_trauma",
+      "question_category": "context_history",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "recent_trauma",
+      "question_role": "qualifier"
+    },
+    "anticoagulant_use": {
+      "id": "anticoagulant_use",
+      "field": "anticoagulant_use",
+      "code": "MED-003",
+      "ui_label": "Anticoagulant use",
+      "phase": "high_priority_followup",
+      "text": "Are you taking any blood thinners or anticoagulants?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "anticoagulant_use_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "anticoagulant_use",
+      "question_category": "context_history",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "anticoagulant_use",
+      "question_role": "qualifier"
+    },
+    "dysuria": {
+      "id": "dysuria",
+      "field": "dysuria",
+      "code": "GU-001",
+      "ui_label": "Pain or burning when passing urine",
+      "phase": "targeted_followup",
+      "text": "Any burning or pain when passing urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "dysuria_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dysuria",
+      "question_category": "symptom",
+      "canonical_question_key": "dysuria",
+      "dedup_family": "ros:dysuria",
+      "dedup_families": [
+        "ros:dysuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_frequency": {
+      "id": "urinary_frequency",
+      "field": "urinary_frequency",
+      "code": "GU-002",
+      "ui_label": "Passing urine more often",
+      "phase": "targeted_followup",
+      "text": "Are you passing urine more often than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "urinary_frequency_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "urinary_frequency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_frequency",
+      "dedup_family": "ros:urinary_frequency",
+      "dedup_families": [
+        "ros:urinary_frequency"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_urgency": {
+      "id": "urinary_urgency",
+      "field": "urinary_urgency",
+      "code": "GU-003",
+      "ui_label": "Sudden urge to pass urine",
+      "phase": "targeted_followup",
+      "text": "Any urgency to pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "urinary_urgency_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "urinary_urgency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_urgency",
+      "dedup_family": "ros:urinary_urgency",
+      "dedup_families": [
+        "ros:urinary_urgency"
+      ],
+      "question_role": "qualifier"
+    },
+    "suprapubic_pain": {
+      "id": "suprapubic_pain",
+      "field": "suprapubic_pain",
+      "code": "GU-008B",
+      "ui_label": "Suprapubic pain",
+      "phase": "targeted_followup",
+      "text": "Any pain low in the lower abdomen or over the bladder area?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "suprapubic_pain_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "suprapubic_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "suprapubic_pain",
+      "question_role": "qualifier"
+    },
+    "recent_catheter": {
+      "id": "recent_catheter",
+      "field": "recent_catheter",
+      "code": "CTX-011",
+      "ui_label": "Recent catheter",
+      "phase": "targeted_followup",
+      "text": "Any recent catheter or urinary procedure?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_catheter_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_catheter",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_catheter",
+      "question_role": "qualifier"
+    },
+    "prior_uti": {
+      "id": "prior_uti",
+      "field": "prior_uti",
+      "code": "PMH-022",
+      "ui_label": "Prior UTI",
+      "phase": "targeted_followup",
+      "text": "Any history of prior urinary tract infections?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "prior_uti_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "prior_uti",
+      "question_category": "context_history",
+      "canonical_question_key": "prior_uti",
+      "question_role": "qualifier"
+    },
+    "prior_stones": {
+      "id": "prior_stones",
+      "field": "prior_stones",
+      "code": "PMH-023",
+      "ui_label": "Prior stones",
+      "phase": "targeted_followup",
+      "text": "Any history of kidney or urinary stones?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "prior_stones_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "prior_stones",
+      "question_category": "context_history",
+      "canonical_question_key": "prior_stones",
+      "question_role": "qualifier"
+    },
+    "history_of_cancer": {
+      "id": "history_of_cancer",
+      "field": "history_of_cancer",
+      "code": "PMH-014",
+      "ui_label": "History of cancer",
+      "phase": "targeted_followup",
+      "text": "Any history of cancer?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "history_of_cancer_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "history_of_cancer",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_malignancy_risk_pattern_hematuria"
+      ],
+      "canonical_question_key": "history_of_cancer",
+      "question_role": "qualifier"
+    },
+    "family_history_urologic_cancer": {
+      "id": "family_history_urologic_cancer",
+      "field": "family_history_urologic_cancer",
+      "code": "GUC-003",
+      "ui_label": "Family history of urologic cancer",
+      "phase": "targeted_followup",
+      "text": "Any family history of bladder or kidney cancer?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "family_history_bladder_or_kidney_cancer_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "family_history_urologic_cancer",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_malignancy_risk_pattern_hematuria"
+      ],
+      "canonical_question_key": "family_history_urologic_cancer",
+      "dedup_family": "context:urologic_cancer_family_history",
+      "dedup_families": [
+        "context:urologic_cancer_family_history"
+      ],
+      "question_role": "context_history"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "inability_to_pass_urine": {
+      "id": "inability_to_pass_urine",
+      "field": "inability_to_pass_urine",
+      "code": "GU-022",
+      "ui_label": "Unable to pass urine",
+      "phase": "high_priority_followup",
+      "text": "Are you unable to pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "unable_to_pass_urine_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "inability_to_pass_urine",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_obstructive_clot_retention_pattern_hematuria"
+      ],
+      "canonical_question_key": "inability_to_pass_urine",
+      "dedup_family": "ros:urinary_retention",
+      "dedup_families": [
+        "ros:urinary_retention"
+      ],
+      "question_role": "red_flag_subtype"
+    }
+  },
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history."
+  },
+  "file_name": "hematuria.json"
+}

@@ -1,0 +1,779 @@
+{
+  "complaint_id": "cough",
+  "version": "1.1.0",
+  "primary_system": "respiratory",
+  "parent_symptom": null,
+  "ui_label": "Cough",
+  "display_name": "Cough",
+  "ui_name": "Cough",
+  "canonical_concept": "cough",
+  "document_status": "draft_completed_for_current_iteration",
+  "opening_state_note": "Selecting this complaint should set state['cough'] = 'yes' before questioning begins.",
+  "normalization_note": "catarrh is normalized to runny_nose and should not be asked as a separate concept.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 24,
+      "target_question_budget": 34,
+      "max_questions": 42,
+      "early_danger_reserve": 5,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": " Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "pattern",
+        "duration",
+        "fever",
+        "shortness_of_breath"
+      ]
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "episode_duration",
+      "duration",
+      "productive_cough",
+      "cough_character",
+      "sputum_character",
+      "sputum_colour",
+      "sputum_amount",
+      "sputum_consistency",
+      "frothy_sputum",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "fever",
+      "chills",
+      "shortness_of_breath",
+      "hemoptysis",
+      "chest_pain",
+      "pleuritic_pain",
+      "leg_swelling",
+      "recent_immobility",
+      "wheeze",
+      "stridor"
+    ],
+    "targeted_followup": [
+      "runny_nose",
+      "sore_throat",
+      "malaise",
+      "fatigue",
+      "recent_antibiotics",
+      "recent_travel",
+      "post_tussive_vomiting"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "respiratory_branch": {
+      "triggers": [
+        "cough",
+        "wheeze",
+        "shortness_of_breath",
+        "stridor"
+      ]
+    },
+    "infectious_branch": {
+      "triggers": [
+        "fever",
+        "chills",
+        "malaise",
+        "fatigue",
+        "runny_nose",
+        "sore_throat"
+      ]
+    },
+    "thromboembolic_chest_overlap_branch": {
+      "triggers": [
+        "hemoptysis",
+        "chest_pain",
+        "pleuritic_pain",
+        "leg_swelling",
+        "recent_immobility",
+        "recent_travel"
+      ]
+    }
+  },
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the cough start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is it there all the time, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "episode_duration": {
+      "id": "episode_duration",
+      "field": "episode_duration",
+      "code": "EVENT-004",
+      "ui_label": "Episode duration",
+      "phase": "core_characterization",
+      "text": "When it comes, how long does each episode last?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "parent_field": "pattern",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATTERN_NOT_EPISODIC"
+      ],
+      "canonical_concept": "episode_duration",
+      "question_category": "qualifier",
+      "ask_if_note": "Ask only when pattern indicates episodic/intermittent symptoms that come and go.",
+      "canonical_question_key": "episode_duration",
+      "question_role": "detail"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "productive_cough": {
+      "id": "productive_cough",
+      "field": "productive_cough",
+      "code": "RESP-011",
+      "ui_label": "Productive cough",
+      "phase": "core_characterization",
+      "text": "Are you bringing anything up when you cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "productive_cough_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "productive_cough",
+      "question_category": "qualifier",
+      "canonical_question_key": "productive_cough",
+      "question_role": "qualifier"
+    },
+    "cough_character": {
+      "id": "cough_character",
+      "field": "cough_character",
+      "code": "RESPQ-009",
+      "ui_label": "Cough character",
+      "phase": "core_characterization",
+      "text": "What is the cough like?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "cough_character",
+      "question_category": "qualifier",
+      "canonical_question_key": "cough_character",
+      "question_role": "detail"
+    },
+    "sputum_character": {
+      "id": "sputum_character",
+      "field": "sputum_character",
+      "code": "RESPQ-010",
+      "ui_label": "Sputum character",
+      "phase": "core_characterization",
+      "text": "What are you bringing up, and what is it like?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "productive_cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "sputum_character",
+      "question_category": "qualifier",
+      "canonical_question_key": "sputum_character",
+      "question_role": "detail"
+    },
+    "sputum_colour": {
+      "id": "sputum_colour",
+      "field": "sputum_colour",
+      "code": "RESPQ-011",
+      "ui_label": "Sputum colour",
+      "phase": "core_characterization",
+      "text": "What colour is it?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "productive_cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "sputum_colour",
+      "question_category": "qualifier",
+      "canonical_question_key": "sputum_colour",
+      "question_role": "detail"
+    },
+    "sputum_amount": {
+      "id": "sputum_amount",
+      "field": "sputum_amount",
+      "code": "RESPQ-012",
+      "ui_label": "Sputum amount",
+      "phase": "core_characterization",
+      "text": "How much are you bringing up?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "productive_cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "sputum_amount",
+      "question_category": "qualifier",
+      "canonical_question_key": "sputum_amount",
+      "question_role": "detail"
+    },
+    "sputum_consistency": {
+      "id": "sputum_consistency",
+      "field": "sputum_consistency",
+      "code": "RESPQ-013",
+      "ui_label": "Sputum consistency",
+      "phase": "core_characterization",
+      "text": "Is it thick, thin, sticky, or something else?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "productive_cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "sputum_consistency",
+      "question_category": "qualifier",
+      "canonical_question_key": "sputum_consistency",
+      "question_role": "detail"
+    },
+    "frothy_sputum": {
+      "id": "frothy_sputum",
+      "field": "frothy_sputum",
+      "code": "RESPQ-014",
+      "ui_label": "Frothy sputum",
+      "phase": "core_characterization",
+      "text": "Is it frothy or bubbly?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "parent_field": "productive_cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "detail_field": "frothy_sputum_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "frothy_sputum",
+      "question_category": "qualifier",
+      "canonical_question_key": "frothy_sputum",
+      "question_role": "detail"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What makes the cough worse, such as lying down, cold air, exercise, talking, smoke, dust, eating, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What makes the cough better, such as sitting up, fluids, inhaler, cough medicine, avoiding triggers, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is the cough affecting you, such as sleep, talking, breathing, work, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_respiratory_infection_cough"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "chills": {
+      "id": "chills",
+      "field": "chills",
+      "code": "CON-003",
+      "ui_label": "Chills",
+      "phase": "high_priority_followup",
+      "text": "Have you felt cold or shivery without uncontrollable shaking?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "chills_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "chills",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "chills",
+      "dedup_family": "ros:chills",
+      "dedup_families": [
+        "ros:chills"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Difficulty in breathing",
+      "phase": "high_priority_followup",
+      "text": "Have you had any difficulty in breathing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "shortness_of_breath_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_respiratory_infection_cough",
+        "possible_pe_pattern_cough",
+        "possible_airway_reactive_pattern_cough"
+      ],
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "hemoptysis": {
+      "id": "hemoptysis",
+      "field": "hemoptysis",
+      "code": "RESP-004",
+      "ui_label": "Coughing up blood",
+      "phase": "high_priority_followup",
+      "text": "Have you coughed up blood?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "hemoptysis_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "hemoptysis",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_respiratory_infection_cough",
+        "possible_pe_pattern_cough"
+      ],
+      "canonical_question_key": "hemoptysis",
+      "dedup_family": "ros:hemoptysis",
+      "dedup_families": [
+        "ros:hemoptysis"
+      ],
+      "question_role": "qualifier"
+    },
+    "chest_pain": {
+      "id": "chest_pain",
+      "field": "chest_pain",
+      "code": "CV-002",
+      "ui_label": "Chest pain or tightness",
+      "phase": "high_priority_followup",
+      "text": "Do you have chest pain or tightness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "chest_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "chest_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_severe_respiratory_infection_cough"
+      ],
+      "canonical_question_key": "chest_pain",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "pleuritic_pain": {
+      "id": "pleuritic_pain",
+      "field": "pleuritic_pain",
+      "code": "RESP-008",
+      "ui_label": "Worse with deep breathing",
+      "phase": "high_priority_followup",
+      "text": "Is it worse when you take a deep breath or cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "pleuritic_component_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pleuritic_pain",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_cough"
+      ],
+      "canonical_question_key": "pleuritic_pain",
+      "dedup_family": "ros:pleuritic_pain",
+      "dedup_families": [
+        "ros:pleuritic_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "leg_swelling": {
+      "id": "leg_swelling",
+      "field": "leg_swelling",
+      "code": "CV-001",
+      "ui_label": "Leg swelling",
+      "phase": "high_priority_followup",
+      "text": "Have you had swelling in one or both legs?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "leg_swelling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "leg_swelling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_cough"
+      ],
+      "canonical_question_key": "leg_swelling",
+      "dedup_family": "ros:leg_swelling",
+      "dedup_families": [
+        "ros:leg_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_immobility": {
+      "id": "recent_immobility",
+      "field": "recent_immobility",
+      "code": "SOC-014",
+      "ui_label": "Recent immobility",
+      "phase": "high_priority_followup",
+      "text": "Have you been stuck in bed, on a long trip, or not moving around much recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_immobility_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_immobility",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_cough"
+      ],
+      "canonical_question_key": "recent_immobility",
+      "dedup_family": "ros:recent_immobility",
+      "dedup_families": [
+        "ros:recent_immobility"
+      ],
+      "question_role": "qualifier"
+    },
+    "wheeze": {
+      "id": "wheeze",
+      "field": "wheeze",
+      "code": "RESPQ-004",
+      "ui_label": "Whistling sound when breathing",
+      "phase": "high_priority_followup",
+      "text": "Do you hear a whistling sound when you breathe?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "wheeze_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "wheeze",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_airway_reactive_pattern_cough"
+      ],
+      "canonical_question_key": "wheeze",
+      "dedup_family": "ros:wheeze",
+      "dedup_families": [
+        "ros:wheeze"
+      ],
+      "question_role": "qualifier"
+    },
+    "stridor": {
+      "id": "stridor",
+      "field": "stridor",
+      "code": "RESPQ-005",
+      "ui_label": "Noisy breathing",
+      "phase": "high_priority_followup",
+      "text": "Is your breathing noisy or harsh?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "stridor_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "stridor",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "stridor",
+      "dedup_family": "ros:stridor",
+      "dedup_families": [
+        "ros:stridor"
+      ],
+      "question_role": "qualifier"
+    },
+    "runny_nose": {
+      "id": "runny_nose",
+      "field": "runny_nose",
+      "code": "RESP-010",
+      "ui_label": "Runny nose",
+      "phase": "targeted_followup",
+      "text": "Do you have a runny nose?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "runny_nose_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "runny_nose",
+      "question_category": "symptom",
+      "canonical_question_key": "runny_nose",
+      "dedup_family": "ros:runny_nose",
+      "dedup_families": [
+        "ros:runny_nose"
+      ],
+      "question_role": "qualifier"
+    },
+    "sore_throat": {
+      "id": "sore_throat",
+      "field": "sore_throat",
+      "code": "ENT-000",
+      "ui_label": "Sore throat",
+      "phase": "targeted_followup",
+      "text": "Do you have a sore throat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "sore_throat_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "sore_throat",
+      "question_category": "symptom",
+      "canonical_question_key": "sore_throat",
+      "dedup_family": "ros:sore_throat",
+      "dedup_families": [
+        "ros:sore_throat"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "malaise": {
+      "id": "malaise",
+      "field": "malaise",
+      "code": "CON-009",
+      "ui_label": "Malaise",
+      "phase": "targeted_followup",
+      "text": "Have you generally felt unwell or weak all over?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "malaise_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "malaise",
+      "question_category": "symptom",
+      "canonical_question_key": "malaise",
+      "dedup_family": "ros:malaise",
+      "dedup_families": [
+        "ros:malaise"
+      ],
+      "question_role": "qualifier"
+    },
+    "fatigue": {
+      "id": "fatigue",
+      "field": "fatigue",
+      "code": "CON-005",
+      "ui_label": "Fatigue",
+      "phase": "targeted_followup",
+      "text": "Have you been unusually tired?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "fatigue_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "fatigue",
+      "question_category": "symptom",
+      "canonical_question_key": "fatigue",
+      "dedup_family": "ros:fatigue",
+      "dedup_families": [
+        "ros:fatigue"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_antibiotics": {
+      "id": "recent_antibiotics",
+      "field": "recent_antibiotics",
+      "code": "MED-002",
+      "ui_label": "Recent antibiotics",
+      "phase": "targeted_followup",
+      "text": "Have you taken any antibiotics in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_antibiotics_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_antibiotics",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_antibiotics",
+      "question_role": "qualifier"
+    },
+    "recent_travel": {
+      "id": "recent_travel",
+      "field": "recent_travel",
+      "code": "SOC-007",
+      "ui_label": "Recent travel",
+      "phase": "targeted_followup",
+      "text": "Have you traveled anywhere recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_travel_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_travel",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_travel",
+      "dedup_family": "ros:recent_travel",
+      "dedup_families": [
+        "ros:recent_travel"
+      ],
+      "question_role": "qualifier"
+    },
+    "post_tussive_vomiting": {
+      "id": "post_tussive_vomiting",
+      "field": "post_tussive_vomiting",
+      "code": "RESP-013",
+      "ui_label": "Vomiting after coughing",
+      "phase": "targeted_followup",
+      "text": "Have you vomited after coughing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "post_tussive_vomiting_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "post_tussive_vomiting",
+      "question_category": "symptom",
+      "canonical_question_key": "post_tussive_vomiting",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "cough": {
+      "id": "cough",
+      "field": "cough",
+      "code": "RESP-005",
+      "ui_label": "Cough",
+      "phase": "opening_state",
+      "text": "Do you have a cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "cough",
+      "question_category": "symptom",
+      "dedup_family": "ros:cough",
+      "dedup_families": [
+        "ros:cough"
+      ],
+      "question_role": "qualifier"
+    }
+  },
+  "shared_escalation_rules_expected": [
+    "possible_severe_respiratory_infection_cough",
+    "possible_pe_pattern_cough",
+    "possible_airway_reactive_pattern_cough",
+    "pulmonary_embolism_screen",
+    "respiratory_distress_screen",
+    "sepsis_or_systemic_instability_screen"
+  ],
+  "file_name": "cough.json"
+}

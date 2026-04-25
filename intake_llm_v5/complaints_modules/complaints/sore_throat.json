@@ -1,0 +1,570 @@
+{
+  "complaint_id": "sore_throat",
+  "version": "1.1.0",
+  "primary_system": "respiratory",
+  "parent_symptom": null,
+  "ui_label": "Sore throat",
+  "display_name": "Sore throat",
+  "ui_name": "Sore throat",
+  "canonical_concept": "sore_throat",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['sore_throat'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 24,
+      "target_question_budget": 36,
+      "max_questions": 45,
+      "early_danger_reserve": 8,
+      "ros_reserve": 3,
+      "context_history_reserve": 4,
+      "rationale": "Sore-throat complaints require early airway/deep-neck-space, respiratory, and infectious screening while preserving enough budget for throat characterization. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 10,
+      "priority_question_ids_if_secondary": [
+        "sore_throat",
+        "onset",
+        "duration",
+        "pain_with_swallowing",
+        "dysphagia",
+        "shortness_of_breath",
+        "fever",
+        "neck_swelling"
+      ],
+      "selection_rule": "If sore throat is secondary, ask only the listed priority questions unless a high-risk branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "ent"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "module_dependencies": {
+    "general_modules_expected": [
+      "pmh_psh_module",
+      "drug_history_module",
+      "social_family_history_module"
+    ],
+    "conditional_modules_expected": [
+      "gynecologic_history_module"
+    ],
+    "rule": "Complaint file should not duplicate generalized module-owned history unless it changes urgency or immediate differential framing."
+  },
+  "question_phase_map": {
+    "core_characterization": [
+      "sore_throat",
+      "onset",
+      "duration",
+      "pain_with_swallowing",
+      "voice_change"
+    ],
+    "high_priority_followup": [
+      "drooling",
+      "shortness_of_breath",
+      "fever",
+      "neck_swelling",
+      "dysphagia",
+      "muffled_voice",
+      "rash",
+      "mouth_involvement"
+    ],
+    "targeted_followup": [
+      "cough",
+      "runny_nose",
+      "tonsillar_exudate",
+      "sick_contact",
+      "throat_irritant_exposure"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "airway_or_deep_neck_space_branch": {
+      "triggers": [
+        "drooling",
+        "shortness_of_breath",
+        "neck_swelling",
+        "muffled_voice",
+        "dysphagia"
+      ]
+    },
+    "infectious_or_systemic_branch": {
+      "triggers": [
+        "fever",
+        "rash",
+        "tonsillar_exudate",
+        "sick_contact"
+      ]
+    },
+    "upper_respiratory_or_irritant_branch": {
+      "triggers": [
+        "cough",
+        "runny_nose",
+        "throat_irritant_exposure"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "painful_swallowing",
+      "replace_with": [
+        "pain_with_swallowing"
+      ]
+    },
+    {
+      "old_concept": "trouble_swallowing",
+      "replace_with": [
+        "dysphagia"
+      ]
+    },
+    {
+      "old_concept": "hot_potato_voice",
+      "replace_with": [
+        "muffled_voice"
+      ]
+    },
+    {
+      "old_concept": "neck_mass_or_swelling",
+      "replace_with": [
+        "neck_swelling"
+      ]
+    },
+    {
+      "old_concept": "voice_change_or_muffled_voice",
+      "replace_with": [
+        "voice_change",
+        "muffled_voice"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_airway_or_deep_neck_space_pattern_sore_throat",
+    "possible_infectious_or_systemic_pattern_sore_throat",
+    "respiratory_distress_screen",
+    "airway_or_anaphylaxis_screen",
+    "sepsis_or_systemic_instability_screen",
+    "severe_rash_screen"
+  ],
+  "questions_by_id": {
+    "sore_throat": {
+      "id": "sore_throat",
+      "field": "sore_throat",
+      "code": "ENT-000",
+      "ui_label": "Sore throat",
+      "phase": "core_characterization",
+      "text": "Do you have a sore throat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "sore_throat_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "sore_throat",
+      "question_category": "symptom",
+      "canonical_question_key": "sore_throat",
+      "dedup_family": "ros:sore_throat",
+      "dedup_families": [
+        "ros:sore_throat"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the sore throat start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has it been going on?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "pain_with_swallowing": {
+      "id": "pain_with_swallowing",
+      "field": "pain_with_swallowing",
+      "code": "ENT-001",
+      "ui_label": "Pain with swallowing",
+      "phase": "core_characterization",
+      "text": "Does it hurt when you swallow?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "pain_with_swallowing_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pain_with_swallowing",
+      "question_category": "symptom",
+      "canonical_question_key": "pain_with_swallowing",
+      "dedup_family": "ros:sore_throat",
+      "dedup_families": [
+        "ros:sore_throat"
+      ],
+      "question_role": "qualifier"
+    },
+    "voice_change": {
+      "id": "voice_change",
+      "field": "voice_change",
+      "code": "ENT-003",
+      "ui_label": "Voice change",
+      "phase": "core_characterization",
+      "text": "Has your voice changed?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "voice_change_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "voice_change",
+      "question_category": "symptom",
+      "canonical_question_key": "voice_change",
+      "dedup_family": "ros:sore_throat",
+      "dedup_families": [
+        "ros:sore_throat"
+      ],
+      "question_role": "qualifier"
+    },
+    "drooling": {
+      "id": "drooling",
+      "field": "drooling",
+      "code": "ENT-005",
+      "ui_label": "Drooling",
+      "phase": "high_priority_followup",
+      "text": "Are you drooling or unable to handle your saliva?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "drooling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "drooling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_airway_or_deep_neck_space_pattern_sore_throat"
+      ],
+      "canonical_question_key": "drooling",
+      "question_role": "qualifier"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Shortness of breath",
+      "phase": "high_priority_followup",
+      "text": "Are you short of breath or having trouble breathing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "shortness_of_breath_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_airway_or_deep_neck_space_pattern_sore_throat"
+      ],
+      "canonical_question_key": "shortness_of_breath",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with the sore throat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_infectious_or_systemic_pattern_sore_throat"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "neck_swelling": {
+      "id": "neck_swelling",
+      "field": "neck_swelling",
+      "code": "ENT-006",
+      "ui_label": "Neck swelling",
+      "phase": "high_priority_followup",
+      "text": "Is there swelling in the neck or throat area?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "neck_swelling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "neck_swelling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_airway_or_deep_neck_space_pattern_sore_throat"
+      ],
+      "canonical_question_key": "neck_swelling",
+      "dedup_family": "ros:neck_swelling",
+      "dedup_families": [
+        "ros:neck_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "muffled_voice": {
+      "id": "muffled_voice",
+      "field": "muffled_voice",
+      "code": "ENT-004",
+      "ui_label": "Muffled voice",
+      "phase": "high_priority_followup",
+      "text": "Does your voice sound muffled or like a hot-potato voice?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "muffled_voice_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "muffled_voice",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_airway_or_deep_neck_space_pattern_sore_throat"
+      ],
+      "canonical_question_key": "muffled_voice",
+      "dedup_family": "ros:sore_throat",
+      "dedup_families": [
+        "ros:sore_throat"
+      ],
+      "question_role": "qualifier"
+    },
+    "rash": {
+      "id": "rash",
+      "field": "rash",
+      "code": "SKIN-001",
+      "ui_label": "Rash",
+      "phase": "high_priority_followup",
+      "text": "Do you have a rash anywhere on the body?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "rash_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "rash",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_infectious_or_systemic_pattern_sore_throat"
+      ],
+      "canonical_question_key": "rash",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "mouth_involvement": {
+      "id": "mouth_involvement",
+      "field": "mouth_involvement",
+      "code": "SKIN-006B",
+      "ui_label": "Mouth involvement",
+      "phase": "high_priority_followup",
+      "text": "Are there sores, ulcers, or other changes in the mouth?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "mouth_involvement_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "mouth_involvement",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "mouth_involvement",
+      "dedup_family": "ros:rash",
+      "dedup_families": [
+        "ros:rash"
+      ],
+      "question_role": "qualifier"
+    },
+    "cough": {
+      "id": "cough",
+      "field": "cough",
+      "code": "RESP-005",
+      "ui_label": "Cough",
+      "phase": "targeted_followup",
+      "text": "Do you also have a cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "cough_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "cough",
+      "question_category": "symptom",
+      "canonical_question_key": "cough",
+      "dedup_family": "ros:cough",
+      "dedup_families": [
+        "ros:cough"
+      ],
+      "question_role": "qualifier"
+    },
+    "runny_nose": {
+      "id": "runny_nose",
+      "field": "runny_nose",
+      "code": "RESP-010",
+      "ui_label": "Runny nose",
+      "phase": "targeted_followup",
+      "text": "Do you also have a runny or blocked nose?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "runny_nose_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "runny_nose",
+      "question_category": "symptom",
+      "canonical_question_key": "runny_nose",
+      "dedup_family": "ros:runny_nose",
+      "dedup_families": [
+        "ros:runny_nose"
+      ],
+      "question_role": "qualifier"
+    },
+    "tonsillar_exudate": {
+      "id": "tonsillar_exudate",
+      "field": "tonsillar_exudate",
+      "code": "ENT-008",
+      "ui_label": "Tonsillar exudate",
+      "phase": "targeted_followup",
+      "text": "Have you noticed white patches, pus, or exudate on the tonsils?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "tonsillar_exudate_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "tonsillar_exudate",
+      "question_category": "symptom",
+      "canonical_question_key": "tonsillar_exudate",
+      "question_role": "qualifier"
+    },
+    "sick_contact": {
+      "id": "sick_contact",
+      "field": "sick_contact",
+      "code": "CTX-019",
+      "ui_label": "Sick contact",
+      "phase": "targeted_followup",
+      "text": "Have you been around anyone who was sick with a sore throat, cold, or similar illness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "sick_contact_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "sick_contact",
+      "question_category": "context_history",
+      "canonical_question_key": "sick_contact",
+      "dedup_family": "ros:sick_contact",
+      "dedup_families": [
+        "ros:sick_contact"
+      ],
+      "question_role": "qualifier"
+    },
+    "throat_irritant_exposure": {
+      "id": "throat_irritant_exposure",
+      "field": "throat_irritant_exposure",
+      "code": "CTX-021",
+      "ui_label": "Throat irritant exposure",
+      "phase": "targeted_followup",
+      "text": "Was there a recent exposure to smoke, dust, chemicals, allergens, or another throat irritant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "allergy_or_irritant_exposure_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "throat_irritant_exposure",
+      "question_category": "context_history",
+      "canonical_question_key": "throat_irritant_exposure",
+      "dedup_family": "ros:allergy_or_irritant_exposure",
+      "dedup_families": [
+        "ros:allergy_or_irritant_exposure"
+      ],
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "dysphagia": {
+      "id": "dysphagia",
+      "field": "dysphagia",
+      "code": "GI-025",
+      "ui_label": "Difficulty swallowing",
+      "phase": "high_priority_followup",
+      "text": "Are you having trouble swallowing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dysphagia_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dysphagia",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "dysphagia",
+      "dedup_family": "ros:dysphagia",
+      "dedup_families": [
+        "ros:dysphagia"
+      ],
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "sore_throat.json"
+}

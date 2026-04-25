@@ -1,0 +1,59 @@
+{
+  "file_name": "module_runner.json",
+  "version": "1.1.0",
+  "data_sources": {
+    "shared_file": "shared_v2.json",
+    "index_file": "index_v2.json",
+    "required_index_sections": [
+      "module_registry",
+      "complaint_registry",
+      "global_orchestration"
+    ],
+    "required_shared_sections": [
+      "authoritative_module_order",
+      "session_guardrails",
+      "canonical_code_policy"
+    ]
+  },
+  "input_contract": {
+    "required": [
+      "complaint_id",
+      "session_state",
+      "active_complaints"
+    ],
+    "optional": [
+      "completed_modules",
+      "captured_fields_override",
+      "module_order_override",
+      "clarification_reopen_fields"
+    ],
+    "completed_modules_format": "List or set of module_id values completed earlier in the same session."
+  },
+  "load_order_rules": {
+    "authoritative_order_source": "shared_v2.authoritative_module_order",
+    "run_point_source": "index_v2.global_orchestration.module_run_point_default"
+  },
+  "activation_rules": {
+    "general_modules": "Always eligible once per session unless already completed.",
+    "conditional_modules_rule": "Activate conditional modules by evaluating the activation_rules declared in each module file against session state and complaint context."
+  },
+  "question_selection_within_module": {
+    "ownership_source": "Use module owned_fields when present; if absent, derive from the module questions list as a fallback.",
+    "field_order_rule": "Respect module field_order when selecting the next module question.",
+    "per_module_cap_rule": "Respect each module session_cap_questions limit."
+  },
+  "cap_enforcement": {
+    "global_cap_source": "shared_v2.session_guardrails.session_hard_cap_questions"
+  },
+  "output_contract": {
+    "return_fields": [
+      "ordered_modules_used",
+      "selected_modules",
+      "selected_module_questions",
+      "skipped_modules_with_reasons",
+      "skipped_fields_with_reasons",
+      "covered_concepts",
+      "remaining_module_budget"
+    ]
+  }
+}

@@ -1,0 +1,690 @@
+{
+  "complaint_id": "back_pain",
+  "version": "1.1.0",
+  "primary_system": "musculoskeletal",
+  "parent_symptom": null,
+  "ui_label": "Back pain",
+  "display_name": "Back pain",
+  "ui_name": "Back pain",
+  "canonical_concept": "back_pain",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['back_pain'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 22,
+      "target_question_budget": 34,
+      "max_questions": 45,
+      "early_danger_reserve": 8,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Back pain requires full pain characterization plus early screening for cauda equina, infection, malignancy, and fracture-risk patterns. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 6,
+      "secondary_question_budget_override_if_red_flag": 10,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "location",
+        "severity",
+        "recent_trauma",
+        "leg_weakness",
+        "bowel_dysfunction",
+        "fever"
+      ],
+      "selection_rule": "If back pain is secondary, ask only the listed priority questions unless a spinal red-flag branch activates."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "musculoskeletal"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "duration",
+      "location",
+      "pain_specific_location",
+      "character",
+      "severity",
+      "radiation",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "recent_trauma",
+      "leg_weakness",
+      "numbness",
+      "tingling",
+      "saddle_anesthesia",
+      "bowel_dysfunction",
+      "bladder_dysfunction",
+      "fever",
+      "history_of_cancer",
+      "fracture_risk_history",
+      "weight_loss"
+    ],
+    "targeted_followup": [
+      "leg_pain",
+      "stiffness",
+      "pain_worse_with_movement",
+      "recent_heavy_lifting"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "cauda_equina_branch": {
+      "triggers": [
+        "saddle_anesthesia",
+        "bowel_dysfunction",
+        "leg_weakness"
+      ]
+    },
+    "fracture_risk_branch": {
+      "triggers": [
+        "recent_trauma",
+        "fracture_risk_history"
+      ]
+    },
+    "infection_or_malignancy_branch": {
+      "triggers": [
+        "fever",
+        "history_of_cancer",
+        "weight_loss"
+      ]
+    },
+    "mechanical_branch": {
+      "triggers": [
+        "pain_worse_with_movement",
+        "recent_heavy_lifting",
+        "stiffness"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "back_location",
+      "replace_with": [
+        "pain_site",
+        "pain_specific_location"
+      ]
+    },
+    {
+      "old_concept": "pain_score",
+      "replace_with": [
+        "severity"
+      ]
+    },
+    {
+      "old_concept": "trauma_history",
+      "replace_with": [
+        "recent_trauma"
+      ]
+    },
+    {
+      "old_concept": "steroid_use_or_osteoporosis",
+      "replace_with": [
+        "fracture_risk_history"
+      ]
+    },
+    {
+      "old_concept": "bladder_or_bowel_issue",
+      "replace_with": [
+        "bowel_dysfunction"
+      ]
+    },
+    {
+      "old_concept": "weakness_or_numbness",
+      "replace_with": [
+        "leg_weakness",
+        "numbness"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_caudas_equina_pattern_back_pain",
+    "possible_spinal_infection_or_malignancy_pattern_back_pain",
+    "possible_fracture_risk_pattern_back_pain",
+    "cauda_equina_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the back pain start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is the pain constant, or does it come and go in episodes?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "location": {
+      "id": "location",
+      "field": "location",
+      "code": "PAIN-014",
+      "ui_label": "Pain site",
+      "phase": "core_characterization",
+      "text": "Where is the back pain located?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "location",
+      "question_category": "qualifier",
+      "canonical_question_key": "location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "pain_specific_location": {
+      "id": "pain_specific_location",
+      "field": "pain_specific_location",
+      "code": "PAIN-014B",
+      "ui_label": "Pain specific location",
+      "phase": "core_characterization",
+      "text": "Can you point to the exact spot in your back?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pain_specific_location",
+      "question_category": "qualifier",
+      "canonical_question_key": "pain_specific_location",
+      "dedup_family": "ros:location",
+      "dedup_families": [
+        "ros:location"
+      ],
+      "question_role": "qualifier"
+    },
+    "character": {
+      "id": "character",
+      "field": "character",
+      "code": "PAIN-016",
+      "ui_label": "Character",
+      "phase": "core_characterization",
+      "text": "What does the back pain feel like, for example throbbing, sharp, dull, burning, cramping, pressure-like, stabbing, or aching?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "character",
+      "question_category": "qualifier",
+      "canonical_question_key": "character",
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "On a scale of 0 to 10, how severe is it?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "radiation": {
+      "id": "radiation",
+      "field": "radiation",
+      "code": "PAIN-017",
+      "ui_label": "Radiation",
+      "phase": "core_characterization",
+      "text": "Does the pain travel anywhere else, such as the back, groin, chest, shoulder, or leg? If yes, where?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "radiation",
+      "question_category": "qualifier",
+      "canonical_question_key": "radiation",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What makes the back pain worse, such as bending, lifting, walking, standing, coughing, or certain positions?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What makes it better, such as rest, lying down, heat, stretching, pain medicine, or certain positions?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is it affecting what you can do, such as walking, standing, eating, sleeping, breathing, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "recent_trauma": {
+      "id": "recent_trauma",
+      "field": "recent_trauma",
+      "code": "CTX-004",
+      "ui_label": "Recent trauma",
+      "phase": "high_priority_followup",
+      "text": "Did this start after any recent trauma or injury?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_trauma_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_trauma",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_fracture_risk_pattern_back_pain"
+      ],
+      "canonical_question_key": "recent_trauma",
+      "question_role": "qualifier"
+    },
+    "leg_weakness": {
+      "id": "leg_weakness",
+      "field": "leg_weakness",
+      "code": "NEURO-007",
+      "ui_label": "Leg weakness",
+      "phase": "high_priority_followup",
+      "text": "Any weakness in one or both legs?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "leg_weakness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "leg_weakness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_caudas_equina_pattern_back_pain"
+      ],
+      "canonical_question_key": "leg_weakness",
+      "question_role": "qualifier"
+    },
+    "numbness": {
+      "id": "numbness",
+      "field": "numbness",
+      "code": "NEURO-004",
+      "ui_label": "Numbness",
+      "phase": "high_priority_followup",
+      "text": "Any numbness in the legs or elsewhere?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "numbness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "numbness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "numbness",
+      "dedup_family": "ros:numbness",
+      "dedup_families": [
+        "ros:numbness"
+      ],
+      "question_role": "qualifier"
+    },
+    "tingling": {
+      "id": "tingling",
+      "field": "tingling",
+      "code": "NEURO-005",
+      "ui_label": "Tingling",
+      "phase": "high_priority_followup",
+      "text": "Any tingling or pins-and-needles in the legs?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "tingling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "tingling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "tingling",
+      "dedup_family": "ros:tingling",
+      "dedup_families": [
+        "ros:tingling"
+      ],
+      "question_role": "qualifier"
+    },
+    "saddle_anesthesia": {
+      "id": "saddle_anesthesia",
+      "field": "saddle_anesthesia",
+      "code": "NEURO-018",
+      "ui_label": "Saddle anesthesia",
+      "phase": "high_priority_followup",
+      "text": "Any numbness around the groin or saddle area?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "saddle_anesthesia_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "saddle_anesthesia",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_caudas_equina_pattern_back_pain"
+      ],
+      "canonical_question_key": "saddle_anesthesia",
+      "question_role": "qualifier"
+    },
+    "bowel_dysfunction": {
+      "id": "bowel_dysfunction",
+      "field": "bowel_dysfunction",
+      "code": "SPINE-001A",
+      "ui_label": "Bowel dysfunction",
+      "phase": "high_priority_followup",
+      "text": "Have you had new trouble controlling your bowels or new loss of stool control?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "bowel_dysfunction_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "bowel_dysfunction",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_caudas_equina_pattern_back_pain"
+      ],
+      "canonical_question_key": "bowel_dysfunction",
+      "dedup_family": "ros:bowel_dysfunction",
+      "dedup_families": [
+        "ros:bowel_dysfunction"
+      ],
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Any fever with the back pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_spinal_infection_or_malignancy_pattern_back_pain"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "history_of_cancer": {
+      "id": "history_of_cancer",
+      "field": "history_of_cancer",
+      "code": "PMH-014",
+      "ui_label": "History of cancer",
+      "phase": "high_priority_followup",
+      "text": "Any history of cancer?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "history_of_cancer_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "history_of_cancer",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_spinal_infection_or_malignancy_pattern_back_pain"
+      ],
+      "canonical_question_key": "history_of_cancer",
+      "question_role": "qualifier"
+    },
+    "fracture_risk_history": {
+      "id": "fracture_risk_history",
+      "field": "fracture_risk_history",
+      "code": "PMH-021",
+      "ui_label": "Fracture risk history",
+      "phase": "high_priority_followup",
+      "text": "Do you have osteoporosis or long-term steroid use?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "osteoporosis_or_steroid_use_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fracture_risk_history",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_fracture_risk_pattern_back_pain"
+      ],
+      "canonical_question_key": "fracture_risk_history",
+      "dedup_family": "ros:back_pain",
+      "dedup_families": [
+        "ros:back_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "weight_loss": {
+      "id": "weight_loss",
+      "field": "weight_loss",
+      "code": "CON-007",
+      "ui_label": "Weight loss",
+      "phase": "high_priority_followup",
+      "text": "Any unexplained weight loss?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "weight_loss_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "weight_loss",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_spinal_infection_or_malignancy_pattern_back_pain"
+      ],
+      "canonical_question_key": "weight_loss",
+      "dedup_family": "ros:weight_loss",
+      "dedup_families": [
+        "ros:weight_loss"
+      ],
+      "question_role": "qualifier"
+    },
+    "leg_pain": {
+      "id": "leg_pain",
+      "field": "leg_pain",
+      "code": "MSK-011",
+      "ui_label": "Leg pain",
+      "phase": "targeted_followup",
+      "text": "Any pain going into the leg?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "leg_pain_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "leg_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "leg_pain",
+      "question_role": "qualifier"
+    },
+    "stiffness": {
+      "id": "stiffness",
+      "field": "stiffness",
+      "code": "MSK-010",
+      "ui_label": "Stiffness",
+      "phase": "targeted_followup",
+      "text": "Any stiffness in the back?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "stiffness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "stiffness",
+      "question_category": "symptom",
+      "canonical_question_key": "stiffness",
+      "dedup_family": "ros:stiffness",
+      "dedup_families": [
+        "ros:stiffness"
+      ],
+      "question_role": "qualifier"
+    },
+    "pain_worse_with_movement": {
+      "id": "pain_worse_with_movement",
+      "field": "pain_worse_with_movement",
+      "code": "MSKQ-010",
+      "ui_label": "Worse with movement",
+      "phase": "targeted_followup",
+      "text": "Is the pain worse with movement?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "pain_worse_with_movement_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pain_worse_with_movement",
+      "question_category": "qualifier",
+      "canonical_question_key": "pain_worse_with_movement",
+      "question_role": "qualifier"
+    },
+    "recent_heavy_lifting": {
+      "id": "recent_heavy_lifting",
+      "field": "recent_heavy_lifting",
+      "code": "CTX-009",
+      "ui_label": "Recent heavy lifting",
+      "phase": "targeted_followup",
+      "text": "Did this start after any recent heavy lifting or strain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_heavy_lifting_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_heavy_lifting",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_heavy_lifting",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "bladder_dysfunction": {
+      "id": "bladder_dysfunction",
+      "field": "bladder_dysfunction",
+      "code": "SPINE-001B",
+      "ui_label": "Bladder dysfunction",
+      "phase": "high_priority_followup",
+      "text": "Have you had new trouble passing urine or controlling your bladder?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "bladder_dysfunction",
+      "question_category": "symptom",
+      "dedup_family": "ros:bladder_dysfunction",
+      "dedup_families": [
+        "ros:bladder_dysfunction"
+      ],
+      "question_role": "qualifier",
+      "detail_field": "bladder_dysfunction_details",
+      "capture_detail_if_positive": true
+    }
+  },
+  "file_name": "back_pain.json"
+}

@@ -1,0 +1,842 @@
+{
+  "complaint_id": "dysuria",
+  "version": "1.1.0",
+  "primary_system": "genitourinary",
+  "parent_symptom": "pain",
+  "ui_label": "Pain or burning when passing urine",
+  "display_name": "Dysuria",
+  "ui_name": "Dysuria",
+  "canonical_concept": "dysuria",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "opening_state_note": "Selecting this complaint should set state['dysuria'] = 'yes' before questioning begins.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 22,
+      "target_question_budget": 34,
+      "max_questions": 42,
+      "early_danger_reserve": 6,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": "Dysuria requires early screening for fever, flank pain, hematuria, retention, and obstruction while preserving budget for GU-specific characterization and source-seeking follow-up. Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "duration",
+        "severity",
+        "fever",
+        "flank_pain"
+      ],
+      "selection_rule": "If dysuria is secondary, ask only the listed priority questions unless a red-flag branch activates or unresolved shared danger concepts remain."
+    },
+    "ros_mode": {
+      "target_ros_questions": 3,
+      "max_ros_questions": 5,
+      "pathological_system_first": true,
+      "pathological_system": "genitourinary"
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "duration",
+      "severity",
+      "dysuria_character",
+      "voiding_timing_relation",
+      "aggravating_factors",
+      "relieving_factors",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "fever",
+      "chills",
+      "flank_pain",
+      "hematuria",
+      "inability_to_pass_urine",
+      "dehydration",
+      "low_urine_output",
+      "severe_abdominal_pain"
+    ],
+    "targeted_followup": [
+      "urinary_frequency",
+      "urinary_urgency",
+      "suprapubic_pain",
+      "abdominal_pain",
+      "nausea",
+      "vomiting",
+      "urethral_discharge",
+      "vaginal_discharge",
+      "pregnancy_context",
+      "recent_sexual_exposure",
+      "prior_stones",
+      "weakness"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "upper_urinary_infection_branch": {
+      "triggers": [
+        "fever",
+        "chills",
+        "flank_pain"
+      ]
+    },
+    "urinary_obstruction_branch": {
+      "triggers": [
+        "inability_to_pass_urine",
+        "dehydration",
+        "low_urine_output"
+      ]
+    },
+    "stone_pattern_branch": {
+      "triggers": [
+        "hematuria",
+        "flank_pain",
+        "prior_stones"
+      ]
+    },
+    "lower_urinary_irritative_branch": {
+      "triggers": [
+        "urinary_frequency",
+        "urinary_urgency",
+        "suprapubic_pain"
+      ]
+    },
+    "discharge_overlap_branch": {
+      "triggers": [
+        "urethral_discharge",
+        "vaginal_discharge",
+        "recent_sexual_exposure"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "burning_urine",
+      "replace_with": [
+        "dysuria"
+      ]
+    },
+    {
+      "old_concept": "frequency_of_urination",
+      "replace_with": [
+        "urinary_frequency"
+      ]
+    },
+    {
+      "old_concept": "urge_to_urinate",
+      "replace_with": [
+        "urinary_urgency"
+      ]
+    },
+    {
+      "old_concept": "blood_in_urine",
+      "replace_with": [
+        "hematuria"
+      ]
+    },
+    {
+      "old_concept": "loin_pain",
+      "replace_with": [
+        "flank_pain"
+      ]
+    },
+    {
+      "old_concept": "frequency_or_urgency",
+      "replace_with": [
+        "urinary_frequency",
+        "urinary_urgency"
+      ]
+    },
+    {
+      "old_concept": "abdominal_or_flank_pain",
+      "replace_with": [
+        "abdominal_pain",
+        "flank_pain"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_upper_urinary_infection_dysuria",
+    "possible_urinary_obstruction_dysuria",
+    "possible_stone_pattern_dysuria",
+    "sepsis_or_systemic_instability_screen",
+    "urinary_retention_screen",
+    "pyelonephritis_or_upper_uti_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the pain or burning when passing urine start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is it there every time you pass urine, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "On a scale of 0 to 10, how bad is it?",
+      "response_type": "SCALE_0_10",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "dysuria_character": {
+      "id": "dysuria_character",
+      "field": "dysuria_character",
+      "code": "GUQ-004",
+      "ui_label": "Dysuria character",
+      "phase": "core_characterization",
+      "text": "What does the pain or burning feel like?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "dysuria_character",
+      "question_category": "qualifier",
+      "canonical_question_key": "dysuria_character",
+      "question_role": "qualifier"
+    },
+    "voiding_timing_relation": {
+      "id": "voiding_timing_relation",
+      "field": "voiding_timing_relation",
+      "code": "GUQ-005",
+      "ui_label": "Timing with urination",
+      "phase": "core_characterization",
+      "text": "Is it before, during, or after passing urine?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "voiding_timing_relation",
+      "question_category": "qualifier",
+      "canonical_question_key": "voiding_timing_relation",
+      "question_role": "qualifier"
+    },
+    "aggravating_factors": {
+      "id": "aggravating_factors",
+      "field": "aggravating_factors",
+      "code": "PAIN-018",
+      "ui_label": "Aggravating factors",
+      "phase": "core_characterization",
+      "text": "What makes the urinary pain worse, such as starting urination, finishing urination, sex, dehydration, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "aggravating_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "aggravating_factors",
+      "question_role": "qualifier"
+    },
+    "relieving_factors": {
+      "id": "relieving_factors",
+      "field": "relieving_factors",
+      "code": "PAIN-019",
+      "ui_label": "Relieving factors",
+      "phase": "core_characterization",
+      "text": "What makes it better, such as drinking fluids, urinating, medicines, or nothing?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "relieving_factors",
+      "question_category": "qualifier",
+      "canonical_question_key": "relieving_factors",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is this affecting you, such as sleep, work, school, sex, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "high_priority_followup",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fever_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_upper_urinary_infection_dysuria"
+      ],
+      "canonical_question_key": "fever",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "chills": {
+      "id": "chills",
+      "field": "chills",
+      "code": "CON-003",
+      "ui_label": "Chills",
+      "phase": "high_priority_followup",
+      "text": "Have you felt cold or shivery without uncontrollable shaking?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "chills_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "chills",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_upper_urinary_infection_dysuria"
+      ],
+      "canonical_question_key": "chills",
+      "dedup_family": "ros:chills",
+      "dedup_families": [
+        "ros:chills"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "flank_pain": {
+      "id": "flank_pain",
+      "field": "flank_pain",
+      "code": "GU-007",
+      "ui_label": "Pain in the side or back near the kidney",
+      "phase": "high_priority_followup",
+      "text": "Do you have pain in your side or back near the kidneys?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "flank_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "flank_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_upper_urinary_infection_dysuria",
+        "possible_stone_pattern_dysuria"
+      ],
+      "canonical_question_key": "flank_pain",
+      "dedup_family": "ros:flank_pain",
+      "dedup_families": [
+        "ros:flank_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "hematuria": {
+      "id": "hematuria",
+      "field": "hematuria",
+      "code": "GU-006",
+      "ui_label": "Blood in urine",
+      "phase": "high_priority_followup",
+      "text": "Have you noticed blood in the urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "hematuria_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "hematuria",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_stone_pattern_dysuria"
+      ],
+      "canonical_question_key": "hematuria",
+      "dedup_family": "ros:hematuria",
+      "dedup_families": [
+        "ros:hematuria"
+      ],
+      "question_role": "qualifier"
+    },
+    "inability_to_pass_urine": {
+      "id": "inability_to_pass_urine",
+      "field": "inability_to_pass_urine",
+      "code": "GU-022",
+      "ui_label": "Unable to pass urine",
+      "phase": "high_priority_followup",
+      "text": "Are you unable to pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "inability_to_pass_urine_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "inability_to_pass_urine",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_urinary_obstruction_dysuria"
+      ],
+      "canonical_question_key": "inability_to_pass_urine",
+      "dedup_family": "ros:urinary_retention",
+      "dedup_families": [
+        "ros:urinary_retention"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "dehydration": {
+      "id": "dehydration",
+      "field": "dehydration",
+      "code": "CON-011A",
+      "ui_label": "Dehydration",
+      "phase": "high_priority_followup",
+      "text": "Have you been very dry, dizzy when standing, or unable to keep fluids down?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dehydration_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dehydration",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_urinary_obstruction_dysuria"
+      ],
+      "canonical_question_key": "dehydration",
+      "if_positive_ask": [
+        "dehydration_details"
+      ],
+      "question_role": "qualifier"
+    },
+    "dehydration_details": {
+      "id": "dehydration_details",
+      "field": "dehydration_details",
+      "code": "CON-011A-D",
+      "ui_label": "Dehydration details",
+      "phase": "high_priority_followup",
+      "text": "Please give more details about dehydration.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dehydration_or_low_urine_output_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dehydration",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_urinary_obstruction_dysuria"
+      ],
+      "canonical_question_key": "dehydration_details",
+      "parent_field": "dehydration",
+      "question_role": "detail"
+    },
+    "low_urine_output": {
+      "id": "low_urine_output",
+      "field": "low_urine_output",
+      "code": "CON-011B",
+      "ui_label": "Low urine output",
+      "phase": "high_priority_followup",
+      "text": "Have you been passing much less urine than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "low_urine_output_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "low_urine_output",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_urinary_obstruction_dysuria"
+      ],
+      "canonical_question_key": "low_urine_output",
+      "if_positive_ask": [
+        "low_urine_output_details"
+      ],
+      "dedup_family": "ros:low_urine_output",
+      "dedup_families": [
+        "ros:low_urine_output"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "low_urine_output_details": {
+      "id": "low_urine_output_details",
+      "field": "low_urine_output_details",
+      "code": "CON-011B-D",
+      "ui_label": "Low urine output details",
+      "phase": "high_priority_followup",
+      "text": "Please give more details about low urine output.",
+      "response_type": "SHORT_TEXT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dehydration_or_low_urine_output_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "low_urine_output",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_urinary_obstruction_dysuria"
+      ],
+      "canonical_question_key": "low_urine_output_details",
+      "parent_field": "low_urine_output",
+      "dedup_family": "ros:low_urine_output",
+      "dedup_families": [
+        "ros:low_urine_output"
+      ],
+      "question_role": "detail"
+    },
+    "severe_abdominal_pain": {
+      "id": "severe_abdominal_pain",
+      "field": "severe_abdominal_pain",
+      "code": "GI-013",
+      "ui_label": "Severe abdominal pain",
+      "phase": "high_priority_followup",
+      "text": "Do you have severe lower abdominal or belly pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "severe_abdominal_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "severe_abdominal_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "severe_abdominal_pain",
+      "question_role": "red_flag_subtype",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ]
+    },
+    "urinary_frequency": {
+      "id": "urinary_frequency",
+      "field": "urinary_frequency",
+      "code": "GU-002",
+      "ui_label": "Passing urine more often",
+      "phase": "targeted_followup",
+      "text": "Are you passing urine more often than usual?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "urinary_frequency_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "urinary_frequency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_frequency",
+      "dedup_family": "ros:urinary_frequency",
+      "dedup_families": [
+        "ros:urinary_frequency"
+      ],
+      "question_role": "qualifier"
+    },
+    "urinary_urgency": {
+      "id": "urinary_urgency",
+      "field": "urinary_urgency",
+      "code": "GU-003",
+      "ui_label": "Sudden urge to pass urine",
+      "phase": "targeted_followup",
+      "text": "Do you feel a sudden urge to pass urine?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "urinary_urgency_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "urinary_urgency",
+      "question_category": "symptom",
+      "canonical_question_key": "urinary_urgency",
+      "dedup_family": "ros:urinary_urgency",
+      "dedup_families": [
+        "ros:urinary_urgency"
+      ],
+      "question_role": "qualifier"
+    },
+    "suprapubic_pain": {
+      "id": "suprapubic_pain",
+      "field": "suprapubic_pain",
+      "code": "GU-008B",
+      "ui_label": "Suprapubic pain",
+      "phase": "targeted_followup",
+      "text": "Do you have pain in the lower middle part of your belly just above the pubic bone?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "suprapubic_pain_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "suprapubic_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "suprapubic_pain",
+      "question_role": "qualifier"
+    },
+    "abdominal_pain": {
+      "id": "abdominal_pain",
+      "field": "abdominal_pain",
+      "code": "GI-008",
+      "ui_label": "Abdominal pain",
+      "phase": "targeted_followup",
+      "text": "Do you have any other abdominal pain?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "abdominal_pain_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "abdominal_pain",
+      "question_category": "symptom",
+      "canonical_question_key": "abdominal_pain",
+      "dedup_family": "ros:abdominal_pain",
+      "dedup_families": [
+        "ros:abdominal_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "nausea": {
+      "id": "nausea",
+      "field": "nausea",
+      "code": "GI-007",
+      "ui_label": "Nausea",
+      "phase": "targeted_followup",
+      "text": "Have you been nauseated?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "nausea_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "nausea",
+      "question_category": "symptom",
+      "canonical_question_key": "nausea",
+      "dedup_family": "ros:nausea",
+      "dedup_families": [
+        "ros:nausea"
+      ],
+      "question_role": "qualifier"
+    },
+    "vomiting": {
+      "id": "vomiting",
+      "field": "vomiting",
+      "code": "GI-002",
+      "ui_label": "Vomiting",
+      "phase": "targeted_followup",
+      "text": "Have you vomited?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "vomiting_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "vomiting",
+      "question_category": "symptom",
+      "canonical_question_key": "vomiting",
+      "dedup_family": "ros:vomiting",
+      "dedup_families": [
+        "ros:vomiting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "urethral_discharge": {
+      "id": "urethral_discharge",
+      "field": "urethral_discharge",
+      "code": "GU-009B",
+      "ui_label": "Urethral discharge",
+      "phase": "targeted_followup",
+      "text": "Have you noticed any discharge from the urine opening?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "urethral_discharge_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "urethral_discharge",
+      "question_category": "symptom",
+      "canonical_question_key": "urethral_discharge",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    "vaginal_discharge": {
+      "id": "vaginal_discharge",
+      "field": "vaginal_discharge",
+      "code": "GYN-002",
+      "ui_label": "Vaginal discharge",
+      "phase": "targeted_followup",
+      "text": "Have you noticed any vaginal discharge?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "vaginal_discharge_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "vaginal_discharge",
+      "question_category": "symptom",
+      "ask_if": "SEX_FEMALE",
+      "canonical_question_key": "vaginal_discharge",
+      "sensitive_topic": true,
+      "dedup_family": "ros:vaginal_discharge",
+      "dedup_families": [
+        "ros:vaginal_discharge"
+      ],
+      "question_role": "qualifier"
+    },
+    "pregnancy_context": {
+      "id": "pregnancy_context",
+      "field": "pregnancy_context",
+      "code": "GYNHX-001",
+      "ui_label": "Pregnancy context",
+      "phase": "targeted_followup",
+      "text": "Could you be pregnant, or is pregnancy a possibility?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "pregnancy_context_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATIENT_ELDERLY_SKIP_PREGNANCY"
+      ],
+      "canonical_concept": "pregnancy_context",
+      "question_category": "context_history",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "canonical_question_key": "pregnancy_context",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    "recent_sexual_exposure": {
+      "id": "recent_sexual_exposure",
+      "field": "recent_sexual_exposure",
+      "code": "SOC-015",
+      "ui_label": "Recent sexual exposure",
+      "phase": "targeted_followup",
+      "text": "Have you had a recent sexual exposure that may be relevant?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_sexual_exposure_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_sexual_exposure",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_sexual_exposure",
+      "sensitive_topic": true,
+      "question_role": "qualifier"
+    },
+    "prior_stones": {
+      "id": "prior_stones",
+      "field": "prior_stones",
+      "code": "PMH-023",
+      "ui_label": "Prior stones",
+      "phase": "targeted_followup",
+      "text": "Have you had kidney or urine stones before?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "prior_stones_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "prior_stones",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_stone_pattern_dysuria"
+      ],
+      "canonical_question_key": "prior_stones",
+      "question_role": "qualifier"
+    },
+    "weakness": {
+      "id": "weakness",
+      "field": "weakness",
+      "code": "CON-006",
+      "ui_label": "Weakness",
+      "phase": "targeted_followup",
+      "text": "Have you felt unusually weak?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "weakness_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "weakness",
+      "question_category": "symptom",
+      "canonical_question_key": "weakness",
+      "dedup_family": "ros:weakness",
+      "dedup_families": [
+        "ros:weakness"
+      ],
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    }
+  },
+  "file_name": "dysuria.json"
+}

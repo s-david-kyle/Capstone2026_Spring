@@ -1,0 +1,202 @@
+{
+  "module_name": "gynecologic_history_module",
+  "version": "1.1.0",
+  "description": "Conditional generalized gynecologic, menstrual, and pregnancy-context module used only when pregnancy, menstrual, or gynecologic history is clinically relevant.",
+  "ui_render_rule": "Use ui_label or text in the UI. Never show raw backend field ids.",
+  "session_cap_questions": 8,
+  "session_non_repeat_required": true,
+  "load_once_per_session": true,
+  "owned_fields": [
+    "pregnancy_context",
+    "lmp",
+    "timing_with_cycle",
+    "contraceptive_use",
+    "menopausal_status",
+    "douching",
+    "local_hygiene_products",
+    "gynecologic_history_other"
+  ],
+  "activation_rules": [
+    "GYNECOLOGIC_CONTEXT_RELEVANT"
+  ],
+  "module_ownership_principle": "Generalized gynecologic, menstrual, and pregnancy-context history are captured here first. Complaint files may ask only targeted follow-up when clinically necessary.",
+  "activation_note": "Complaints that capture pregnancy context earlier should still reuse the same canonical code and field, and the module should skip that question if already captured.",
+  "questions": [
+    {
+      "id": "pregnancy_context",
+      "field": "pregnancy_context",
+      "code": "GYNHX-001",
+      "ui_label": "Pregnancy context",
+      "phase": "context_and_history",
+      "text": "Could you be pregnant now, or are you recently postpartum?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "pregnancy_context_details",
+      "canonical_concept": "pregnancy_context",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "pregnancy_context",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "lmp",
+      "field": "lmp",
+      "code": "GYNHX-002",
+      "ui_label": "Last menstrual period",
+      "phase": "context_and_history",
+      "text": "When was the first day of your last menstrual period?",
+      "response_type": "TEMPORAL_OR_SHORT_TEXT",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "lmp",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "lmp",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "timing_with_cycle",
+      "field": "timing_with_cycle",
+      "code": "GYNHX-003",
+      "ui_label": "Timing with cycle",
+      "phase": "context_and_history",
+      "text": "Do your symptoms seem related to your menstrual cycle?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "timing_with_cycle_details",
+      "canonical_concept": "timing_with_cycle",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "timing_with_cycle",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "contraceptive_use",
+      "field": "contraceptive_use",
+      "code": "GYNHX-004",
+      "ui_label": "Contraceptive use",
+      "phase": "context_and_history",
+      "text": "Are you using any contraception or hormonal treatment that may be relevant?",
+      "response_type": "SHORT_TEXT",
+      "ask_if": "SEX_FEMALE_REPRODUCTIVE_AGE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "contraceptive_use",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "contraceptive_use",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "menopausal_status",
+      "field": "menopausal_status",
+      "code": "GYNHX-005",
+      "ui_label": "Menopausal status",
+      "phase": "context_and_history",
+      "text": "Are you still having periods regularly, are they irregular, or have they stopped completely?",
+      "response_type": "SHORT_TEXT",
+      "ask_if": "SEX_FEMALE",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "menopausal_status",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "menopausal_status",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "douching",
+      "field": "douching",
+      "code": "GYNHX-006",
+      "ui_label": "Douching or internal products",
+      "phase": "context_and_history",
+      "text": "Have you used douching, vaginal washes, or internal products recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "ask_if": "GYNECOLOGIC_CONTEXT_RELEVANT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "douching_details",
+      "canonical_concept": "douching",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "douching",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "local_hygiene_products",
+      "field": "local_hygiene_products",
+      "code": "GYNHX-007",
+      "ui_label": "Local hygiene products",
+      "phase": "context_and_history",
+      "text": "Have you recently changed pads, soaps, creams, lubricants, or other local products?",
+      "response_type": "SHORT_TEXT",
+      "ask_if": "GYNECOLOGIC_CONTEXT_RELEVANT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "local_hygiene_products",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "local_hygiene_products",
+      "question_role": "qualifier"
+    },
+    {
+      "id": "gynecologic_history_other",
+      "field": "gynecologic_history_other",
+      "code": "GYNHX-009",
+      "ui_label": "Other gynecologic history",
+      "phase": "context_and_history",
+      "text": "Is there any other gynecologic or obstetric history we should know about?",
+      "response_type": "SHORT_TEXT",
+      "ask_if": "GYNECOLOGIC_CONTEXT_RELEVANT",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "gynecologic_history_other",
+      "question_category": "context_history",
+      "sensitive_topic": true,
+      "canonical_question_key": "gynecologic_history_other",
+      "question_role": "qualifier"
+    }
+  ],
+  "field_order": [
+    "pregnancy_context",
+    "lmp",
+    "timing_with_cycle",
+    "contraceptive_use",
+    "menopausal_status",
+    "douching",
+    "local_hygiene_products",
+    "gynecologic_history_other"
+  ],
+  "summary_rendering": {
+    "pregnancy_context": "Pregnancy context",
+    "lmp": "Last menstrual period",
+    "timing_with_cycle": "Timing with cycle",
+    "contraceptive_use": "Contraceptive use",
+    "menopausal_status": "Menopausal status",
+    "douching": "Douching or internal products",
+    "local_hygiene_products": "Local hygiene products",
+    "gynecologic_history_other": "Other gynecologic history"
+  },
+  "followup_guidance": {
+    "principle": "Keep this module generalized. Complaint files should ask targeted gynecologic follow-up only when the complaint, red flags, or earlier answers make that detail decision-relevant.",
+    "examples": [
+      "vomiting may capture pregnancy_context earlier, but it must still use code GYNHX-001",
+      "abdominal pain may ask targeted ectopic or cycle-linked follow-up after this module if needed",
+      "vaginal discharge may ask discharge-specific or vulvovaginal follow-up after these generalized history questions"
+    ]
+  },
+  "file_name": "gynecologic_history_module.json"
+}

@@ -1,0 +1,856 @@
+{
+  "complaint_id": "shortness_of_breath",
+  "version": "1.1.0",
+  "primary_system": "respiratory",
+  "parent_symptom": null,
+  "ui_label": "Shortness of breath",
+  "display_name": "Shortness of Breath",
+  "ui_name": "Shortness of breath",
+  "canonical_concept": "shortness_of_breath",
+  "document_status": "draft_completed_for_current_iteration",
+  "signoff_note": "Complaint draft completed for now. File remains revisable if later shared-contract or complaint-review changes are identified.",
+  "question_budget": {
+    "primary_mode": {
+      "min_questions": 28,
+      "target_question_budget": 38,
+      "max_questions": 48,
+      "early_danger_reserve": 6,
+      "ros_reserve": 3,
+      "context_history_reserve": 3,
+      "rationale": " Caps increased in v1.1.0 to preserve room for complaint flow while session hard cap supports ROS and module questions."
+    },
+    "secondary_mode": {
+      "secondary_question_budget": 5,
+      "secondary_question_budget_override_if_red_flag": 8,
+      "priority_question_ids_if_secondary": [
+        "onset",
+        "pattern",
+        "duration",
+        "severity",
+        "breathlessness_at_rest"
+      ]
+    }
+  },
+  "question_schedule": [
+    "core_characterization",
+    "high_priority_followup",
+    "targeted_followup",
+    "final_closeout"
+  ],
+  "question_phase_map": {
+    "core_characterization": [
+      "onset",
+      "pattern",
+      "episode_duration",
+      "duration",
+      "severity",
+      "exertional_trigger",
+      "functional_impact"
+    ],
+    "high_priority_followup": [
+      "breathlessness_at_rest",
+      "unable_to_speak_full_sentences",
+      "cyanosis",
+      "confusion",
+      "stridor",
+      "chest_pain",
+      "hemoptysis",
+      "pleuritic_pain",
+      "leg_swelling",
+      "recent_immobility",
+      "orthopnea",
+      "paroxysmal_nocturnal_dyspnea",
+      "fainting",
+      "dizziness"
+    ],
+    "targeted_followup": [
+      "wheeze",
+      "positional_component",
+      "cough",
+      "cough_character",
+      "sputum_character",
+      "asthma_history",
+      "copd_history",
+      "palpitations",
+      "recent_travel",
+      "recent_antibiotics"
+    ],
+    "final_closeout": [
+      "final_closeout_question"
+    ]
+  },
+  "branching_logic": {
+    "respiratory_branch": {
+      "triggers": [
+        "shortness_of_breath",
+        "wheeze",
+        "stridor",
+        "cough",
+        "hemoptysis",
+        "pleuritic_pain"
+      ]
+    },
+    "cardiovascular_branch": {
+      "triggers": [
+        "chest_pain",
+        "orthopnea",
+        "paroxysmal_nocturnal_dyspnea",
+        "leg_swelling",
+        "palpitations"
+      ]
+    },
+    "infectious_thromboembolic_branch": {
+      "triggers": [
+        "fever",
+        "cough",
+        "hemoptysis",
+        "pleuritic_pain",
+        "recent_immobility",
+        "recent_travel",
+        "leg_swelling"
+      ]
+    }
+  },
+  "concepts_retired_from_old_file": [
+    {
+      "old_concept": "orthopnea_or_pnd",
+      "replace_with": [
+        "orthopnea",
+        "paroxysmal_nocturnal_dyspnea"
+      ]
+    },
+    {
+      "old_concept": "stridor_or_airway_swelling",
+      "replace_with": [
+        "stridor"
+      ]
+    },
+    {
+      "old_concept": "syncope_or_near_syncope",
+      "replace_with": [
+        "fainting",
+        "dizziness"
+      ]
+    },
+    {
+      "old_concept": "cyanosis_or_confusion",
+      "replace_with": [
+        "cyanosis",
+        "confusion"
+      ]
+    },
+    {
+      "old_concept": "recent_immobility_or_travel",
+      "replace_with": [
+        "recent_immobility",
+        "recent_travel"
+      ]
+    },
+    {
+      "old_concept": "known_asthma_or_copd",
+      "replace_with": [
+        "asthma_history",
+        "copd_history"
+      ]
+    }
+  ],
+  "shared_escalation_rules_expected": [
+    "possible_critical_respiratory_distress_shortness_of_breath",
+    "possible_pe_pattern_shortness_of_breath",
+    "possible_cardiac_failure_pattern_shortness_of_breath",
+    "cardiac_chest_pain_screen",
+    "pulmonary_embolism_screen",
+    "respiratory_distress_screen",
+    "airway_or_anaphylaxis_screen",
+    "sepsis_or_systemic_instability_screen"
+  ],
+  "questions_by_id": {
+    "onset": {
+      "id": "onset",
+      "field": "onset",
+      "code": "EVENT-001",
+      "ui_label": "Onset",
+      "phase": "core_characterization",
+      "text": "When did the breathing problem start?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "canonical_concept": "onset",
+      "question_category": "qualifier",
+      "canonical_question_key": "onset",
+      "question_role": "qualifier"
+    },
+    "pattern": {
+      "id": "pattern",
+      "field": "pattern",
+      "code": "EVENT-003",
+      "ui_label": "Pattern",
+      "phase": "core_characterization",
+      "text": "Is it there all the time, or does it come and go?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "pattern",
+      "question_category": "qualifier",
+      "canonical_question_key": "pattern",
+      "question_role": "qualifier"
+    },
+    "episode_duration": {
+      "id": "episode_duration",
+      "field": "episode_duration",
+      "code": "EVENT-004",
+      "ui_label": "Episode duration",
+      "phase": "core_characterization",
+      "text": "When it happens, how long does each episode last?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "parent_field": "pattern",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PATTERN_NOT_EPISODIC"
+      ],
+      "canonical_concept": "episode_duration",
+      "question_category": "qualifier",
+      "ask_if_note": "Ask only when pattern indicates episodic/intermittent symptoms that come and go.",
+      "canonical_question_key": "episode_duration",
+      "question_role": "detail"
+    },
+    "duration": {
+      "id": "duration",
+      "field": "duration",
+      "code": "EVENT-002",
+      "ui_label": "Duration",
+      "phase": "core_characterization",
+      "text": "How long has this been going on altogether?",
+      "response_type": "TEMPORAL_WITH_UNIT_OR_SHORT_TEXT",
+      "canonical_concept": "duration",
+      "question_category": "qualifier",
+      "canonical_question_key": "duration",
+      "question_role": "qualifier"
+    },
+    "severity": {
+      "id": "severity",
+      "field": "severity",
+      "code": "PAIN-015",
+      "ui_label": "Severity",
+      "phase": "core_characterization",
+      "text": "How bad is it from 0 to 10?",
+      "response_type": "SCALE_0_10",
+      "canonical_concept": "severity",
+      "question_category": "qualifier",
+      "canonical_question_key": "severity",
+      "question_role": "qualifier"
+    },
+    "exertional_trigger": {
+      "id": "exertional_trigger",
+      "field": "exertional_trigger",
+      "code": "EVENT-012",
+      "ui_label": "Worse with exertion",
+      "phase": "core_characterization",
+      "text": "Does it come on or get worse with physical activity?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "exertional_trigger_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "exertional_trigger",
+      "question_category": "qualifier",
+      "canonical_question_key": "exertional_trigger",
+      "question_role": "qualifier"
+    },
+    "functional_impact": {
+      "id": "functional_impact",
+      "field": "functional_impact",
+      "code": "PAIN-020",
+      "ui_label": "Functional impact",
+      "phase": "core_characterization",
+      "text": "How is it affecting what you can do, such as walking, standing, eating, sleeping, breathing, or daily activities?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "functional_impact",
+      "question_category": "qualifier",
+      "canonical_question_key": "functional_impact",
+      "question_role": "qualifier"
+    },
+    "breathlessness_at_rest": {
+      "id": "breathlessness_at_rest",
+      "field": "breathlessness_at_rest",
+      "code": "RESPQ-001",
+      "ui_label": "Even at rest",
+      "phase": "high_priority_followup",
+      "text": "Does it happen even when you are resting?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "breathlessness_at_rest_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "breathlessness_at_rest",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "breathlessness_at_rest",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "qualifier"
+    },
+    "unable_to_speak_full_sentences": {
+      "id": "unable_to_speak_full_sentences",
+      "field": "unable_to_speak_full_sentences",
+      "code": "RESP-002",
+      "ui_label": "Unable to speak full sentences",
+      "phase": "high_priority_followup",
+      "text": "Is your breathing so bad that you cannot speak in full sentences?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "unable_to_speak_full_sentences_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "unable_to_speak_full_sentences",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_critical_respiratory_distress_shortness_of_breath"
+      ],
+      "canonical_question_key": "unable_to_speak_full_sentences",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "red_flag_subtype"
+    },
+    "cyanosis": {
+      "id": "cyanosis",
+      "field": "cyanosis",
+      "code": "RESP-003",
+      "ui_label": "Bluish lips or face",
+      "phase": "high_priority_followup",
+      "text": "Have your lips, face, or fingertips looked bluish?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "cyanosis_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "cyanosis",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_critical_respiratory_distress_shortness_of_breath"
+      ],
+      "canonical_question_key": "cyanosis",
+      "question_role": "qualifier"
+    },
+    "confusion": {
+      "id": "confusion",
+      "field": "confusion",
+      "code": "NEU-004",
+      "ui_label": "Confusion",
+      "phase": "high_priority_followup",
+      "text": "Have you felt confused or not like yourself?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "confusion_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "confusion",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_critical_respiratory_distress_shortness_of_breath"
+      ],
+      "canonical_question_key": "confusion",
+      "dedup_family": "ros:confusion",
+      "dedup_families": [
+        "ros:confusion"
+      ],
+      "question_role": "qualifier"
+    },
+    "stridor": {
+      "id": "stridor",
+      "field": "stridor",
+      "code": "RESPQ-005",
+      "ui_label": "Noisy breathing",
+      "phase": "high_priority_followup",
+      "text": "Is your breathing noisy or harsh?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "stridor_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "stridor",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_critical_respiratory_distress_shortness_of_breath"
+      ],
+      "canonical_question_key": "stridor",
+      "dedup_family": "ros:stridor",
+      "dedup_families": [
+        "ros:stridor"
+      ],
+      "question_role": "qualifier"
+    },
+    "chest_pain": {
+      "id": "chest_pain",
+      "field": "chest_pain",
+      "code": "CV-002",
+      "ui_label": "Chest pain or tightness",
+      "phase": "high_priority_followup",
+      "text": "Do you have any chest pain or tightness?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "chest_pain_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "chest_pain",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "chest_pain",
+      "dedup_family": "ros:chest_pain",
+      "dedup_families": [
+        "ros:chest_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "hemoptysis": {
+      "id": "hemoptysis",
+      "field": "hemoptysis",
+      "code": "RESP-004",
+      "ui_label": "Coughing up blood",
+      "phase": "high_priority_followup",
+      "text": "Have you coughed up blood?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "hemoptysis_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "hemoptysis",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_shortness_of_breath"
+      ],
+      "canonical_question_key": "hemoptysis",
+      "dedup_family": "ros:hemoptysis",
+      "dedup_families": [
+        "ros:hemoptysis"
+      ],
+      "question_role": "qualifier"
+    },
+    "pleuritic_pain": {
+      "id": "pleuritic_pain",
+      "field": "pleuritic_pain",
+      "code": "RESP-008",
+      "ui_label": "Worse with deep breathing",
+      "phase": "high_priority_followup",
+      "text": "Is it worse when you take a deep breath or cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "pleuritic_component_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "pleuritic_pain",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_shortness_of_breath"
+      ],
+      "canonical_question_key": "pleuritic_pain",
+      "dedup_family": "ros:pleuritic_pain",
+      "dedup_families": [
+        "ros:pleuritic_pain"
+      ],
+      "question_role": "qualifier"
+    },
+    "leg_swelling": {
+      "id": "leg_swelling",
+      "field": "leg_swelling",
+      "code": "CV-001",
+      "ui_label": "Leg swelling",
+      "phase": "high_priority_followup",
+      "text": "Have you had swelling in one or both legs?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "leg_swelling_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "leg_swelling",
+      "question_category": "symptom",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_shortness_of_breath"
+      ],
+      "canonical_question_key": "leg_swelling",
+      "dedup_family": "ros:leg_swelling",
+      "dedup_families": [
+        "ros:leg_swelling"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_immobility": {
+      "id": "recent_immobility",
+      "field": "recent_immobility",
+      "code": "SOC-014",
+      "ui_label": "Recent immobility",
+      "phase": "high_priority_followup",
+      "text": "Have you been stuck in bed, on a long trip, or not moving around much recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "recent_immobility_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "recent_immobility",
+      "question_category": "context_history",
+      "linked_escalation_rules": [
+        "possible_pe_pattern_shortness_of_breath"
+      ],
+      "canonical_question_key": "recent_immobility",
+      "dedup_family": "ros:recent_immobility",
+      "dedup_families": [
+        "ros:recent_immobility"
+      ],
+      "question_role": "qualifier"
+    },
+    "orthopnea": {
+      "id": "orthopnea",
+      "field": "orthopnea",
+      "code": "RESPQ-002",
+      "ui_label": "Worse when lying flat",
+      "phase": "high_priority_followup",
+      "text": "Is it worse when you lie flat?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "orthopnea_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "orthopnea",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_cardiac_failure_pattern_shortness_of_breath"
+      ],
+      "canonical_question_key": "orthopnea",
+      "dedup_family": "ros:orthopnea",
+      "dedup_families": [
+        "ros:orthopnea"
+      ],
+      "question_role": "qualifier"
+    },
+    "paroxysmal_nocturnal_dyspnea": {
+      "id": "paroxysmal_nocturnal_dyspnea",
+      "field": "paroxysmal_nocturnal_dyspnea",
+      "code": "RESPQ-003",
+      "ui_label": "Waking short of breath at night",
+      "phase": "high_priority_followup",
+      "text": "Do you wake from sleep short of breath?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "paroxysmal_nocturnal_dyspnea_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "paroxysmal_nocturnal_dyspnea",
+      "question_category": "qualifier",
+      "linked_escalation_rules": [
+        "possible_cardiac_failure_pattern_shortness_of_breath"
+      ],
+      "canonical_question_key": "paroxysmal_nocturnal_dyspnea",
+      "dedup_family": "ros:paroxysmal_nocturnal_dyspnea",
+      "dedup_families": [
+        "ros:paroxysmal_nocturnal_dyspnea"
+      ],
+      "question_role": "qualifier"
+    },
+    "fainting": {
+      "id": "fainting",
+      "field": "fainting",
+      "code": "NEU-002",
+      "ui_label": "Fainting",
+      "phase": "high_priority_followup",
+      "text": "Have you fainted or passed out?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "fainting_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "fainting",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "fainting",
+      "dedup_family": "ros:fainting",
+      "dedup_families": [
+        "ros:fainting"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "dizziness": {
+      "id": "dizziness",
+      "field": "dizziness",
+      "code": "NEU-001",
+      "ui_label": "Dizziness or lightheadedness",
+      "phase": "high_priority_followup",
+      "text": "Have you felt dizzy or lightheaded?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "detail_field": "dizziness_details",
+      "capture_detail_if_positive": true,
+      "canonical_concept": "dizziness",
+      "question_category": "symptom",
+      "linked_escalation_rules": [],
+      "canonical_question_key": "dizziness",
+      "dedup_family": "ros:dizziness",
+      "dedup_families": [
+        "ros:dizziness"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "wheeze": {
+      "id": "wheeze",
+      "field": "wheeze",
+      "code": "RESPQ-004",
+      "ui_label": "Whistling sound when breathing",
+      "phase": "targeted_followup",
+      "text": "Do you hear a whistling sound when you breathe?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "wheeze_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "wheeze",
+      "question_category": "qualifier",
+      "canonical_question_key": "wheeze",
+      "dedup_family": "ros:wheeze",
+      "dedup_families": [
+        "ros:wheeze"
+      ],
+      "question_role": "qualifier"
+    },
+    "positional_component": {
+      "id": "positional_component",
+      "field": "positional_component",
+      "code": "RESPQ-008",
+      "ui_label": "Affected by position",
+      "phase": "targeted_followup",
+      "text": "Is it affected by your position, such as lying down or sitting up?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "positional_component_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "positional_component",
+      "question_category": "qualifier",
+      "canonical_question_key": "positional_component",
+      "question_role": "qualifier"
+    },
+    "cough": {
+      "id": "cough",
+      "field": "cough",
+      "code": "RESP-005",
+      "ui_label": "Cough",
+      "phase": "targeted_followup",
+      "text": "Do you have a cough?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "cough_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "cough",
+      "question_category": "symptom",
+      "canonical_question_key": "cough",
+      "dedup_family": "ros:cough",
+      "dedup_families": [
+        "ros:cough"
+      ],
+      "question_role": "qualifier"
+    },
+    "cough_character": {
+      "id": "cough_character",
+      "field": "cough_character",
+      "code": "RESPQ-009",
+      "ui_label": "Cough character",
+      "phase": "targeted_followup",
+      "text": "What is the cough like?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "cough_character",
+      "question_category": "qualifier",
+      "canonical_question_key": "cough_character",
+      "question_role": "detail"
+    },
+    "sputum_character": {
+      "id": "sputum_character",
+      "field": "sputum_character",
+      "code": "RESPQ-010",
+      "ui_label": "Sputum character",
+      "phase": "targeted_followup",
+      "text": "Are you bringing anything up, and what is it like?",
+      "response_type": "SHORT_TEXT",
+      "parent_field": "cough",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED",
+        "PARENT_NEGATIVE"
+      ],
+      "canonical_concept": "sputum_character",
+      "question_category": "qualifier",
+      "canonical_question_key": "sputum_character",
+      "question_role": "detail"
+    },
+    "palpitations": {
+      "id": "palpitations",
+      "field": "palpitations",
+      "code": "CV-003",
+      "ui_label": "Palpitations",
+      "phase": "targeted_followup",
+      "text": "Have you felt your heart racing or beating irregularly?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "palpitations_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "palpitations",
+      "question_category": "symptom",
+      "canonical_question_key": "palpitations",
+      "dedup_family": "ros:palpitations",
+      "dedup_families": [
+        "ros:palpitations"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_travel": {
+      "id": "recent_travel",
+      "field": "recent_travel",
+      "code": "SOC-007",
+      "ui_label": "Recent travel",
+      "phase": "targeted_followup",
+      "text": "Have you traveled anywhere recently?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_travel_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_travel",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_travel",
+      "dedup_family": "ros:recent_travel",
+      "dedup_families": [
+        "ros:recent_travel"
+      ],
+      "question_role": "qualifier"
+    },
+    "recent_antibiotics": {
+      "id": "recent_antibiotics",
+      "field": "recent_antibiotics",
+      "code": "MED-002",
+      "ui_label": "Recent antibiotics",
+      "phase": "targeted_followup",
+      "text": "Have you taken any antibiotics in the last few weeks?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "recent_antibiotics_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "recent_antibiotics",
+      "question_category": "context_history",
+      "canonical_question_key": "recent_antibiotics",
+      "question_role": "qualifier"
+    },
+    "final_closeout_question": {
+      "id": "final_closeout_question",
+      "field": "final_closeout_question",
+      "code": "CLOSE-001",
+      "ui_label": "Anything else",
+      "phase": "final_closeout",
+      "text": "Is there anything else you want to mention that we have not asked about yet?",
+      "response_type": "SHORT_TEXT",
+      "canonical_concept": "final_closeout_question",
+      "question_category": "context_history",
+      "canonical_question_key": "final_closeout_question",
+      "question_role": "qualifier"
+    },
+    "asthma_history": {
+      "id": "asthma_history",
+      "field": "asthma_history",
+      "code": "PMH-002",
+      "ui_label": "Asthma history",
+      "phase": "targeted_followup",
+      "text": "Do you have asthma?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "asthma_history_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "asthma_history",
+      "question_category": "context_history",
+      "canonical_question_key": "asthma_history",
+      "question_role": "qualifier"
+    },
+    "copd_history": {
+      "id": "copd_history",
+      "field": "copd_history",
+      "code": "PMH-003",
+      "ui_label": "COPD history",
+      "phase": "targeted_followup",
+      "text": "Do you have COPD or chronic obstructive lung disease?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "detail_field": "copd_history_details",
+      "capture_detail_if_positive": true,
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "copd_history",
+      "question_category": "context_history",
+      "canonical_question_key": "copd_history",
+      "question_role": "qualifier"
+    },
+    "fever": {
+      "id": "fever",
+      "field": "fever",
+      "code": "CON-001",
+      "ui_label": "Fever",
+      "phase": "targeted_followup",
+      "text": "Have you had a fever?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "fever",
+      "question_category": "symptom",
+      "dedup_family": "ros:fever",
+      "dedup_families": [
+        "ros:fever"
+      ],
+      "question_role": "parent_symptom"
+    },
+    "shortness_of_breath": {
+      "id": "shortness_of_breath",
+      "field": "shortness_of_breath",
+      "code": "RESP-001",
+      "ui_label": "Difficulty in breathing",
+      "phase": "targeted_followup",
+      "text": "Have you had any difficulty in breathing?",
+      "response_type": "BOOLEAN_WITH_OPTIONAL_DETAILS",
+      "skip_if": [
+        "FIELD_ALREADY_CAPTURED"
+      ],
+      "canonical_concept": "shortness_of_breath",
+      "question_category": "symptom",
+      "dedup_family": "ros:shortness_of_breath",
+      "dedup_families": [
+        "ros:shortness_of_breath"
+      ],
+      "question_role": "parent_symptom"
+    }
+  },
+  "opening_state_note": "Selecting this complaint should set state['shortness_of_breath'] = 'yes' before questioning begins.",
+  "history_ownership_note": "Immunization history should remain in the immunization module and should not be duplicated in this complaint unless a narrowly urgent complaint-specific vaccine question is later justified.",
+  "file_name": "shortness_of_breath.json"
+}
