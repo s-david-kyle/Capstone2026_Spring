@@ -151,8 +151,8 @@ def llm_single_symptom_check(prompt):
             "content": (
                 "You are a clinical intake bot. "
                 "STRICT RULES: "
-                # "1. Come up with a single keyword to represent the medical symptom in this statement and no additional information. "
-                "1. Come up with one to three words to represent the medical symptom in this statement and no additional information. "
+                "1. Come up with a single keyword to represent the medical symptom in this statement and no additional information. "
+                # "1. Come up with one to three words to represent the medical symptom in this statement and no additional information. "
                 # "2. Avoid vague non-descriptive words like 'pain'. "
                 # "2. Format the response in this format: ['keyword 1', 'keyword 2', 'keyword 3']"
                 "2. Do not use any punctuation."
@@ -715,14 +715,15 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
     # Duplicate KG to show it was used in this conversation turn
     # ----------------------------------------------------
 
-    # push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
-    symptom_system_kg = get_system_symptom_df(session_id, turn_number)
-    symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
-    push_kg_to_db(symptom_system_kg, 
-                session_id, 
-                'SymptomSystemKG', 
-                overwrite=False,
-                continue_session=True)
+    # TODO: remove this to see if things still operate okay (only need to see the jumps in the doctor interface)
+    # # push last symptom system kg to SymptomSystemKg (will be redundant but tell story)
+    # symptom_system_kg = get_system_symptom_df(session_id, turn_number)
+    # symptom_system_kg['turn'] = turn_number + 1 # was decremented before function call
+    # push_kg_to_db(symptom_system_kg, 
+    #             session_id, 
+    #             'SymptomSystemKG', 
+    #             overwrite=False,
+    #             continue_session=True)
     
     # ----------------------------------------------------
     # Branching for drilldown start, current phase
@@ -831,7 +832,8 @@ def drilldown_system(session_id, turn_number, symptom, prompt, drilldown_start, 
             # symptom to generate new nodes, and push these to KG table
             # freq_system + symptom
             new_umls_term = (freq_system + ' ' + symptom[0]).lower()
-            new_symptoms_df = umls_knowledge_graph(new_umls_term, 50, partial_search=True)
+            # TODO: increase term matches since search is more specific
+            new_symptoms_df = umls_knowledge_graph(new_umls_term, 150, partial_search=True)
             symptom_system_graph, question_phase = symptom_grouping(new_symptoms_df, 
                                             freq_system, 
                                             session_id, 

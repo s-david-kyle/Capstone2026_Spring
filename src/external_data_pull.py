@@ -78,7 +78,7 @@ def umls_retrieval(symptoms):
         umls_json = [{'Symptom': None, 'SemanticType': None}]
     return umls_json
 
-def umls_knowledge_graph(symptom, num_results):
+def umls_knowledge_graph(symptom, num_results, semantic_type='Sign or Symptom'):
     """
     Retrieves UMLS concepts based on a list of symptoms.
 
@@ -123,6 +123,8 @@ def umls_knowledge_graph(symptom, num_results):
             semantic_types.append(result['semanticTypes'][0])
         # put in dataframe
         df = pd.DataFrame({'symptom': symptom_names, 'semantic_type': semantic_types})
+        # TODO: filter by semantic_type
+        df = df[df['semantic_type'] == semantic_type]
         # umls_json = [{'Symptom': symptom_names[i], 'SemanticType': semantic_types[i]} for i in range(len(symptom_names))]
     except:
         df = pd.DataFrame({'Symptom': [None], 'SemanticType': [None]})

@@ -79,7 +79,7 @@ def umls_retrieval(symptoms):
     return umls_json
 
 # TODO: add toggle for partial_search here (only use at the beginning)
-def umls_knowledge_graph(symptom, num_results, partial_search=False):
+def umls_knowledge_graph(symptom, num_results, semantic_type='Sign or Symptom', partial_search=False):
     """
     Retrieves UMLS concepts based on a list of symptoms.
 
@@ -124,8 +124,11 @@ def umls_knowledge_graph(symptom, num_results, partial_search=False):
             symptom_names.append(result['name'])
             semantic_types.append(result['semanticTypes'][0])
         # put in dataframe
+        print(f'Before filtering, {len(symptom_names)} UMLS terms returned')
         print('UMLS data extracted into name/semanticTypes dataframe:')
         df = pd.DataFrame({'symptom': symptom_names, 'semantic_type': semantic_types})
+        # TODO: filter results based off of semantic_type
+        df = df[df['semantic_type'] == semantic_type]
         print(df)
     except:
         print('UMLS data not parsed into dataframe')
