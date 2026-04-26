@@ -78,7 +78,8 @@ def umls_retrieval(symptoms):
         umls_json = [{'Symptom': None, 'SemanticType': None}]
     return umls_json
 
-def umls_knowledge_graph(symptom, num_results):
+# TODO: add toggle for partial_search here (only use at the beginning)
+def umls_knowledge_graph(symptom, num_results, semantic_type='Sign or Symptom', partial_search=False):
     """
     Retrieves UMLS concepts based on a list of symptoms.
 
@@ -96,6 +97,7 @@ def umls_knowledge_graph(symptom, num_results):
     # basic search
     search_results = search_api.search(
         search_string=symptom,  # The term to search for
+        partial_search=partial_search, # TODO: check if this causes any issues with narrowing
         input_type=None,  # None implies search for any input type
         include_obsolete=False,  # Don't include obsolete terms
         include_suppressible=False,  # Don't include suppressible terms
@@ -107,7 +109,7 @@ def umls_knowledge_graph(symptom, num_results):
         file_path=UMLS_PATH
     )
     # convert from string to dictionary for indexing
-    # print(search_results)
+    # print(f'UMLS search results: {search_results}')
     search_results = eval(search_results)
     
     # create list of name and semanticTypes
@@ -122,12 +124,17 @@ def umls_knowledge_graph(symptom, num_results):
             symptom_names.append(result['name'])
             semantic_types.append(result['semanticTypes'][0])
         # put in dataframe
+        print(f'Before filtering, {len(symptom_names)} UMLS terms returned')
+        print('UMLS data extracted into name/semanticTypes dataframe:')
         df = pd.DataFrame({'symptom': symptom_names, 'semantic_type': semantic_types})
-        # umls_json = [{'Symptom': symptom_names[i], 'SemanticType': semantic_types[i]} for i in range(len(symptom_names))]
+        # TODO: filter results based off of semantic_type
+        df = df[df['semantic_type'] == semantic_type]
+        print(df)
     except:
+        print('UMLS data not parsed into dataframe')
         df = pd.DataFrame({'symptom': [None], 'semantic_type': [None]})
-    print(f'New UMLS knowledge graph will have {len(df)} symptoms')
-    print(df)
+    # print(f'New UMLS knowledge graph will have {len(df)} symptoms')
+    # print(df)
     return df
 
 def symptom_drill_down(df, primary_symptom, include_other_types=False):

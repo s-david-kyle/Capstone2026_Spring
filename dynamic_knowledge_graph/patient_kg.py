@@ -45,6 +45,9 @@ if "question_phase" not in st.session_state:
 if "symptom_phase" not in st.session_state:
     st.session_state.symptom_phase = 1
 
+if "avatar" not in st.session_state:
+    st.session_state.avatar = st.sidebar.image("assets/idle state 1.0.gif")
+
 if not os.path.exists(SCRIPT_DIR):
     os.makedirs(SCRIPT_DIR)
 # ==========================================
@@ -90,7 +93,7 @@ if "patient_name" not in st.session_state:
 if "intake_date" not in st.session_state:
     st.session_state.intake_date = datetime.now().strftime("%B %d, %Y")
 
-    # Registration Gate: Only show chat after name is entered
+# Registration Gate: Only show chat after name is entered
 if not st.session_state.patient_name:
     st.subheader("Welcome. Please register to begin.")
     name_input = st.text_input("Enter your Full Name:")
@@ -100,13 +103,13 @@ if not st.session_state.patient_name:
             st.rerun()
         else:
             st.error("Please enter a name to continue.")
+    if st.button("Upload Medical Documentation"):
+        pass
     st.stop() # This prevents the rest of the code from running until registered
 
 # Display patient info in the sidebar once registered
 st.sidebar.info(f"👤 Patient: **{st.session_state.patient_name}**")
 st.sidebar.info(f"📅 Date: **{st.session_state.intake_date}**")
-
-
 
 # Create unique session ID
 session_id = st.session_state.session_id
@@ -129,9 +132,9 @@ if "messages" not in st.session_state:
 
 for msg in st.session_state.messages:
     # Display message with a small time caption
-    time_str = datetime.now().strftime("%H:%M") 
+    # time_str = datetime.now().strftime("%H:%M") 
     st.chat_message(msg["role"]).write(msg["content"])
-    st.caption(f"Time: {time_str}")
+    # st.caption(f"Time: {time_str}")
 
 # Requirement: Text input box for the patient
 # Logic to disable input once the session is complete
@@ -156,6 +159,7 @@ if prompt:
     # if st.session_state.system_drilldown == False:
     if st.session_state.question_phase == 1:
         # gather list of symptoms and systems, create kg to search through
+        print('------------ Phase 1: single symptom check ------------')
         new_symptom = llm_single_symptom_check(prompt)
         st.session_state.symptoms.append(new_symptom)
         # for testing/refinement (can remove - results are written to db at session close)
@@ -164,12 +168,15 @@ if prompt:
         # call UMLS API and push terms to session_state
         # UI-Safe UMLS call: Prevents crashing if API Key is missing
         try:
+            # TODO: update animated gif (this part takes a bit of time)
+            st.session_state.avatar.image("assets/thinking state.gif")
             # UMLS KG function call here
             umls_symptoms = umls_knowledge_graph(new_symptom, 50)  # modify number for tests
             symptom_system_graph = system_grouping(umls_symptoms, 
                                                 new_symptom, 
                                                 session_id, 
                                                 st.session_state.turn_number)
+            st.session_state.avatar.image("assets/complete state 1.0.gif")
         except Exception:
             # new_umls_terms = [] # Fallback to empty list so UI stays active
             st.sidebar.warning(" UMLS Offline (API Key Required)")
@@ -194,13 +201,14 @@ if prompt:
             st.session_state.question_phase += 1
             st.session_state.system_drilldown_start = True
             # response = get_llm_response(st.session_state.messages)
-            status.update(label="Response ready!", state="complete", expanded=False)
+            # status.update(label="Response ready!", state="complete", expanded=False)
 
     # -------------------------------------------------------------------------------------
     # 2: Drill down to affected system
     # -------------------------------------------------------------------------------------
     elif st.session_state.question_phase == 2:
         # drilldown on system
+        print('------------ Phase 2: System drilldown ------------')
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # pull most recent symptom into this function calls
@@ -209,7 +217,8 @@ if prompt:
                                                 st.session_state.symptoms[-1], # grabs last extracted symptom
                                                 prompt,
                                                 st.session_state.system_drilldown_start,
-                                                st.session_state.question_phase)
+                                                st.session_state.question_phase,
+                                                st.session_state.avatar)
         # want to note what turn drilldown_start happened
         st.session_state.system_drilldown_start = system_drilldown_start
         # update state turn_number
@@ -221,6 +230,8 @@ if prompt:
     # 3: Drill down to specific symptom
     # -------------------------------------------------------------------------------------
     elif st.session_state.question_phase == 3:
+        st.session_state.avatar.image("assets/thinking state.gif")
+        print('------------ Phase 3: Symptom drilldown ------------')
         # update turn table with current patient dialogue
         add_turn_data(session_id, datetime.now(), 'patient', prompt)
         # generate new prompt from filtered systems
@@ -228,7 +239,8 @@ if prompt:
                                                                 session_id, 
                                                                 st.session_state.turn_number, 
                                                                 st.session_state.question_phase,
-                                                                st.session_state.symptom_phase)
+                                                                st.session_state.symptom_phase,
+                                                                st.session_state.avatar)
         # update state turn_number
         st.session_state.turn_number = turn_number
         st.session_state.question_phase = current_phase
@@ -238,6 +250,8 @@ if prompt:
     # 4: Diagnosis
     # -------------------------------------------------------------------------------------
     else:
+        print('------------ Phase 4: Diagnosis ------------')
+        st.session_state.avatar.image("assets/thinking state.gif")
         # likely end conversation here
         response = 'Below is a summary of our conversation. Have a nice day!'
         clinical_summary = generate_summary(st.session_state.messages)
@@ -259,7 +273,10 @@ if prompt:
         add_session_metric_data(session_id)
 
         st.sidebar.success("Intake Saved Successfully!")
+
+        st.session_state.avatar.image("assets/complete state 1.0.gif")
     
+    # output question
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
     
@@ -303,6 +320,9 @@ if st.sidebar.button("Finish & Generate Summary"):
             add_session_metric_data(session_id)
 
             st.sidebar.success("Intake Saved Successfully!")
+
+            st.session_state.avatar.image("assets/complete state 1.0.gif")
+
 if "final_summary" in st.session_state:
     # Replace placeholders with real patient data
     final_note = st.session_state.final_summary.replace("[Patient Name - to be added]", st.session_state.patient_name)
@@ -313,6 +333,8 @@ if "final_summary" in st.session_state:
     st.info(final_note)
 
 if st.sidebar.button("Clear Chat / New Patient"):
+    st.session_state.avatar.image("assets/complete state 1.0.gif")
+    
     # save session to db
     clinical_summary = generate_summary(st.session_state.messages)
     add_new_session_data(session_id, session_start, datetime.now(),
@@ -325,7 +347,11 @@ if st.sidebar.button("Clear Chat / New Patient"):
     st.rerun()
 
 # Display the avatar in the sidebar
-st.sidebar.image("assets/capsule_idle.gif")
+# avatar = st.sidebar.image("assets/idle state 1.0.gif")
+if st.session_state.question_phase == 4:
+    st.session_state.avatar.image("assets/complete state 1.0.gif")
+else:
+    st.session_state.avatar.image("assets/idle state 1.0.gif")
 
 # TODO: implement condition to switch to the spin GIF
 # if st.button("Switch to Spin GIF"):
