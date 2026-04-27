@@ -482,10 +482,9 @@ def get_engine_status() -> str:
         return "error"
     if st.session_state.session_closed or st.session_state.summary_payload:
         return "complete"
-    if st.session_state.session_id is not None:
-        return "thinking"
+    if st.session_state.get("current_question") or st.session_state.get("current_batch"):
+        return "idle"
     return "idle"
-
 
 def get_engine_status_caption() -> str:
     state = get_engine_status()
@@ -886,6 +885,33 @@ def main():
     tab_intake, tab_transcript, tab_summary, tab_metrics = st.tabs(["Intake", "Transcript", "Summary", "Metrics"])
 
     with st.sidebar:
+        # --- DYNAMIC AVATAR LOGIC ---
+        try:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            st.session_state.image_folder = os.path.join(current_dir, "images")
+            
+            # 1. Create a placeholder that we can inject images into instantly
+            avatar_placeholder = st.empty()
+            st.session_state.avatar_placeholder = avatar_placeholder
+            
+            # 2. Get current state and display default image
+            current_state = get_engine_status()
+            avatar_files = {
+                "idle": "idle.gif",
+                "thinking": "thinking.gif",
+                "complete": "complete.gif",
+                "error": "error.gif"
+            }
+            current_avatar = avatar_files.get(current_state, "idle.gif")
+            image_path = os.path.join(st.session_state.image_folder, current_avatar)
+            
+            # 3. Draw it inside the placeholder
+            avatar_placeholder.image(image_path, use_container_width=True)
+        except Exception:
+            st.warning("Could not load avatar file")
+        st.write("") 
+        # -----------------------------
+
         st.markdown('<div class="section-title">Session controls</div>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
@@ -971,11 +997,16 @@ def main():
             with left:
                 st.markdown('<div class="card">', unsafe_allow_html=True)
                 st.markdown('<div class="section-title">Conversation</div>', unsafe_allow_html=True)
-                if not st.session_state.chat_history:
-                    st.caption("The live conversation will appear here.")
-                else:
-                    for item in st.session_state.chat_history[-15:]:
-                        render_chat_bubble(item["role"], item["message"], item.get("phase"))
+                
+                # 1. Added a fixed-height container to create a scrollable box
+                # 2. Removed the [-15:] limit so the entire chat history is preserved
+                with st.container(height=600, border=False):
+                    if not st.session_state.chat_history:
+                        st.caption("The live conversation will appear here.")
+                    else:
+                        for item in st.session_state.chat_history:
+                            render_chat_bubble(item["role"], item["message"], item.get("phase"))
+                            
                 st.markdown('</div>', unsafe_allow_html=True)
             with right:
                 if st.session_state.progress.get("red_flags"):
@@ -987,16 +1018,37 @@ def main():
                     render_ros_batch(st.session_state.current_batch)
                 elif st.session_state.phase == "complaint" and st.session_state.current_question:
                     q = st.session_state.current_question
-                    st.markdown('<div class="question-shell">', unsafe_allow_html=True)
-                    st.markdown(f'<div class="phase-tag">{safe_text(q.get("phase"))}</div>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="question-prompt">{safe_text(q.get("text") or q.get("ui_label") or q.get("field"))}</div>', unsafe_allow_html=True)
-                    st.markdown(f'**Field:** {safe_text(q.get("ui_label") or q.get("field"))}')
-                    if q.get("sensitive_topic"):
-                        st.caption("🔒 Sensitive topic")
-                    answer = render_widget(q)
-                    st.markdown('<div class="sidebar-question-note">Question text is shown above in high contrast for readability.</div>', unsafe_allow_html=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    # Wrap the question and Submit button in an st.form so Enter works
+                    with st.form(key=f"form_complaint_{q.get('id', 'default')}", clear_on_submit=False, border=False):
+                        st.markdown('<div class="question-shell">', unsafe_allow_html=True)
+                        st.markdown(f'<div class="phase-tag">{safe_text(q.get("phase"))}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="question-prompt">{safe_text(q.get("text") or q.get("ui_label") or q.get("field"))}</div>', unsafe_allow_html=True)
+                        st.markdown(f'**Field:** {safe_text(q.get("ui_label") or q.get("field"))}')
+                        if q.get("sensitive_topic"):
+                            st.caption("🔒 Sensitive topic")
+                        
+                        answer = render_widget(q)
+                        
+                        st.markdown('<div class="sidebar-question-note">Question text is shown above in high contrast for readability.</div>', unsafe_allow_html=True)
+                        st.markdown('</div>', unsafe_allow_html=True)
 
+                        submitted = st.form_submit_button("Submit answer", use_container_width=True, type="primary")
+                        if submitted:
+                            if not str(answer).strip():
+                                st.warning("Enter an answer before continuing.")
+                            else:
+                                # 1. Instantly inject the thinking GIF into the sidebar placeholder!
+                                thinking_path = os.path.join(st.session_state.image_folder, "thinking.gif")
+                                st.session_state.avatar_placeholder.image(thinking_path, use_container_width=True)
+                                
+                                # 2. Safely talk to the database
+                                submit_answer(str(answer).strip())
+                                
+                                # 3. Redraw the screen (which naturally reverts to idle)
+                                st.rerun()
+
+                    # Keep Skip and Finish OUTSIDE the form
                     if st.session_state.confirm_finish:
                         st.warning("Are you sure you want to end the session now and generate a summary with the information provided so far?")
                         col_confirm, col_cancel = st.columns(2)
@@ -1009,49 +1061,47 @@ def main():
                                 st.session_state.confirm_finish = False
                                 st.rerun()
                     else:
-                        c1, c2, c3 = st.columns(3)
+                        c1, c2 = st.columns(2)
                         with c1:
-                            if st.button("Submit answer", use_container_width=True, type="primary"):
-                                if not str(answer).strip():
-                                    st.warning("Enter an answer before continuing.")
-                                else:
-                                    submit_answer(str(answer).strip())
-                                    st.rerun()
-                        with c2:
                             if st.button("Skip question", use_container_width=True):
                                 skip_current_question()
                                 st.rerun()
-                        with c3:
+                        with c2:
                             if st.button("Finish & summarize", use_container_width=True):
                                 st.session_state.confirm_finish = True
                                 st.rerun()
                 elif st.session_state.phase == "modules" and st.session_state.current_question:
                     st.info("General history modules are now running: PMH/PSH, medications/allergies, social/family history, and conditional history where relevant.")
                     q = st.session_state.current_question
-                    st.markdown('<div class="question-shell">', unsafe_allow_html=True)
-                    st.markdown(f'<div class="phase-tag">{safe_text(q.get("phase"))}</div>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="question-prompt">{safe_text(q.get("text") or q.get("ui_label") or q.get("field"))}</div>', unsafe_allow_html=True)
-                    st.markdown(f'**Field:** {safe_text(q.get("ui_label") or q.get("field"))}')
-                    if q.get("sensitive_topic"):
-                        st.caption("🔒 Sensitive topic")
-                    answer = render_widget(q)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                    c1, c2, c3 = st.columns(3)
-                    with c1:
-                        if st.button("Submit answer", use_container_width=True, type="primary"):
+                    
+                    # Wrap in form
+                    with st.form(key=f"form_modules_{q.get('id', 'default')}", clear_on_submit=False, border=False):
+                        st.markdown('<div class="question-shell">', unsafe_allow_html=True)
+                        st.markdown(f'<div class="phase-tag">{safe_text(q.get("phase"))}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="question-prompt">{safe_text(q.get("text") or q.get("ui_label") or q.get("field"))}</div>', unsafe_allow_html=True)
+                        st.markdown(f'**Field:** {safe_text(q.get("ui_label") or q.get("field"))}')
+                        if q.get("sensitive_topic"):
+                            st.caption("🔒 Sensitive topic")
+                        
+                        answer = render_widget(q)
+                        st.markdown('</div>', unsafe_allow_html=True)
+
+                        submitted = st.form_submit_button("Submit answer", use_container_width=True, type="primary")
+                        if submitted:
                             if not str(answer).strip():
                                 st.warning("Enter an answer before continuing.")
                             else:
+                                # 1. Instantly inject the thinking GIF into the sidebar placeholder!
+                                thinking_path = os.path.join(st.session_state.image_folder, "thinking.gif")
+                                st.session_state.avatar_placeholder.image(thinking_path, use_container_width=True)
+                                
+                                # 2. Safely talk to the database
                                 submit_answer(str(answer).strip())
+                                
+                                # 3. Redraw the screen (which naturally reverts to idle)
                                 st.rerun()
-                    with c2:
-                        if st.button("Skip question", use_container_width=True):
-                            skip_current_question()
-                            st.rerun()
-                    with c3:
-                        if st.button("Finish & summarize", use_container_width=True):
-                            st.session_state.confirm_finish = True
-                            st.rerun()
+
+                    # Keep Skip and Finish OUTSIDE the form
                     if st.session_state.confirm_finish:
                         st.warning("Are you sure you want to end the session now and generate a summary?")
                         col_confirm, col_cancel = st.columns(2)
@@ -1062,6 +1112,16 @@ def main():
                         with col_cancel:
                             if st.button("❌ Cancel", use_container_width=True):
                                 st.session_state.confirm_finish = False
+                                st.rerun()
+                    else:
+                        c1, c2 = st.columns(2)
+                        with c1:
+                            if st.button("Skip question", use_container_width=True):
+                                skip_current_question()
+                                st.rerun()
+                        with c2:
+                            if st.button("Finish & summarize", use_container_width=True):
+                                st.session_state.confirm_finish = True
                                 st.rerun()
                 elif st.session_state.summary_payload or st.session_state.session_closed:
                     st.markdown('<div class="question-shell"><div class="section-title">Session completed</div><div class="helper">The chat has ended and the summaries are ready in the Summary tab.</div></div>', unsafe_allow_html=True)
