@@ -52,8 +52,8 @@ st.markdown(
   color: white; border-radius: 26px; padding: 22px 28px; margin-bottom: 20px;
   box-shadow: 0 22px 45px rgba(29,78,216,.20);
 }
-.hero h1 {font-size:26px; font-weight:900; margin:0 0 4px 0; letter-spacing:-.02em;}
-.hero p  {font-size:13px; opacity:.75; margin:0;}
+.hero h1 {font-size:30px; font-weight:900; margin:0 0 4px 0; letter-spacing:-.02em;}
+.hero p  {font-size:14px; opacity:.75; margin:0;}
 .card {
   background: rgba(255,255,255,.95); border:1px solid rgba(148,163,184,.18);
   border-radius: 22px; padding: 20px 22px; margin-bottom: 16px;
@@ -64,7 +64,7 @@ st.markdown(
   background: rgba(255,255,255,.97);
   border: 1px solid rgba(148,163,184,.2);
   border-radius: 20px;
-  padding: 18px 22px;
+  padding: 20px 24px;
   margin-bottom: 14px;
   box-shadow: 0 8px 24px rgba(15,23,42,.07);
   position: relative;
@@ -81,46 +81,46 @@ st.markdown(
 .ddx-rank-4::before { background: linear-gradient(180deg,#ca8a04,#d97706); }
 .ddx-rank-5::before { background: linear-gradient(180deg,#9ca3af,#6b7280); }
 .ddx-header {display:flex; align-items:baseline; gap:12px; margin-bottom:10px; flex-wrap:wrap;}
-.ddx-rank  {font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:#64748b;}
-.ddx-name  {font-size:20px; font-weight:900; color:#0f172a; flex:1;}
-.ddx-pct   {font-size:28px; font-weight:900; color:#1d4ed8;}
-.bar-wrap  {background:#e2e8f0; border-radius:99px; height:8px; margin-bottom:14px;}
-.bar-fill  {height:8px; border-radius:99px; transition:width .6s ease;}
+.ddx-rank  {font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:#64748b;}
+.ddx-name  {font-size:22px; font-weight:900; color:#0f172a; flex:1;}
+.ddx-pct   {font-size:30px; font-weight:900; color:#1d4ed8;}
+.bar-wrap  {background:#e2e8f0; border-radius:99px; height:9px; margin-bottom:16px;}
+.bar-fill  {height:9px; border-radius:99px; transition:width .6s ease;}
 .ddx-grid  {display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:2px;}
 .ddx-col-head {
-  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.1em;
-  margin-bottom:6px; padding-bottom:4px; border-bottom:2px solid;
+  font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.1em;
+  margin-bottom:7px; padding-bottom:5px; border-bottom:2px solid;
 }
 .col-for   {color:#059669; border-color:#059669;}
 .col-against {color:#dc2626; border-color:#dc2626;}
 .evidence-item {
   display:flex; align-items:flex-start; gap:8px;
-  font-size:13px; color:#1e293b; margin-bottom:5px; line-height:1.4;
+  font-size:14px; color:#1e293b; margin-bottom:6px; line-height:1.45;
 }
-.ev-dot {width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:5px;}
+.ev-dot {width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:6px;}
 .ev-dot-for     {background:#059669;}
 .ev-dot-against {background:#dc2626;}
 .icd-chip {
   display:inline-block; background:#ede9fe; color:#6d28d9;
-  font-size:11px; font-weight:700; border-radius:8px;
-  padding:2px 8px; margin-top:8px; font-family: monospace;
+  font-size:12px; font-weight:700; border-radius:8px;
+  padding:3px 10px; margin-top:8px; font-family: monospace;
 }
 .urgency-immediate {
   display:inline-block; background:#fee2e2; color:#991b1b;
-  font-size:11px; font-weight:800; border-radius:8px; padding:3px 10px; margin-left:8px;
+  font-size:12px; font-weight:800; border-radius:8px; padding:3px 10px; margin-left:8px;
 }
 .urgency-urgent {
   display:inline-block; background:#fff7ed; color:#9a3412;
-  font-size:11px; font-weight:800; border-radius:8px; padding:3px 10px; margin-left:8px;
+  font-size:12px; font-weight:800; border-radius:8px; padding:3px 10px; margin-left:8px;
 }
 .urgency-routine {
   display:inline-block; background:#f0fdf4; color:#166534;
-  font-size:11px; font-weight:800; border-radius:8px; padding:3px 10px; margin-left:8px;
+  font-size:12px; font-weight:800; border-radius:8px; padding:3px 10px; margin-left:8px;
 }
 .caveats-box {
   background:linear-gradient(135deg,#fffbeb,#fef3c7);
   border:1px solid #fde68a; border-radius:14px;
-  padding:14px 18px; margin-top:20px; font-size:13px; color:#78350f;
+  padding:14px 18px; margin-top:20px; font-size:14px; color:#78350f;
 }
 /* sidebar */
 section[data-testid="stSidebar"] {background:#0f172a !important;}
@@ -217,7 +217,7 @@ Return ONLY a JSON object — no markdown fences, no preamble — with this exac
 }
 
 Rules:
-- Return 3–5 ranked diagnoses. Probabilities must sum to ≤ 100.
+- Return 3–5 ranked diagnoses. Probabilities must sum to ≤ 95 — reserve the remainder for unlisted etiologies.
 - urgency values: "immediate" | "urgent" | "routine"
 - "for" and "against" use clinical shorthand appropriate for attending-level physicians (eponyms, abbreviations, Latin OK).
 - "next_steps" is one concise action sentence.
@@ -379,29 +379,27 @@ def render_ddx_card(dx: Dict[str, Any], idx: int) -> None:
         '</div>'
     )
 
-    # Each st.markdown call is isolated — mixing HTML chunks in one block causes Streamlit to escape inner tags
     st.markdown(
-        f"""
-        <div class="ddx-card ddx-rank-{css_rank}">
-          <div class="ddx-header">
-            <span class="ddx-rank">#{rank}</span>
-            <span class="ddx-name">{name}</span>
-            <span class="ddx-pct">{pct}%</span>
-            {urgency_html}
-          </div>
-          {bar_html}
-          {grid_html}
-        </div>
-        """,
+        f'<div class="ddx-card ddx-rank-{css_rank}">'
+        f'<div class="ddx-header">'
+        f'<span class="ddx-rank">#{rank}</span>'
+        f'<span class="ddx-name">{name}</span>'
+        f'<span style="font-size:12px;font-weight:700;color:#64748b;margin-right:2px;">Relative likelihood</span>'
+        f'<span class="ddx-pct">{pct}%</span>'
+        f'{urgency_html}'
+        f'</div>'
+        f'{bar_html}'
+        f'{grid_html}'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
     if next_steps:
         st.markdown(
             f'<div style="margin:-8px 0 6px 0;padding:10px 16px;background:#f8fafc;'
-            f'border-radius:12px;border-left:4px solid {color};font-size:13px;color:#0f172a;">'
+            f'border-radius:12px;border-left:4px solid {color};font-size:14px;color:#0f172a;">'
             f'<span style="font-weight:800;color:{color};font-size:11px;text-transform:uppercase;'
-            f'letter-spacing:.08em;">Next step &nbsp;·&nbsp; </span>{next_steps}</div>',
+            f'letter-spacing:.08em;">Clinician considerations &nbsp;·&nbsp; </span>{next_steps}</div>',
             unsafe_allow_html=True,
         )
 
@@ -427,7 +425,7 @@ encounters = load_completed_encounters()
 # ── sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### 🩺 DDx Console")
-    st.caption("Probabilistic differential diagnosis from structured intake data.")
+    st.caption("AI-assisted ranked DDx from structured intake data.")
     st.divider()
 
     if not encounters:
@@ -472,13 +470,23 @@ with st.sidebar:
     run_ddx = st.button("🔬 Get DDx", type="primary", use_container_width=True)
 
 # ── main body ─────────────────────────────────────────────────────────────────
+_hero_age = enc.get('patient_age', '?')
+_hero_sex = (enc.get('patient_sex') or '?')[0].upper()
+_hero_complaint = enc["primary_complaint"].replace("_", " ").title()
+try:
+    from datetime import datetime as _dt
+    _hero_ts = _dt.strptime((enc.get("created_at") or "")[:19], "%Y-%m-%d %H:%M:%S").strftime("%b %d, %Y")
+except Exception:
+    _hero_ts = (enc.get("created_at") or "")[:10]
+
 st.markdown(
-    """
-    <div class="hero">
-      <h1>Differential Diagnosis</h1>
-      <p>AI-assisted probabilistic DDx · For clinical decision support only · Not a substitute for clinical judgment</p>
-    </div>
-    """,
+    f'<div class="hero">'
+    f'<h1>Differential Diagnosis</h1>'
+    f'<p style="opacity:.55;font-size:12px;margin:2px 0 6px 0;">'
+    f'{_hero_age}F &nbsp;·&nbsp; {_hero_complaint} &nbsp;·&nbsp; {_hero_ts}'
+    f'</p>'
+    f'<p>AI-assisted ranked DDx · For clinical decision support only · Not a substitute for clinical judgment</p>'
+    f'</div>',
     unsafe_allow_html=True,
 )
 
@@ -501,7 +509,7 @@ st.markdown(
         <span class="meta-chip">✚ {len(pp_list)} positives</span>
         <span class="meta-chip">✗ {len(pn_list)} negatives</span>
       </div>
-      <div style="font-size:13px;color:#475569;line-height:1.5;">
+      <div style="font-size:14px;color:#475569;line-height:1.6;">
         {(enc.get("ai_summary") or enc.get("pre_summary") or "<em>No narrative summary available.</em>")}
       </div>
     </div>
@@ -534,10 +542,9 @@ if st.session_state.ddx_result:
 
     if diagnoses:
         st.markdown(
-            f"<div style='font-size:13px;color:#64748b;margin-bottom:16px;'>"
-            f"Showing <strong>{len(diagnoses)}</strong> ranked diagnoses · "
-            f"Probabilities reflect prior likelihood given collected history only — "
-            f"examine, investigate, and revise accordingly.</div>",
+            f"<div style='font-size:14px;color:#64748b;margin-bottom:16px;'>"
+            f"Showing <strong>{len(diagnoses)}</strong> ranked diagnoses. "
+            f"Likelihoods are model-assigned from collected intake history and are for clinician review only.</div>",
             unsafe_allow_html=True,
         )
         for i, dx in enumerate(diagnoses):
@@ -550,6 +557,8 @@ if st.session_state.ddx_result:
             f'<div class="caveats-box">⚠️ <strong>Clinical caveat:</strong> {caveat}</div>',
             unsafe_allow_html=True,
         )
+
+
 else:
     st.markdown(
         """
