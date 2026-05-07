@@ -1,1 +1,0 @@
-[[LLM-Driven Medical Document Analysis -  Enhancing Trustworthy Pathology and Differential Diagnosis]]
