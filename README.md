@@ -11,4 +11,4 @@ There are two methods applied:
 Combines dynamic knowledge graphs, UMLS queries, and a local LLM to surface patient symptoms. Files and documentation are located in the `dynamic_knowledge_graph` folder.
 
 ### Deterministic approach
-Applies a structured approach to aid in diagnosis. Files and documentation are located in the `intake_llm_v5` folder.
+Applies a structured approach to aid in diagnosis. Files and documentation are located in the `deterministic_engine` folder.
